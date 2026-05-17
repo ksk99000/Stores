@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Store Tracker</title>
+    <!-- Apple Web App Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Store Tracker">
+    <link rel="apple-touch-icon" href="https://img.icons8.com/fluent/180/000000/shop.png">
+    
+    <style>
+        :root {
+            --bg-color: #f2f2f7;
+            --card-bg: #ffffff;
+            --text-color: #1c1c1e;
+            --primary-color: #007aff;
+            --success-color: #34c759;
+            --border-color: #e5e5ea;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            padding-top: env(safe-area-inset-top);
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        header {
+            position: sticky;
+            top: 0;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+            z-index: 100;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin: 0 0 10px 0;
+            font-weight: 700;
+        }
+
+        .stats {
+            font-size: 14px;
+            color: #8e8e93;
+            margin-bottom: 12px;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 10px 15px;
+            font-size: 16px;
+            border: none;
+            background-color: #e3e3e9;
+            border-radius: 10px;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        .store-list {
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding-bottom: 50px;
+        }
+
+        .store-item {
+            background-color: var(--card-bg);
+            padding: 16px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            transition: background-color 0.2s ease;
+        }
+
+        .store-name {
+            font-size: 16px;
+            font-weight: 500;
+            padding-right: 10px;
+        }
+
+        /* iOS Style Toggle Switch */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 51px;
+            height: 31px;
+            flex-shrink: 0;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #e5e5ea;
+            transition: .3s;
+            border-radius: 31px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 27px;
+            width: 27px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+        }
+
+        input:checked + .slider {
+            background-color: var(--success-color);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(20px);
+        }
+
+        .visited {
+            background-color: #f2f9f3;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Store Tracker</h1>
+        <div class="stats" id="stats">Visited: 0 / 0 stores</div>
+        <input type="text" id="search" class="search-bar" placeholder="Search stores...">
+    </header>
+
+    <div class="store-list" id="storeList"></div>
+
+    <script>
+        // Cleaned up store list array
+        const rawStores = [
+            "IGA Esk", "Iga Toogoolawah", "Drakes Lowood", "Drakes Samford", "Iga Frenchs Forest",
+            "Iga Dayboro", "Iga Cashmere", "Seasons Iga Burpengary", "Fresh & Save Deagon", "Drakes Mcdowall",
+            "Hoppers Iga Ascot", "Hoppers Iga St Lucia", "Seasons Iga East Brisbane", "Iga Greenslopes", "Iga Carina",
+            "Jones Iga Manly", "Jones Iga Wellington Pt", "Jones Iga Bloomfield", "Jones Iga Cleveland", "Jones Iga Thornlands",
+            "Jones Siga Mt Cotton", "Jones Siga Russell Island", "Iga Acacia Ridge", "Drakes Parkinson", "Drakes Regents Park",
+            "Jones Iga Beaudesert", "Fresh & Save Richlands", "Drakes Yamanto", "Drakes Rosewood", "Supa Iga Laidley",
+            "Iga Hattonvale", "Iga Walloon", "Ritchies Siga Boonah", "Iga West Ipswich", "Foodworks Woodridge",
+            "Drakes Rochedale", "Ritchies Siga Daisy Hill", "Iga Loganholme", "Fresh & Save Eagleby", "Jones Iga Sanctuary Cove",
+            "Drakes Hollywell Rd Market", "Jones Iga Queen St Village", "Drakes Ashmore", "Carlos Siga North Tamborine", "IGA Canungra",
+            "Spanos Iga Mermaid Waters", "Spanos Iga Robina", "Iga Currumbin", "Iga Tugun", "Spanos Siga Gatton",
+            "Iga Dysart (cornetts)", "Cornetts Supa Iga Middlemount", "Cornetts Supa Iga Clermont", "Iga Clermont (beales)", "Cornetts Iga Blackall",
+            "Cornetts Supa Iga Longreach", "Foodworks Tara", "Drakes Chinchilla", "Food works Miles", "Iga Miles",
+            "Cornetts Iga Roma", "Cornetts Supa Iga Charleville", "Iga Cunnamulla", "Cornetts Iga St George", "Foodworks St George",
+            "Foodworks Goondiwindi", "Cornetts Supa Iga Oakey", "Iga Pittsworth", "Iga Crows Nest", "Drakes Toowoomba",
+            "Iga Allora", "Spanos Siga Warwick", "Spanos Siga Stanthorpe", "Foodworks Killarney", "Foodworks Tenterfield",
+            "Iga Tweed Valley (qld)", "Iga Pottsville (qld)", "Iga Byron Bay (qld)", "Ritchies Supa Valu Ballina (qld)", "Cornetts Iga Barcaldine",
+            "Ritchies Siga Kyogle (qld)", "Ritchies Iga Evans Head (qld)", "Iga Iluka (qld)", "Ritchies Siga Maclean Plus Liquor (qld)", "Fresh & Save Grafton",
+            "Carlos Supa Iga Wee Waa", "Bindara Plus Liquor", "Carlos Iga Warialda", "Ritchies Siga Inverell", "Iga Kirks Guyra",
+            "Fresh & Save Armidale", "Foodworks Uralla", "Carlos Iga Manilla", "Carlos Iga Walcha", "Iga Kootingal"
+        ];
+
+        // Format system typos (e.g., lowercase l's or pipes '|' used instead of I)
+        const stores = rawStores.map(store => store.replace(/^[l|]\s*/i, 'IGA ').trim());
+
+        // Load progress or initiate empty object
+        let visitedStores = JSON.parse(localStorage.getItem('visitedStores')) || {};
+
+        const storeListContainer = document.getElementById('storeList');
+        const searchInput = document.getElementById('search');
+        const statsContainer = document.getElementById('stats');
+
+        function updateStats() {
+            const total = stores.length;
+            const visitedCount = Object.values(visitedStores).filter(Boolean).length;
+            statsContainer.innerText = `Visited: ${visitedCount} / ${total} stores (${Math.round((visitedCount/total)*100)}%)`;
+        }
+
+        function renderList(filterText = '') {
+            storeListContainer.innerHTML = '';
+            
+            stores.forEach((store, index) => {
+                if (filterText && !store.toLowerCase().includes(filterText.toLowerCase())) {
+                    return;
+                }
+
+                const isChecked = visitedStores[store] || false;
+
+                const item = document.createElement('div');
+                item.className = `store-item ${isChecked ? 'visited' : ''}`;
+                item.id = `item-${index}`;
+
+                item.innerHTML = `
+                    <span class="store-name">${store}</span>
+                    <label class="switch">
+                        <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="toggleVisited('${store}', ${index}, this)">
+                        <span class="slider"></span>
+                    </label>
+                `;
+                storeListContainer.appendChild(item);
+            });
+        }
+
+        window.toggleVisited = function(storeName, index, checkbox) {
+            visitedStores[storeName] = checkbox.checked;
+            localStorage.setItem('visitedStores', JSON.stringify(visitedStores));
+            
+            const card = document.getElementById(`item-${index}`);
+            if (checkbox.checked) {
+                card.classList.add('visited');
+            } else {
+                card.classList.remove('visited');
+            }
+            updateStats();
+        }
+
+        searchInput.addEventListener('input', (e) => {
+            renderList(e.target.value);
+        });
+
+        // Initialize App
+        renderList();
+        updateStats();
+    </script>
+</body>
+</html>
