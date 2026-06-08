@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2026 Master Roster Planner - Quick Add Edition</title>
+    <title>2026 Master Roster Planner - Quick Edit Edition</title>
     <style>
         :root {
             --primary: #0f172a;
@@ -99,7 +99,7 @@
             background: #ffffff; 
             border: 1px solid #cbd5e1; 
             border-radius: 5px; 
-            cursor: grab; 
+            cursor: pointer; 
             font-size: 0.78rem; 
             display: flex; 
             justify-content: space-between; 
@@ -116,9 +116,9 @@
         
         .store-placeholder { border: 2px dashed #93c5fd; background: #f0fdf4; border-radius: 5px; height: 28px; }
 
-        .store-chip:hover:not(.dragging):not(.non-visit) { background: #f8fafc; border-color: #94a3b8; }
-        .store-chip.visited { background: #d1fae5; border-color: #a7f3d0; color: #065f46; font-weight: 500; text-decoration: line-through; }
-        .store-chip.visited::after { content: "✓"; font-weight: 700; margin-left: 3px; font-size: 0.7rem; }
+        .store-chip:hover:not(.dragging):not(.non-visit) { background: #fee2e2; border-color: #fca5a5; color: #991b1b; }
+        .store-chip:hover:not(.dragging):not(.non-visit)::after { content: "✕"; font-weight: 700; font-size: 0.7rem; color: #ef4444; margin-left: 4px; }
+        
         .store-chip.non-visit { background: #e2e8f0; color: #64748b; font-style: italic; cursor: default; pointer-events: none; text-align: center; justify-content: center;}
         .store-chip.leave-chip { background: #f0f9ff; color: #0369a1; border-color: #cbd5e1; text-align: center; justify-content: center; font-weight: bold; padding: 12px 6px; cursor: default; pointer-events: none; }
 
@@ -204,7 +204,7 @@
     <header>
         <div>
             <h1>2026 Master Roster Planner</h1>
-            <p style="color: #64748b; font-size: 0.8rem; margin-top: 2px;">Right-Click Day Card to Quick-Add Multiple Stores | Drag to Re-order</p>
+            <p style="color: #64748b; font-size: 0.8rem; margin-top: 2px;">Left-Click Store to Delete | Right-Click Card to Quick-Add | Drag to Re-order</p>
         </div>
         <div class="controls">
             <button class="btn btn-secondary" onclick="resetTracker()">Reset Roster</button>
@@ -282,13 +282,11 @@
         ];
 
         let roster = JSON.parse(localStorage.getItem('kyal_roster_data_v6')) || initialRosterData;
-        let visitedStores = JSON.parse(localStorage.getItem('kyal_visited_stores_v6')) || {};
         let currentEditingId = null;
         let currentPickerDayId = null;
 
         function saveData() {
             localStorage.setItem('kyal_roster_data_v6', JSON.stringify(roster));
-            localStorage.setItem('kyal_visited_stores_v6', JSON.stringify(visitedStores));
         }
 
         function renderCalendar() {
@@ -314,7 +312,7 @@
                 tile.className = `day-tile ${day.isHoliday ? 'holiday' : ''} ${day.isLeave ? 'annual-leave' : ''}`;
                 tile.setAttribute('data-day-id', day.id);
 
-                // Wire up the clean right-click quick picker framework
+                // Right-click quick picker framework
                 tile.addEventListener('contextmenu', (e) => {
                     e.preventDefault();
                     toggleStorePicker(day.id, e.clientX, e.clientY);
@@ -334,16 +332,14 @@
                     day.stores.forEach((store, index) => {
                         if(!store || store.trim() === "") return;
                         const isHolidayText = day.isHoliday || store.includes('OFFLINE');
-                        const storeKey = `${day.id}-${index}`;
-                        const isVisited = visitedStores[storeKey] ? 'visited' : '';
                         
                         storeListHtml += `
-                            <div class="store-chip ${isHolidayText ? 'non-visit' : isVisited}" 
+                            <div class="store-chip ${isHolidayText ? 'non-visit' : ''}" 
                                  title="${store}"
                                  draggable="${!isHolidayText}"
                                  data-day-id="${day.id}"
                                  data-index="${index}"
-                                 onclick="toggleStore('${day.id}', ${index}); event.stopPropagation();">
+                                 onclick="deleteStore('${day.id}', ${index}); event.stopPropagation();">
                                 ${store}
                             </div>`;
                     });
@@ -370,11 +366,20 @@
             setupTactileDragAndDrop();
         }
 
+        // --- Left-Click Instant Delete Function ---
+        function deleteStore(dayId, storeIndex) {
+            const targetDay = roster.find(d => d.id === dayId);
+            if (targetDay) {
+                targetDay.stores.splice(storeIndex, 1);
+                saveData();
+                renderCalendar();
+            }
+        }
+
         // --- Custom Floating Right-Click Store Picker Logic ---
         function toggleStorePicker(dayId, mouseX, mouseY) {
             const picker = document.getElementById('floatingStorePicker');
             
-            // If right-clicking the exact same open card, close the picker
             if (picker.style.display === 'flex' && currentPickerDayId === dayId) {
                 closePicker();
                 return;
@@ -383,7 +388,6 @@
             currentPickerDayId = dayId;
             document.getElementById('pickerSearch').value = '';
             
-            // Check boundaries so the picker box doesn't bleed off screen edges
             let topPos = mouseY;
             let leftPos = mouseX;
             if (window.innerHeight - mouseY < 420) topPos = window.innerHeight - 420;
@@ -395,7 +399,6 @@
 
             buildPickerList();
             
-            // Wire submission run updates
             document.getElementById('pickerSubmitBtn').onclick = () => {
                 const checkedBoxes = document.querySelectorAll('.picker-item input:checked');
                 if (checkedBoxes.length > 0) {
@@ -416,7 +419,6 @@
                 const item = document.createElement('label');
                 item.className = 'picker-item';
                 item.innerHTML = `<input type="checkbox" value="${store}"> <span>${store}</span>`;
-                // Allow label row selections natively without clipping toggle mechanics
                 item.addEventListener('click', (e) => e.stopPropagation()); 
                 listContainer.appendChild(item);
             });
@@ -435,7 +437,6 @@
             currentPickerDayId = null;
         }
 
-        // Global dismiss windows on basic standard left clicks outside picker component bounds
         document.addEventListener('click', (e) => {
             const picker = document.getElementById('floatingStorePicker');
             if (picker.style.display === 'flex' && !picker.contains(e.target)) {
@@ -483,23 +484,10 @@
 
                     const targetDay = roster.find(d => d.id === dayId);
                     const chips = Array.from(list.querySelectorAll('.store-chip'));
-                    const oldVisited = { ...visitedStores };
                     const newStores = [];
                     
-                    chips.forEach((chip, newIdx) => {
-                        const originalDayId = chip.getAttribute('data-day-id');
-                        const originalIdx = chip.getAttribute('data-index');
-                        const originalStoreName = chip.getAttribute('title');
-                        
-                        newStores.push(originalStoreName);
-                        
-                        const oldKey = `${originalDayId}-${originalIdx}`;
-                        const newKey = `${dayId}-${newIdx}`;
-                        if (oldVisited[oldKey] !== undefined) {
-                            visitedStores[newKey] = oldVisited[oldKey];
-                        } else {
-                            delete visitedStores[newKey];
-                        }
+                    chips.forEach((chip) => {
+                        newStores.push(chip.getAttribute('title'));
                     });
 
                     targetDay.stores = newStores;
@@ -526,13 +514,6 @@
                     return closest;
                 }
             }, { offset: Number.NEGATIVE_INFINITY }).element;
-        }
-
-        function toggleStore(dayId, storeIndex) {
-            const storeKey = `${dayId}-${storeIndex}`;
-            visitedStores[storeKey] = !visitedStores[storeKey];
-            saveData();
-            renderCalendar();
         }
 
         // --- Metadata Management Modal ---
@@ -583,15 +564,13 @@
         function resetTracker() {
             if(confirm("Reset entire roster history?")) {
                 localStorage.removeItem('kyal_roster_data_v6');
-                localStorage.removeItem('kyal_visited_stores_v6');
                 roster = JSON.parse(JSON.stringify(initialRosterData));
-                visitedStores = {};
                 renderCalendar();
             }
         }
 
         function exportData() {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({roster, visitedStores}, null, 2));
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({roster}, null, 2));
             const downloadAnchor = document.createElement('a');
             downloadAnchor.setAttribute("href", dataStr);
             downloadAnchor.setAttribute("download", "master_roster_backup.json");
