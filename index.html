@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2026 Master Roster Planner - Quick Edit Edition</title>
+    <title>2026 Master Roster Planner - Automation Edition</title>
     <style>
         :root {
             --primary: #0f172a;
@@ -89,8 +89,7 @@
         
         .alert-tag { background: #fee2e2; color: var(--warning); padding: 2px 4px; border-radius: 3px; font-size: 0.7rem; font-weight: 700; margin-bottom: 4px; display: inline-block; text-align: center; border: 1px solid #fca5a5; width: 100%; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; pointer-events: none; }
         .alert-tag.leave-tag { background: #bae6fd; color: #0369a1; border-color: #7dd3fc; }
-        
-        .route-notes { font-size: 0.75rem; color: #475569; font-style: italic; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; pointer-events: none; }
+        .alert-tag.nsw-holiday-tag { background: #fef3c7; color: #b45309; border-color: #fcd34d; }
         
         .store-list { display: flex; flex-direction: column; gap: 5px; min-height: 60px; padding: 2px; border-radius: 4px; }
         
@@ -189,7 +188,7 @@
         .modal-content { background: white; padding: 20px; border-radius: 8px; max-width: 450px; width: 90%; }
         .form-group { margin-bottom: 10px; }
         .form-group label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 2px; color: #475569; }
-        .form-group input, .form-group textarea { width: 100%; padding: 6px; border: 1px solid var(--border); border-radius: 4px; font-size: 0.85rem; }
+        .form-group input { width: 100%; padding: 6px; border: 1px solid var(--border); border-radius: 4px; font-size: 0.85rem; }
         .form-checkbox { display: flex; align-items: center; gap: 8px; background: #f0f9ff; padding: 10px; border-radius: 6px; border: 1px solid #bae6fd; margin-bottom: 12px; }
         .form-checkbox label { font-weight: 700; color: #0369a1; cursor: pointer; font-size: 0.85rem; }
         .modal-buttons { display: flex; justify-content: flex-end; gap: 8px; margin-top: 15px; }
@@ -204,7 +203,7 @@
     <header>
         <div>
             <h1>2026 Master Roster Planner</h1>
-            <p style="color: #64748b; font-size: 0.8rem; margin-top: 2px;">Left-Click Store to Delete | Right-Click Card to Quick-Add | Drag to Re-order</p>
+            <p style="color: #64748b; font-size: 0.8rem; margin-top: 2px;">Left-Click to Delete Store | Right-Click Card to Quick-Add | Public Holidays Automated & Locked</p>
         </div>
         <div class="controls">
             <button class="btn btn-secondary" onclick="resetTracker()">Reset Roster</button>
@@ -228,7 +227,7 @@
 
     <div class="modal" id="editModal">
         <div class="modal-content">
-            <div class="modal-header" id="modalTitle" style="font-weight:700; margin-bottom:10px;">Edit Day Metadata</div>
+            <div class="modal-header" id="modalTitle" style="font-weight:700; margin-bottom:10px;">Edit Day Logistics</div>
             <div class="form-checkbox">
                 <input type="checkbox" id="editIsLeave" onchange="toggleModalLeaveView(this.checked)">
                 <label for="editIsLeave">🌴 Mark day as Annual Leave (A/L)</label>
@@ -269,24 +268,29 @@
         };
 
         const initialRosterData = [
-            { id: "1", week: "W23", date: "08/06/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", notes: "Normal QLD (NSW Holiday)", isHoliday: false, isLeave: false },
-            { id: "2", week: "W23", date: "09/06/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", notes: "Gold Coast North Loop", isHoliday: false, isLeave: false },
-            { id: "3", week: "W23", date: "10/06/2026", day: "Wednesday", stores: [...basePatterns.WednesdayA], accommodation: "HOME BASE", notes: "Brisbane Core Run", isHoliday: false, isLeave: false },
-            { id: "4", week: "W23", date: "11/06/2026", day: "Thursday", stores: ["Metcash IGA M Evans Head (Ritchies)", "Metcash IGA L Maclean (Ritchies)", "Metcash IGA M Iluka Plus Cbn", "Metcash Fresh & Save Grafton"], accommodation: "HOME BASE", notes: "Lower NSW Coast Travel Run", isHoliday: false, isLeave: false },
-            { id: "5", week: "W23", date: "12/06/2026", day: "Friday", stores: [...basePatterns.FridayA], accommodation: "HOME BASE", notes: "Home Turf Loop", isHoliday: false, isLeave: false },
-            { id: "6", week: "W24", date: "15/06/2026", day: "Monday", stores: [...basePatterns.MondayB], accommodation: "HOME BASE", notes: "Ipswich Day Corridor", isHoliday: false, isLeave: false },
-            { id: "7", week: "W24", date: "16/06/2026", day: "Tuesday", stores: ["Metcash IGA M Miles", "Metcash Foodworks Tara 2020", "Metcash IGA M Roma (Cornetts)", "Metcash Drakes Toowoomba High St", "Metcash IGA L Oakey (Cornetts)", "Metcash IGA M Pittsworth"], accommodation: "🛏️ BOOK TRIP (Toowoomba)", notes: "Western Fringe Day 1", isHoliday: false, isLeave: false },
-            { id: "8", week: "W24", date: "17/06/2026", day: "Wednesday", stores: ["Metcash IGA M Crows Nest", "Metcash IGA M Allora", "Metcash IGA L Warwick (Spano)", "Metcash IGA L Stanthorpe (Spano)", "Metcash Foodworks Goondiwindi", "Metcash Foodworks Killarney"], accommodation: "🛏️ BOOK TRIP (Warwick)", notes: "Western Fringe Day 2", isHoliday: false, isLeave: false },
-            { id: "9", week: "W24", date: "18/06/2026", day: "Thursday", stores: ["Metcash IGA M Beaudesert (Jones)", "Metcash IGA M Canungra", "Metcash IGA M Mt Tamborine", "Metcash IGA M Russell Island", "ADMIN & VEHICLE LOGS"], accommodation: "HOME BASE", notes: "Scenic Rim Catchup", isHoliday: false, isLeave: false },
-            { id: "10", week: "W24", date: "19/06/2026", day: "Friday", stores: [...basePatterns.FridayB], accommodation: "HOME BASE", notes: "Moreton Bay Loop", isHoliday: false, isLeave: false }
+            { id: "1", week: "W23", date: "08/06/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "2", week: "W23", date: "09/06/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "3", week: "W23", date: "10/06/2026", day: "Wednesday", stores: [...basePatterns.WednesdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "4", week: "W23", date: "11/06/2026", day: "Thursday", stores: ["Metcash IGA M Evans Head (Ritchies)", "Metcash IGA L Maclean (Ritchies)", "Metcash IGA M Iluka Plus Cbn", "Metcash Fresh & Save Grafton"], accommodation: "HOME BASE", isLeave: false },
+            { id: "5", week: "W23", date: "12/06/2026", day: "Friday", stores: [...basePatterns.FridayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "6", week: "W24", date: "15/06/2026", day: "Monday", stores: [...basePatterns.MondayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "7", week: "W24", date: "16/06/2026", day: "Tuesday", stores: ["Metcash IGA M Miles", "Metcash Foodworks Tara 2020", "Metcash IGA M Roma (Cornetts)", "Metcash Drakes Toowoomba High St", "Metcash IGA L Oakey (Cornetts)", "Metcash IGA M Pittsworth"], accommodation: "🛏️ BOOK TRIP (Toowoomba)", isLeave: false },
+            { id: "8", week: "W24", date: "17/06/2026", day: "Wednesday", stores: ["Metcash IGA M Crows Nest", "Metcash IGA M Allora", "Metcash IGA L Warwick (Spano)", "Metcash IGA L Stanthorpe (Spano)", "Metcash Foodworks Goondiwindi", "Metcash Foodworks Killarney"], accommodation: "🛏️ BOOK TRIP (Warwick)", isLeave: false },
+            { id: "9", week: "W24", date: "18/06/2026", day: "Thursday", stores: ["Metcash IGA M Beaudesert (Jones)", "Metcash IGA M Canungra", "Metcash IGA M Mt Tamborine", "Metcash IGA M Russell Island", "ADMIN & VEHICLE LOGS"], accommodation: "HOME BASE", isLeave: false },
+            { id: "10", week: "W24", date: "19/06/2026", day: "Friday", stores: [...basePatterns.FridayB], accommodation: "HOME BASE", isLeave: false }
         ];
 
-        let roster = JSON.parse(localStorage.getItem('kyal_roster_data_v6')) || initialRosterData;
+        let roster = JSON.parse(localStorage.getItem('kyal_roster_data_v7')) || initialRosterData;
         let currentEditingId = null;
         let currentPickerDayId = null;
 
         function saveData() {
-            localStorage.setItem('kyal_roster_data_v6', JSON.stringify(roster));
+            localStorage.setItem('kyal_roster_data_v7', JSON.stringify(roster));
+        }
+
+        function isNswPublicHoliday(dateStr) {
+            // Native lock check for King's Birthday Holiday Mon June 8, 2026
+            return dateStr === "08/06/2026";
         }
 
         function renderCalendar() {
@@ -308,21 +312,26 @@
                     container.appendChild(currentWeekRow);
                 }
 
+                const hasNswHoliday = isNswPublicHoliday(day.date);
                 const tile = document.createElement('div');
-                tile.className = `day-tile ${day.isHoliday ? 'holiday' : ''} ${day.isLeave ? 'annual-leave' : ''}`;
+                tile.className = `day-tile ${hasNswHoliday ? 'holiday' : ''} ${day.isLeave ? 'annual-leave' : ''}`;
                 tile.setAttribute('data-day-id', day.id);
 
-                // Right-click quick picker framework
                 tile.addEventListener('contextmenu', (e) => {
                     e.preventDefault();
                     toggleStorePicker(day.id, e.clientX, e.clientY);
                 });
 
-                let accommodationHtml = '';
+                let alertsHtml = '';
                 if (day.isLeave) {
-                    accommodationHtml = `<div class="alert-tag leave-tag">🌴 ANNUAL LEAVE (A/L)</div>`;
-                } else if (day.accommodation && (day.accommodation.includes('🛏️') || day.accommodation.includes('BOOK'))) {
-                    accommodationHtml = `<div class="alert-tag">${day.accommodation}</div>`;
+                    alertsHtml = `<div class="alert-tag leave-tag">🌴 ANNUAL LEAVE (A/L)</div>`;
+                } else {
+                    if (hasNswHoliday) {
+                        alertsHtml += `<div class="alert-tag nsw-holiday-tag">⚠️ NSW PUBLIC HOLIDAY</div>`;
+                    }
+                    if (day.accommodation && (day.accommodation.includes('🛏️') || day.accommodation.includes('BOOK'))) {
+                        alertsHtml += `<div class="alert-tag">${day.accommodation}</div>`;
+                    }
                 }
 
                 let storeListHtml = '';
@@ -331,12 +340,12 @@
                 } else {
                     day.stores.forEach((store, index) => {
                         if(!store || store.trim() === "") return;
-                        const isHolidayText = day.isHoliday || store.includes('OFFLINE');
+                        const isHolidayChip = store.includes('OFFLINE');
                         
                         storeListHtml += `
-                            <div class="store-chip ${isHolidayText ? 'non-visit' : ''}" 
+                            <div class="store-chip ${isHolidayChip ? 'non-visit' : ''}" 
                                  title="${store}"
-                                 draggable="${!isHolidayText}"
+                                 draggable="${!isHolidayChip}"
                                  data-day-id="${day.id}"
                                  data-index="${index}"
                                  onclick="deleteStore('${day.id}', ${index}); event.stopPropagation();">
@@ -351,12 +360,11 @@
                             <div class="day-date">${day.date.substring(0,5)}</div>
                             <div class="day-name">${day.day}</div>
                         </div>
-                        ${accommodationHtml}
-                        <div class="route-notes">${day.isLeave ? 'Annual Leave Leave Period' : (day.notes || '')}</div>
+                        ${alertsHtml}
                         <div class="store-list" data-day-id="${day.id}">${storeListHtml}</div>
                     </div>
                     <div class="tile-actions">
-                        <button class="edit-lnk" onclick="openEditModal('${day.id}'); event.stopPropagation();">Edit Metadata</button>
+                        <button class="edit-lnk" onclick="openEditModal('${day.id}'); event.stopPropagation();">Edit Logistics</button>
                     </div>
                 `;
 
@@ -366,7 +374,6 @@
             setupTactileDragAndDrop();
         }
 
-        // --- Left-Click Instant Delete Function ---
         function deleteStore(dayId, storeIndex) {
             const targetDay = roster.find(d => d.id === dayId);
             if (targetDay) {
@@ -376,7 +383,6 @@
             }
         }
 
-        // --- Custom Floating Right-Click Store Picker Logic ---
         function toggleStorePicker(dayId, mouseX, mouseY) {
             const picker = document.getElementById('floatingStorePicker');
             
@@ -444,7 +450,6 @@
             }
         });
 
-        // --- Tactile Sequence Drag and Drop Re-ordering Engine ---
         function setupTactileDragAndDrop() {
             const lists = document.querySelectorAll('.store-list');
             let draggedChip = null;
@@ -516,19 +521,14 @@
             }, { offset: Number.NEGATIVE_INFINITY }).element;
         }
 
-        // --- Metadata Management Modal ---
         function openEditModal(dayId) {
             currentEditingId = dayId;
             const dayData = roster.find(d => d.id === dayId);
-            document.getElementById('modalTitle').innerText = `Modify Metadata: ${dayData.date}`;
+            document.getElementById('modalTitle').innerText = `Modify Logistics: ${dayData.date}`;
             document.getElementById('editIsLeave').checked = dayData.isLeave || false;
 
             document.getElementById('modalFields').innerHTML = `
                 <div id="conditionalFieldsContainer">
-                    <div class="form-group">
-                        <label>Route Strategy / Notes</label>
-                        <textarea id="editNotes" rows="2">${dayData.notes || ''}</textarea>
-                    </div>
                     <div class="form-group">
                         <label>Accommodation Alert</label>
                         <input type="text" id="editAccommodation" value="${dayData.accommodation || ''}">
@@ -553,7 +553,6 @@
             const dayData = roster.find(d => d.id === currentEditingId);
             dayData.isLeave = document.getElementById('editIsLeave').checked;
             if (!dayData.isLeave) {
-                dayData.notes = document.getElementById('editNotes').value;
                 dayData.accommodation = document.getElementById('editAccommodation').value;
             }
             saveData();
@@ -563,7 +562,7 @@
 
         function resetTracker() {
             if(confirm("Reset entire roster history?")) {
-                localStorage.removeItem('kyal_roster_data_v6');
+                localStorage.removeItem('kyal_roster_data_v7');
                 roster = JSON.parse(JSON.stringify(initialRosterData));
                 renderCalendar();
             }
