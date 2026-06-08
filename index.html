@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2026 Master Roster - Full Year Desktop Edition</title>
+    <title>2026 Master Roster Planner - Smart Dropdown Edition</title>
     <style>
         :root {
             --primary: #0f172a;
@@ -41,7 +41,6 @@
 
         .calendar-container { max-width: 1650px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
         
-        /* Desktop Row Styling - Fits entire week horizontally */
         .week-row { 
             display: grid; 
             grid-template-columns: 70px repeat(5, 1fr); 
@@ -115,7 +114,7 @@
     <header>
         <div>
             <h1>2026 Master Roster Planner</h1>
-            <p style="color: #64748b; font-size: 0.8rem; margin-top: 2px;">Widescreen Optimised Tracker | Live from 08/06/2026 to Christmas Sweep</p>
+            <p style="color: #64748b; font-size: 0.8rem; margin-top: 2px;">Widescreen Optimised Tracker | Smart Searchable Dropdown Menus Enabled</p>
         </div>
         <div class="controls">
             <button class="btn btn-secondary" onclick="resetTracker()">Reset Roster</button>
@@ -124,6 +123,110 @@
     </header>
 
     <div class="calendar-container" id="calendarContainer"></div>
+
+    <datalist id="masterStoreList">
+        <option value="Metcash Drakes Mcdowall">
+        <option value="Metcash IGA M Hoppers Ascot">
+        <option value="Metcash IGA M Frenchs Forest">
+        <option value="Metcash IGA M Dayboro Valley">
+        <option value="Metcash Drakes Samford">
+        <option value="Metcash IGA M Cashmere">
+        <option value="Metcash Fresh & Save Deagon">
+        <option value="Metcash IGA L Burpengary (Seasons)">
+        <option value="Metcash IGA M Sanctuary Cove (Jones)">
+        <option value="Metcash Drakes Hollywell Road Markets">
+        <option value="Metcash L Queen Street Village Southport">
+        <option value="Metcash Drakes Nerang Road Ashmore">
+        <option value="Metcash IGA M Mermaid Waters">
+        <option value="Metcash IGA M Nerang (Spano)">
+        <option value="Metcash IGA M Robina (Easy T) (Spano)">
+        <option value="Metcash IGA M Currumbin Fair">
+        <option value="Metcash IGA M Tugun Beach">
+        <option value="Metcash IGA M Tweed Valley Way (Bugg)">
+        <option value="Metcash IGA Local Grocer Pottsville">
+        <option value="Metcash Supa Valu Ritchies Ballina">
+        <option value="Metcash IGA M St Lucia">
+        <option value="Metcash IGA M Greenslopes Legends">
+        <option value="Metcash IGA M Chriss Carina">
+        <option value="Metcash IGA M East Brisbane (Seasons)">
+        <option value="Metcash IGA M Acacia Ridge">
+        <option value="Metcash Foodworks Woodridge">
+        <option value="Metcash Drakes Rochedale">
+        <option value="Metcash IGA M Wellington Point (Jones)">
+        <option value="Metcash IGA M On Bloomfield (Jones)">
+        <option value="Metcash IGA M Cleveland (Jones)">
+        <option value="Metcash IGA M Thornlands (Jones)">
+        <option value="Metcash IGA L Mt Cotton (Jones)">
+        <option value="Metcash IGA M Augustine Heights">
+        <option value="Metcash Drakes Winston Glades">
+        <option value="Metcash IGA M West Ipswich">
+        <option value="Metcash IGA M Walloon">
+        <option value="Metcash Drakes Rosewood">
+        <option value="Metcash Drakes Lowood">
+        <option value="Metcash IGA M Laidley (Choundings)">
+        <option value="Metcash IGA L Gatton (Spano)">
+        <option value="Metcash IGA M Hatton Vale">
+        <option value="Metcash IGA M Esk (Co-op)">
+        <option value="Metcash IGA M Toogoolawah Coop">
+        <option value="Metcash L Boonah (Ritchies)">
+        <option value="Metcash Fresh & Save Richlands">
+        <option value="Metcash Drakes Parkinson">
+        <option value="Metcash Drakes Regents Park">
+        <option value="Metcash IGA M Loganholme">
+        <option value="Metcash IGA L Daisy Hill (Ritchies)">
+        <option value="Metcash Fresh & Save Eagleby">
+        <option value="Metcash IGA M Evans Head (Ritchies)">
+        <option value="Metcash IGA L Maclean (Ritchies)">
+        <option value="Metcash IGA M Iluka Plus Cbn">
+        <option value="Metcash Fresh & Save Grafton">
+        <option value="Metcash IGA M Miles">
+        <option value="Metcash Foodworks Tara 2020">
+        <option value="Metcash IGA M Roma (Cornetts)">
+        <option value="Metcash Drakes Toowoomba High St">
+        <option value="Metcash IGA L Oakey (Cornetts)">
+        <option value="Metcash IGA M Pittsworth">
+        <option value="Metcash IGA M Crows Nest">
+        <option value="Metcash IGA M Allora">
+        <option value="Metcash IGA L Warwick (Spano)">
+        <option value="Metcash IGA L Stanthorpe (Spano)">
+        <option value="Metcash Foodworks Goondiwindi">
+        <option value="Metcash Foodworks Killarney">
+        <option value="Metcash IGA M Beaudesert (Jones)">
+        <option value="Metcash IGA M Canungra">
+        <option value="Metcash IGA M Mt Tamborine">
+        <option value="Metcash IGA M Russell Island">
+        <option value="Metcash Fwks Tenterfield">
+        <option value="Metcash IGA L Inverell">
+        <option value="Metcash IGA M Bingara">
+        <option value="Metcash IGA M Warialda">
+        <option value="Metcash IGA M Guyra">
+        <option value="Metcash F&S Armidale">
+        <option value="Metcash Fwks Uralla">
+        <option value="Metcash IGA L Tamworth">
+        <option value="Metcash IGA M Kootingal">
+        <option value="Metcash IGA L Quirindi">
+        <option value="Metcash IGA M Walcha Plus">
+        <option value="Metcash IGA M Manilla Plus">
+        <option value="Metcash IGA L Wee Waa">
+        <option value="Metcash IGA M L Kyogle (Ritchies)">
+        <option value="Metcash IGA M Chinchilla">
+        <option value="Metcash IGA M Longreach">
+        <option value="Metcash IGA M Charleville">
+        <option value="Metcash IGA Grocer Cunnamulla">
+        <option value="Metcash IGA Barcaldine">
+        <option value="Metcash IGA Blackall">
+        <option value="Metcash M Beales Clermont">
+        <option value="Metcash Fwks St George">
+        <option value="Metcash Foodworks Tara 2020">
+        <option value="Metcash IGA Middlemount">
+        <option value="Metcash IGA Clermont">
+        <option value="Metcash IGA Dysart Plaza">
+        <option value="ADMIN & VEHICLE LOGS">
+        <option value="DISPLAY BUILD OUT DAY">
+        <option value="PLANOGRAM AUDIT CHECK">
+        <option value="TERRITORY ADMIN REVIEW">
+        <option value="STORES OFFLINE - PUBLIC HOLIDAY">
+    </datalist>
 
     <div class="modal" id="editModal">
         <div class="modal-content">
@@ -137,7 +240,6 @@
     </div>
 
     <script>
-        // Generated full continuous rolling cycle loops to map out the entire calendar straight to Christmas 2026.
         const basePatterns = {
             MondayA: ["Metcash Drakes Mcdowall", "Metcash IGA M Hoppers Ascot", "Metcash IGA M Frenchs Forest", "Metcash IGA M Dayboro Valley", "Metcash Drakes Samford", "Metcash IGA M Cashmere"],
             TuesdayA: ["Metcash IGA M Sanctuary Cove (Jones)", "Metcash Drakes Hollywell Road Markets", "Metcash L Queen Street Village Southport", "Metcash Drakes Nerang Road Ashmore", "Metcash IGA M Mermaid Waters", "Metcash IGA M Nerang (Spano)"],
@@ -148,82 +250,71 @@
             MondayB: ["Metcash IGA M Augustine Heights", "Metcash Drakes Winston Glades", "Metcash IGA M West Ipswich", "Metcash IGA M Walloon", "Metcash Drakes Rosewood", "Metcash Drakes Lowood"],
             TuesdayB: ["Metcash IGA M Robina (Easy T) (Spano)", "Metcash IGA M Currumbin Fair", "Metcash IGA M Tugun Beach", "Metcash IGA M Tweed Valley Way (Bugg)", "Metcash IGA Local Grocer Pottsville", "Metcash Supa Valu Ritchies Ballina"],
             WednesdayB: ["Metcash Fresh & Save Richlands", "Metcash Drakes Parkinson", "Metcash Drakes Regents Park", "Metcash IGA M Loganholme", "Metcash IGA L Daisy Hill (Ritchies)", "Metcash Fresh & Save Eagleby"],
-            ThursdayB: ["Metcash IGA M Laidley (Choundings)", "Metcash IGA L Gatton (Spano)", "Metcash IGA M Hatton Vale", "Metcash IGA M Esk (Co-op)", "Metcash IGA M Toogoolawah Coop", "Metcash IGA L Boonah (Ritchies)"],
+            ThursdayB: ["Metcash IGA M Laidley (Choundings)", "Metcash IGA L Gatton (Spano)", "Metcash IGA M Hatton Vale", "Metcash IGA M Esk (Co-op)", "Metcash IGA M Toogoolawah Coop", "Metcash L Boonah (Ritchies)"],
             FridayB: ["Metcash Drakes Samford", "Metcash IGA M Dayboro Valley", "Metcash IGA M Cashmere", "Metcash IGA M Hoppers Ascot", "Metcash IGA L Burpengary (Seasons)", "Metcash Fresh & Save Deagon"]
         };
 
         const initialRosterData = [
-            // WEEK 23
             { id: "1", week: "W23", date: "08/06/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", notes: "Normal QLD (NSW Holiday)", isHoliday: false },
             { id: "2", week: "W23", date: "09/06/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", notes: "Gold Coast North Loop", isHoliday: false },
             { id: "3", week: "W23", date: "10/06/2026", day: "Wednesday", stores: [...basePatterns.WednesdayA], accommodation: "HOME BASE", notes: "Brisbane Core Run", isHoliday: false },
             { id: "4", week: "W23", date: "11/06/2026", day: "Thursday", stores: ["Metcash IGA M Evans Head (Ritchies)", "Metcash IGA L Maclean (Ritchies)", "Metcash IGA M Iluka Plus Cbn", "Metcash Fresh & Save Grafton"], accommodation: "HOME BASE", notes: "Lower NSW Coast Travel Run", isHoliday: false },
             { id: "5", week: "W23", date: "12/06/2026", day: "Friday", stores: [...basePatterns.FridayA], accommodation: "HOME BASE", notes: "Home Turf Loop", isHoliday: false },
             
-            // WEEK 24 (REGIONAL WEEK)
             { id: "6", week: "W24", date: "15/06/2026", day: "Monday", stores: [...basePatterns.MondayB], accommodation: "HOME BASE", notes: "Ipswich Day Corridor", isHoliday: false },
             { id: "7", week: "W24", date: "16/06/2026", day: "Tuesday", stores: ["Metcash IGA M Miles", "Metcash Foodworks Tara 2020", "Metcash IGA M Roma (Cornetts)", "Metcash Drakes Toowoomba High St", "Metcash IGA L Oakey (Cornetts)", "Metcash IGA M Pittsworth"], accommodation: "🛏️ BOOK TRIP (Toowoomba)", notes: "Western Fringe Day 1", isHoliday: false },
             { id: "8", week: "W24", date: "17/06/2026", day: "Wednesday", stores: ["Metcash IGA M Crows Nest", "Metcash IGA M Allora", "Metcash IGA L Warwick (Spano)", "Metcash IGA L Stanthorpe (Spano)", "Metcash Foodworks Goondiwindi", "Metcash Foodworks Killarney"], accommodation: "🛏️ BOOK TRIP (Warwick)", notes: "Western Fringe Day 2", isHoliday: false },
             { id: "9", week: "W24", date: "18/06/2026", day: "Thursday", stores: ["Metcash IGA M Beaudesert (Jones)", "Metcash IGA M Canungra", "Metcash IGA M Mt Tamborine", "Metcash IGA M Russell Island", "ADMIN & VEHICLE LOGS"], accommodation: "HOME BASE", notes: "Scenic Rim Catchup", isHoliday: false },
             { id: "10", week: "W24", date: "19/06/2026", day: "Friday", stores: [...basePatterns.FridayB], accommodation: "HOME BASE", notes: "Moreton Bay Loop", isHoliday: false },
             
-            // WEEK 25
             { id: "11", week: "W25", date: "22/06/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", notes: "Near North Loop", isHoliday: false },
             { id: "12", week: "W25", date: "23/06/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", notes: "Gold Coast North Strip", isHoliday: false },
             { id: "13", week: "W25", date: "24/06/2026", day: "Wednesday", stores: [...basePatterns.WednesdayA], accommodation: "HOME BASE", notes: "Brisbane Core Run", isHoliday: false },
             { id: "14", week: "W25", date: "25/06/2026", day: "Thursday", stores: [...basePatterns.ThursdayA], accommodation: "HOME BASE", notes: "Bayside Key Accounts", isHoliday: false },
             { id: "15", week: "W25", date: "26/06/2026", day: "Friday", stores: [...basePatterns.FridayA], accommodation: "HOME BASE", notes: "Home Turf Loop", isHoliday: false },
             
-            // WEEK 26
             { id: "16", week: "W26", date: "29/06/2026", day: "Monday", stores: [...basePatterns.MondayB], accommodation: "HOME BASE", notes: "Ipswich Run", isHoliday: false },
             { id: "17", week: "W26", date: "30/06/2026", day: "Tuesday", stores: [...basePatterns.TuesdayB], accommodation: "HOME BASE", notes: "GC South & NSW Coast", isHoliday: false },
             { id: "18", week: "W26", date: "01/07/2026", day: "Wednesday", stores: [...basePatterns.WednesdayB], accommodation: "HOME BASE", notes: "Logan Highway Corridor", isHoliday: false },
             { id: "19", week: "W26", date: "02/07/2026", day: "Thursday", stores: [...basePatterns.ThursdayB], accommodation: "HOME BASE", notes: "Brisbane Valley Country", isHoliday: false },
             { id: "20", week: "W26", date: "03/07/2026", day: "Friday", stores: [...basePatterns.FridayB], accommodation: "HOME BASE", notes: "Moreton Bay Near North", isHoliday: false },
 
-            // WEEK 27
             { id: "21", week: "W27", date: "06/07/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", notes: "Near North Loop", isHoliday: false },
             { id: "22", week: "W27", date: "07/07/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", notes: "GC Strip Run", isHoliday: false },
             { id: "23", week: "W27", date: "08/07/2026", day: "Wednesday", stores: [...basePatterns.WednesdayA], accommodation: "HOME BASE", notes: "Brisbane Core Run", isHoliday: false },
             { id: "24", week: "W27", date: "09/07/2026", day: "Thursday", stores: ["Metcash IGA M Evans Head (Ritchies)", "Metcash IGA L Maclean (Ritchies)", "Metcash IGA M Iluka Plus Cbn", "Metcash Fresh & Save Grafton"], accommodation: "HOME BASE", notes: "Lower NSW South Trip", isHoliday: false },
             { id: "25", week: "W27", date: "10/07/2026", day: "Friday", stores: [...basePatterns.FridayA], accommodation: "HOME BASE", notes: "Home Turf Loop", isHoliday: false },
 
-            // WEEK 28 (BARGE DEDICATED TRIP)
             { id: "26", week: "W28", date: "13/07/2026", day: "Monday", stores: [...basePatterns.MondayB], accommodation: "HOME BASE", notes: "Ipswich Run", isHoliday: false },
             { id: "27", week: "W28", date: "14/07/2026", day: "Tuesday", stores: [...basePatterns.WednesdayB], accommodation: "HOME BASE", notes: "Logan Highway Corridor", isHoliday: false },
             { id: "28", week: "W28", date: "15/07/2026", day: "Wednesday", stores: [...basePatterns.ThursdayA], accommodation: "HOME BASE", notes: "Bayside Key Accounts", isHoliday: false },
             { id: "29", week: "W28", date: "16/07/2026", day: "Thursday", stores: ["Metcash IGA M Russell Island", "DISPLAY BUILD OUT DAY", "PLANOGRAM AUDIT CHECK", "TERRITORY ADMIN REVIEW"], accommodation: "HOME BASE", notes: "Russell Island Dedicated Barge Run", isHoliday: false },
             { id: "30", week: "W28", date: "17/07/2026", day: "Friday", stores: [...basePatterns.FridayB], accommodation: "HOME BASE", notes: "Moreton Bay Sweep", isHoliday: false },
 
-            // WEEK 29
             { id: "31", week: "W29", date: "20/07/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", notes: "Near North Loop", isHoliday: false },
             { id: "32", week: "W29", date: "21/07/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", notes: "Gold Coast North Strip", isHoliday: false },
             { id: "33", week: "W29", date: "22/07/2026", day: "Wednesday", stores: [...basePatterns.WednesdayA], accommodation: "HOME BASE", notes: "Brisbane Core Run", isHoliday: false },
             { id: "34", week: "W29", date: "23/07/2026", day: "Thursday", stores: [...basePatterns.ThursdayA], accommodation: "HOME BASE", notes: "Bayside Loop", isHoliday: false },
             { id: "35", week: "W29", date: "24/07/2026", day: "Friday", stores: [...basePatterns.FridayA], accommodation: "HOME BASE", notes: "Home Turf Loop", isHoliday: false },
 
-            // WEEK 30
             { id: "36", week: "W30", date: "27/07/2026", day: "Monday", stores: [...basePatterns.MondayB], accommodation: "HOME BASE", notes: "Ipswich Run", isHoliday: false },
             { id: "37", week: "W30", date: "28/07/2026", day: "Tuesday", stores: [...basePatterns.TuesdayB], accommodation: "HOME BASE", notes: "Gold Coast South Loop", isHoliday: false },
             { id: "38", week: "W30", date: "29/07/2026", day: "Wednesday", stores: [...basePatterns.WednesdayB], accommodation: "HOME BASE", notes: "Logan Highway", isHoliday: false },
             { id: "39", week: "W30", date: "30/07/2026", day: "Thursday", stores: [...basePatterns.ThursdayB], accommodation: "HOME BASE", notes: "Brisbane Valley Run", isHoliday: false },
             { id: "40", week: "W30", date: "31/07/2026", day: "Friday", stores: [...basePatterns.FridayB], accommodation: "HOME BASE", notes: "Moreton Bay North", isHoliday: false },
 
-            // WEEK 31
             { id: "41", week: "W31", date: "03/08/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", notes: "Near North Run", isHoliday: false },
             { id: "42", week: "W31", date: "04/08/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", notes: "Gold Coast Run", isHoliday: false },
             { id: "43", week: "W31", date: "05/08/2026", day: "Wednesday", stores: [...basePatterns.WednesdayA], accommodation: "HOME BASE", notes: "Brisbane Core", isHoliday: false },
             { id: "44", week: "W31", date: "06/08/2026", day: "Thursday", stores: [...basePatterns.ThursdayA], accommodation: "HOME BASE", notes: "Bayside Accounts", isHoliday: false },
             { id: "45", week: "W31", date: "07/08/2026", day: "Friday", stores: [...basePatterns.FridayA], accommodation: "HOME BASE", notes: "Home Turf Loop", isHoliday: false },
 
-            // WEEK 32 (EKKA PUBLIC HOLIDAY SPLIT WEEK)
             { id: "46", week: "W32", date: "10/08/2026", day: "Monday", stores: [...basePatterns.MondayB], accommodation: "HOME BASE", notes: "Ipswich Run", isHoliday: false },
             { id: "47", week: "W32", date: "11/08/2026", day: "Tuesday", stores: [...basePatterns.TuesdayB], accommodation: "HOME BASE", notes: "GC & NSW Border Run", isHoliday: false },
             { id: "48", week: "W32", date: "12/08/2026", day: "Wednesday", stores: ["STORES OFFLINE - EKKA WEDNESDAY HOLIDAY"], accommodation: "HOME BASE", notes: "Ekka Holiday (Brisbane Dist. Closed)", isHoliday: true },
             { id: "49", week: "W32", date: "13/08/2026", day: "Thursday", stores: [...basePatterns.WednesdayB], accommodation: "HOME BASE", notes: "Logan Highway (Shifted from Wed)", isHoliday: false },
             { id: "50", week: "W32", date: "14/08/2026", day: "Friday", stores: [...basePatterns.FridayB], accommodation: "HOME BASE", notes: "Moreton Bay Run", isHoliday: false },
 
-            // WEEK 33 TO WEEK 35 (AUGUST CORE BLOCK)
             { id: "51", week: "W33", date: "17/08/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", notes: "Near North Run", isHoliday: false },
             { id: "52", week: "W33", date: "18/08/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", notes: "Gold Coast Run", isHoliday: false },
             { id: "53", week: "W33", date: "19/08/2026", day: "Wednesday", stores: [...basePatterns.WednesdayA], accommodation: "HOME BASE", notes: "Brisbane Central Core", isHoliday: false },
@@ -231,7 +322,7 @@
             { id: "55", week: "W33", date: "21/08/2026", day: "Friday", stores: [...basePatterns.FridayA], accommodation: "HOME BASE", notes: "Home Turf Loop", isHoliday: false },
 
             { id: "56", week: "W34", date: "24/08/2026", day: "Monday", stores: [...basePatterns.MondayB], accommodation: "HOME BASE", notes: "Ipswich Run", isHoliday: false },
-            { id: "57", week: "W34", date: "24/08/2026", day: "Tuesday", stores: [...basePatterns.TuesdayB], accommodation: "HOME BASE", notes: "Gold Coast South Coast", isHoliday: false },
+            { id: "57", week: "W34", date: "25/08/2026", day: "Tuesday", stores: [...basePatterns.TuesdayB], accommodation: "HOME BASE", notes: "Gold Coast South Coast", isHoliday: false },
             { id: "58", week: "W34", date: "26/08/2026", day: "Wednesday", stores: [...basePatterns.WednesdayB], accommodation: "HOME BASE", notes: "Logan Corridor", isHoliday: false },
             { id: "59", week: "W34", date: "27/08/2026", day: "Thursday", stores: [...basePatterns.ThursdayB], accommodation: "HOME BASE", notes: "Brisbane Valley Run", isHoliday: false },
             { id: "60", week: "W34", date: "28/08/2026", day: "Friday", stores: [...basePatterns.FridayB], accommodation: "HOME BASE", notes: "Moreton Bay", isHoliday: false },
@@ -242,14 +333,12 @@
             { id: "64", week: "W35", date: "03/09/2026", day: "Thursday", stores: [...basePatterns.ThursdayA], accommodation: "HOME BASE", notes: "Bayside Key Accounts", isHoliday: false },
             { id: "65", week: "W35", date: "04/09/2026", day: "Friday", stores: [...basePatterns.FridayA], accommodation: "HOME BASE", notes: "Home Turf Loop", isHoliday: false },
 
-            // WEEK 36 (Q3 NEW ENGLAND COUNTRY ROAD TRIP)
             { id: "66", week: "W36", date: "07/09/2026", day: "Monday", stores: [...basePatterns.MondayB], accommodation: "HOME BASE", notes: "Ipswich Run Pre-Trip", isHoliday: false },
             { id: "67", week: "W36", date: "08/09/2026", day: "Tuesday", stores: ["Metcash Fwks Tenterfield", "Metcash IGA L Inverell", "Metcash IGA M Bingara", "Metcash IGA M Warialda", "Metcash IGA M Guyra", "Metcash F&S Armidale"], accommodation: "🛏️ BOOK TRIP (Armidale)", notes: "New England Tour Day 1", isHoliday: false },
             { id: "68", week: "W36", date: "09/09/2026", day: "Wednesday", stores: ["Metcash Fwks Uralla", "Metcash IGA L Tamworth", "Metcash IGA M Kootingal", "Metcash IGA L Quirindi", "Metcash IGA M Walcha Plus", "Metcash IGA M Manilla Plus"], accommodation: "🛏️ BOOK TRIP (Tamworth)", notes: "New England Tour Day 2", isHoliday: false },
             { id: "69", week: "W36", date: "10/09/2026", day: "Thursday", stores: ["Metcash IGA L Wee Waa", "Metcash IGA M L Kyogle (Ritchies)", "Metcash IGA M Russell Island", "ADMIN DATA LOGS IN MOTEL"], accommodation: "🛏️ BOOK TRIP (Kyogle)", notes: "New England Border Clearance", isHoliday: false },
             { id: "70", week: "W36", date: "11/09/2026", day: "Friday", stores: [...basePatterns.FridayB], accommodation: "HOME BASE", notes: "Moreton North (Return Home Day)", isHoliday: false },
 
-            // WEEK 37 TO WEEK 39 (SEPTEMBER BLOCK)
             { id: "71", week: "W37", date: "14/09/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", notes: "Near North Run", isHoliday: false },
             { id: "72", week: "W37", date: "15/09/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", notes: "Gold Coast Run", isHoliday: false },
             { id: "73", week: "W37", date: "16/09/2026", day: "Wednesday", stores: [...basePatterns.WednesdayA], accommodation: "HOME BASE", notes: "Brisbane Core", isHoliday: false },
@@ -268,14 +357,12 @@
             { id: "84", week: "W39", date: "01/10/2026", day: "Thursday", stores: [...basePatterns.ThursdayA], accommodation: "HOME BASE", notes: "Bayside Key Run", isHoliday: false },
             { id: "85", week: "W39", date: "02/10/2026", day: "Friday", stores: [...basePatterns.FridayA], accommodation: "HOME BASE", notes: "Home Turf Loop", isHoliday: false },
 
-            // WEEK 40 (OCTOBER DOUBLE PUBLIC HOLIDAY & DEEP WESTERN RUN)
             { id: "86", week: "W40", date: "05/10/2026", day: "Monday", stores: ["STORES OFFLINE - DOUBLE PUBLIC HOLIDAY"], accommodation: "HOME BASE", notes: "QLD King's Birthday & NSW Labour Day (All Closed)", isHoliday: true },
             { id: "87", week: "W40", date: "06/10/2026", day: "Tuesday", stores: ["Metcash IGA M Chinchilla", "Metcash IGA M Miles", "Metcash IGA M Roma (Cornetts)", "Metcash IGA M Longreach", "Metcash IGA M Charleville", "Metcash IGA Grocer Cunnamulla"], accommodation: "🛏️ BOOK TRIP (Roma)", notes: "Deep Western Trip Day 1", isHoliday: false },
             { id: "88", week: "W40", date: "07/10/2026", day: "Wednesday", stores: ["Metcash IGA Barcaldine", "Metcash IGA Blackall", "Metcash M Beales Clermont", "Metcash Fwks St George", "Metcash Foodworks Tara 2020"], accommodation: "🛏️ BOOK TRIP (Longreach)", notes: "Deep Western Trip Day 2", isHoliday: false },
             { id: "89", week: "W40", date: "08/10/2026", day: "Thursday", stores: ["Metcash IGA Middlemount", "Metcash IGA Clermont", "Metcash IGA Dysart Plaza", "Metcash IGA M Russell Island", "ADMIN STORAGE ROAD ANALYSIS"], accommodation: "🛏️ BOOK TRIP (Toowoomba)", notes: "Deep Western Trip Day 3", isHoliday: false },
             { id: "90", week: "W40", date: "09/10/2026", day: "Friday", stores: [...basePatterns.FridayB], accommodation: "HOME BASE", notes: "Moreton Bay (Return Flight/Drive Home)", isHoliday: false },
 
-            // WEEK 41 TO WEEK 47 (OCTOBER - NOVEMBER STANDARD ROLLING BLOCKS)
             { id: "91", week: "W41", date: "12/10/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", notes: "Near North Run", isHoliday: false },
             { id: "92", week: "W41", date: "13/10/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", notes: "Gold Coast Run", isHoliday: false },
             { id: "93", week: "W41", date: "14/10/2026", day: "Wednesday", stores: [...basePatterns.WednesdayA], accommodation: "HOME BASE", notes: "Brisbane Core", isHoliday: false },
@@ -318,14 +405,12 @@
             { id: "124", week: "W47", date: "26/11/2026", day: "Thursday", stores: ["Metcash IGA M Evans Head (Ritchies)", "Metcash IGA L Maclean (Ritchies)", "Metcash IGA M Iluka Plus Cbn", "Metcash Fresh & Save Grafton"], accommodation: "HOME BASE", notes: "Lower NSW Coast Travel Run", isHoliday: false },
             { id: "125", week: "W47", date: "27/11/2026", day: "Friday", stores: [...basePatterns.FridayA], accommodation: "HOME BASE", notes: "Home Turf Loop", isHoliday: false },
 
-            // WEEK 48 (FINAL NEW ENGLAND PRE-CHRISTMAS CAMPAIGN)
             { id: "126", week: "W48", date: "30/11/2026", day: "Monday", stores: [...basePatterns.MondayB], accommodation: "HOME BASE", notes: "Ipswich Run Pre-Trip", isHoliday: false },
             { id: "127", week: "W48", date: "01/12/2026", day: "Tuesday", stores: ["Metcash Fwks Tenterfield", "Metcash IGA L Inverell", "Metcash IGA M Bingara", "Metcash IGA M Warialda", "Metcash IGA M Guyra", "Metcash F&S Armidale"], accommodation: "🛏️ BOOK TRIP (Armidale)", notes: "Pre-Christmas Country Day 1", isHoliday: false },
             { id: "128", week: "W48", date: "02/12/2026", day: "Wednesday", stores: ["Metcash Fwks Uralla", "Metcash IGA L Tamworth", "Metcash IGA M Kootingal", "Metcash IGA L Quirindi", "Metcash IGA M Walcha Plus", "Metcash IGA M Manilla Plus"], accommodation: "🛏️ BOOK TRIP (Tamworth)", notes: "Pre-Christmas Country Day 2", isHoliday: false },
             { id: "129", week: "W48", date: "03/12/2026", day: "Thursday", stores: ["Metcash IGA L Wee Waa", "Metcash IGA M L Kyogle (Ritchies)", "Metcash IGA M Russell Island", "PRE-XMAS COMPLIANCE CHECKS"], accommodation: "🛏️ BOOK TRIP (Kyogle)", notes: "Pre-Christmas Country Day 3", isHoliday: false },
             { id: "130", week: "W48", date: "04/12/2026", day: "Friday", stores: [...basePatterns.FridayB], accommodation: "HOME BASE", notes: "Moreton Bay (Return Home Sweep)", isHoliday: false },
 
-            // WEEK 49 TO WEEK 50 (DECEMBER INTENSE VOLUME CYCLES)
             { id: "131", week: "W49", date: "07/12/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", notes: "Near North Run", isHoliday: false },
             { id: "132", week: "W49", date: "08/12/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", notes: "Gold Coast Run", isHoliday: false },
             { id: "133", week: "W49", date: "09/12/2026", day: "Wednesday", stores: [...basePatterns.WednesdayA], accommodation: "HOME BASE", notes: "Brisbane Core", isHoliday: false },
@@ -338,14 +423,12 @@
             { id: "139", week: "W50", date: "17/12/2026", day: "Thursday", stores: [...basePatterns.ThursdayB], accommodation: "HOME BASE", notes: "Brisbane Valley Run", isHoliday: false },
             { id: "140", week: "W50", date: "18/12/2026", day: "Friday", stores: [...basePatterns.FridayB], accommodation: "HOME BASE", notes: "Moreton Bay North Run", isHoliday: false },
 
-            // WEEK 51 (THE CHRISTMAS WEEK SQUEEZE)
             { id: "141", week: "W51", date: "21/12/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", notes: "Near North Christmas Run", isHoliday: false },
             { id: "142", week: "W51", date: "22/12/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", notes: "Gold Coast Christmas Run", isHoliday: false },
             { id: "143", week: "W51", date: "23/12/2026", day: "Wednesday", stores: [...basePatterns.WednesdayA], accommodation: "HOME BASE", notes: "Brisbane Core Christmas Run", isHoliday: false },
             { id: "144", week: "W51", date: "24/12/2026", day: "Thursday", stores: [...basePatterns.ThursdayA], accommodation: "HOME BASE", notes: "Bayside Christmas Final Sweep", isHoliday: false },
             { id: "145", week: "W51", date: "25/12/2026", day: "Friday", stores: ["STORES OFFLINE - CHRISTMAS DAY"], accommodation: "HOME BASE", notes: "Christmas Day Public Holiday", isHoliday: true },
 
-            // WEEK 52 (BOXING DAY CATCHUP TO NEW YEAR)
             { id: "146", week: "W52", date: "28/12/2026", day: "Monday", stores: ["STORES OFFLINE - BOXING DAY HOLIDAY"], accommodation: "HOME BASE", notes: "Boxing Day Observed Closure", isHoliday: true },
             { id: "147", week: "W52", date: "29/12/2026", day: "Tuesday", stores: [...basePatterns.WednesdayB], accommodation: "HOME BASE", notes: "Logan Highway End of Year Sweep", isHoliday: false },
             { id: "148", week: "W52", date: "30/12/2026", day: "Wednesday", stores: [...basePatterns.MondayB], accommodation: "HOME BASE", notes: "Ipswich Corridor End of Year Sweep", isHoliday: false },
@@ -353,13 +436,13 @@
             { id: "150", week: "W52", date: "01/01/2027", day: "Friday", stores: ["STORES OFFLINE - NEW YEARS DAY"], accommodation: "HOME BASE", notes: "New Years Day Closure", isHoliday: true }
         ];
 
-        let roster = JSON.parse(localStorage.getItem('kyal_roster_data_v2')) || initialRosterData;
-        let visitedStores = JSON.parse(localStorage.getItem('kyal_visited_stores_v2')) || {};
+        let roster = JSON.parse(localStorage.getItem('kyal_roster_data_v3')) || initialRosterData;
+        let visitedStores = JSON.parse(localStorage.getItem('kyal_visited_stores_v3')) || {};
         let currentEditingId = null;
 
         function saveData() {
-            localStorage.setItem('kyal_roster_data_v2', JSON.stringify(roster));
-            localStorage.setItem('kyal_visited_stores_v2', JSON.stringify(visitedStores));
+            localStorage.setItem('kyal_roster_data_v3', JSON.stringify(roster));
+            localStorage.setItem('kyal_visited_stores_v3', JSON.stringify(visitedStores));
         }
 
         function renderCalendar() {
@@ -447,14 +530,14 @@
                     <label>Accommodation Alert</label>
                     <input type="text" id="editAccommodation" value="${dayData.accommodation}">
                 </div>
-                <label style="display:block; font-size:0.8rem; font-weight:600; margin-bottom:4px; color:#475569;">Store Sequence</label>
+                <label style="display:block; font-size:0.8rem; font-weight:600; margin-bottom:4px; color:#475569;">Store Sequence (Search or select from list)</label>
             `;
 
             for(let i = 0; i < 6; i++) {
                 const val = dayData.stores[i] || "";
                 fieldsHtml += `
                     <div class="form-group" style="margin-bottom:4px;">
-                        <input type="text" id="editStore${i}" value="${val}" placeholder="Store ${i+1}">
+                        <input type="text" id="editStore${i}" list="masterStoreList" value="${val}" placeholder="Type to filter or choose store ${i+1}...">
                     </div>`;
             }
 
@@ -486,8 +569,8 @@
 
         function resetTracker() {
             if(confirm("Are you sure you want to completely clear down all checks and reset back to the default master roster?")) {
-                localStorage.removeItem('kyal_roster_data_v2');
-                localStorage.removeItem('kyal_visited_stores_v2');
+                localStorage.removeItem('kyal_roster_data_v3');
+                localStorage.removeItem('kyal_visited_stores_v3');
                 roster = [...initialRosterData];
                 visitedStores = {};
                 renderCalendar();
