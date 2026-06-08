@@ -36,8 +36,8 @@
         }
         h1 { font-size: 1.5rem; color: var(--primary); }
         
-        .controls { display: flex; gap: 10px; }
-        .btn { padding: 6px 14px; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 0.85rem; transition: background 0.2s; }
+        .controls { display: flex; gap: 10px; align-items: center; }
+        .btn { padding: 8px 14px; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 0.85rem; transition: background 0.2s; white-space: nowrap; }
         .btn-primary { background-color: var(--accent); color: white; }
         .btn-primary:hover { background-color: #1d4ed8; }
         .btn-secondary { background-color: #e2e8f0; color: var(--primary); }
@@ -235,7 +235,6 @@
         <option value="Metcash IGA Blackall">
         <option value="Metcash M Beales Clermont">
         <option value="Metcash Fwks St George">
-        <option value="Metcash Foodworks Tara 2020">
         <option value="Metcash IGA Middlemount">
         <option value="Metcash IGA Clermont">
         <option value="Metcash IGA Dysart Plaza">
@@ -527,3 +526,180 @@
                             <div class="day-name">${day.day}</div>
                         </div>
                         ${accommodationHtml}
+                        <div class="route-notes" title="${day.notes}">${day.isLeave ? 'Annual Leave Leave Period' : (day.notes || '')}</div>
+                        <div class="store-list">${storeListHtml}</div>
+                    </div>
+                    <div class="tile-actions">
+                        <button class="edit-lnk" onclick="openEditModal('${day.id}')">Edit Run</button>
+                    </div>
+                `;
+
+                currentWeekRow.appendChild(tile);
+            });
+        }
+
+        function toggleStore(dayId, storeIndex) {
+            const storeKey = `${dayId}-${storeIndex}`;
+            visitedStores[storeKey] = !visitedStores[storeKey];
+            saveData();
+            renderCalendar();
+        }
+
+        function openEditModal(dayId) {
+            currentEditingId = dayId;
+            const dayData = roster.find(d => d.id === dayId);
+            document.getElementById('modalTitle').innerText = `Modify Run: ${dayData.date} (${dayData.day})`;
+            
+            const leaveCheckbox = document.getElementById('editIsLeave');
+            leaveCheckbox.checked = dayData.isLeave || false;
+
+            generateModalFieldsHtml(dayData);
+            toggleModalLeaveView(dayData.isLeave);
+
+            document.getElementById('editModal').style.display = 'flex';
+        }
+
+        function generateModalFieldsHtml(dayData) {
+            let fieldsHtml = `
+                <div id="conditionalFieldsContainer">
+                    <div class="form-group">
+                        <label>Route Strategy / Notes</label>
+                        <textarea id="editNotes" rows="2">${dayData.notes || ''}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Accommodation Alert</label>
+                        <input type="text" id="editAccommodation" value="${dayData.accommodation || ''}">
+                    </div>
+                    <label style="display:block; font-size:0.8rem; font-weight:600; margin-bottom:4px; color:#475569;">Store Sequence</label>
+            `;
+
+            for(let i = 0; i < 6; i++) {
+                const val = dayData.stores[i] || "";
+                fieldsHtml += `
+                    <div class="form-group" style="margin-bottom:4px;">
+                        <input type="text" id="editStore${i}" list="masterStoreList" value="${val}" placeholder="Store ${i+1}...">
+                    </div>`;
+            }
+            
+            fieldsHtml += `</div>`;
+            document.getElementById('modalFields').innerHTML = fieldsHtml;
+        }
+
+        function toggleModalLeaveView(isLeaveChecked) {
+            const fieldsContainer = document.getElementById('conditionalFieldsContainer');
+            if(fieldsContainer) {
+                if(isLeaveChecked) {
+                    fieldsContainer.style.opacity = '0.3';
+                    fieldsContainer.style.pointerEvents = 'none';
+                } else {
+                    fieldsContainer.style.opacity = '1';
+                    fieldsContainer.style.pointerEvents = 'auto';
+                }
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+
+        function saveDayEdits() {
+            const dayData = roster.find(d => d.id === currentEditingId);
+            const leaveState = document.getElementById('editIsLeave').checked;
+            
+            dayData.isLeave = leaveState;
+            
+            if (!leaveState) {
+                dayData.notes = document.getElementById('editNotes').value;
+                dayData.accommodation = document.getElementById('editAccommodation').value;
+                
+                dayData.stores = [];
+                for(let i = 0; i < 6; i++) {
+                    const val = document.getElementById(`editStore${i}`).value;
+                    if(val.trim() !== "") {
+                        dayData.stores.push(val);
+                    }
+                }
+            }
+
+            saveData();
+            renderCalendar();
+            closeModal();
+        }
+
+        function resetTracker() {
+            if(confirm("Are you sure you want to completely clear down all checks and reset back to the default master roster?")) {
+                localStorage.removeItem('kyal_roster_data_v4');
+                localStorage.removeItem('kyal_visited_stores_v4');
+                roster = JSON.parse(JSON.stringify(initialRosterData));
+                visitedStores = {};
+                renderCalendar();
+            }
+        }
+
+        function exportData() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({roster, visitedStores}, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "master_roster_backup_2026.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        function copyRosterForAI() {
+            let logText = "CURRENT ROSTER SCHEDULE PLAN:\n\n";
+            roster.forEach(day => {
+                logText += `ID:${day.id} | ${day.date} (${day.day}) [Week: ${day.week}]\n`;
+                logText += `Status: ${day.isLeave ? 'ANNUAL LEAVE' : 'Working'}\n`;
+                if(!day.isLeave) {
+                    logText += `Notes: ${day.notes || 'None'}\n`;
+                    logText += `Lodging: ${day.accommodation || 'HOME BASE'}\n`;
+                    logText += `Sequence: ${day.stores.join(' -> ')}\n`;
+                }
+                logText += "-----------------------------------\n";
+            });
+
+            navigator.clipboard.writeText(logText).then(() => {
+                const btn = document.getElementById('aiCopyBtn');
+                const origText = btn.innerText;
+                btn.innerText = "✓ Copied!";
+                setTimeout(() => { btn.innerText = origText; }, 2000);
+            }).catch(err => {
+                alert("Error copying data.");
+            });
+        }
+
+        function importAICode() {
+            const aiJson = prompt("Paste the AI changes text block here:");
+            if (!aiJson) return;
+
+            try {
+                const changes = JSON.parse(aiJson);
+                if (!Array.isArray(changes)) {
+                    alert("Invalid format. Please ensure you copy the entire code snippet provided by the AI.");
+                    return;
+                }
+
+                changes.forEach(change => {
+                    const targetDay = roster.find(d => String(d.id) === String(change.id) || d.date === change.date);
+                    if (targetDay) {
+                        if (change.isLeave !== undefined) targetDay.isLeave = change.isLeave;
+                        if (change.notes !== undefined) targetDay.notes = change.notes;
+                        if (change.accommodation !== undefined) targetDay.accommodation = change.accommodation;
+                        if (change.stores !== undefined) targetDay.stores = change.stores;
+                    }
+                });
+
+                saveData();
+                renderCalendar();
+                alert("✨ Schedule updated successfully!");
+            } catch (e) {
+                alert("Oops! The text wasn't pasted correctly. Make sure to copy the entire snippet.");
+            }
+        }
+
+        // Run on load
+        renderCalendar();
+    </script>
+</body>
+</html>
