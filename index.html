@@ -2,239 +2,287 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Store Tracker</title>
-    <!-- Apple Web App Meta Tags -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Store Tracker">
-    <link rel="apple-touch-icon" href="https://img.icons8.com/fluent/180/000000/shop.png">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026 Master Roster & Store Tracker</title>
     <style>
         :root {
-            --bg-color: #f2f2f7;
+            --primary: #1e293b;
+            --accent: #2563eb;
+            --success: #16a34a;
+            --warning: #dc2626;
+            --bg: #f8fafc;
             --card-bg: #ffffff;
-            --text-color: #1c1c1e;
-            --primary-color: #007aff;
-            --success-color: #34c759;
-            --border-color: #e5e5ea;
+            --text: #0f172a;
+            --border: #e2e8f0;
         }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 0;
-            padding-top: env(safe-area-inset-top);
-            -webkit-user-select: none;
-            user-select: none;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        body { background-color: var(--bg); color: var(--text); padding: 20px; line-height: 1.5; }
+        header { max-width: 1200px; margin: 0 auto 30px auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        h1 { font-size: 1.8rem; color: var(--primary); }
+        
+        .controls { display: flex; gap: 10px; }
+        .btn { padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.9rem; transition: background 0.2s; }
+        .btn-primary { background-color: var(--accent); color: white; }
+        .btn-primary:hover { background-color: #1d4ed8; }
+        .btn-secondary { background-color: var(--border); color: var(--primary); }
+        .btn-secondary:hover { background-color: #cbd5e1; }
 
-        header {
-            position: sticky;
-            top: 0;
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            padding: 15px;
-            border-bottom: 1px solid var(--border-color);
-            z-index: 100;
-        }
+        .calendar-grid { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+        .week-section { background: transparent; border-left: 4px solid var(--primary); padding-left: 15px; margin-bottom: 10px; }
+        .week-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 10px; color: var(--primary); }
+        
+        .days-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 15px; }
+        .day-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between; }
+        .day-card.holiday { background-color: #fef2f2; border-color: #fca5a5; }
+        
+        .day-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+        .day-date { font-weight: 700; font-size: 1.1rem; }
+        .day-name { font-size: 0.9rem; color: #64748b; font-weight: 600; text-transform: uppercase; }
+        
+        .alert-tag { background: #fee2e2; color: var(--warning); padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 700; margin-bottom: 10px; display: inline-flex; align-items: center; gap: 5px; border: 1px solid #fca5a5; }
+        .route-notes { font-size: 0.85rem; color: #475569; font-style: italic; margin-bottom: 12px; background: #f1f5f9; padding: 6px 10px; border-radius: 4px; }
+        
+        .store-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 15px; }
+        .store-item { padding: 8px 12px; background: #f8fafc; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center; user-select: none; transition: all 0.15s; }
+        .store-item:hover { background: #f1f5f9; border-color: #cbd5e1; }
+        .store-item.visited { background: #e6f4ea; border-color: #b7e1cd; color: #137333; font-weight: 500; text-decoration: line-through; }
+        .store-item.visited::after { content: "✓"; font-weight: 700; }
+        .store-item.non-visit { background: #f1f5f9; color: #64748b; font-style: italic; cursor: default; pointer-events: none; }
 
-        h1 {
-            font-size: 24px;
-            margin: 0 0 10px 0;
-            font-weight: 700;
-        }
+        .card-actions { display: flex; justify-content: flex-end; gap: 5px; border-top: 1px solid var(--border); padding-top: 10px; }
+        
+        /* Modal Style for Editing */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 100; }
+        .modal-content { background: white; padding: 25px; border-radius: 8px; max-width: 500px; width: 90%; max-height: 90vh; overflow-y: auto; }
+        .modal-header { font-size: 1.3rem; font-weight: 700; margin-bottom: 15px; }
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 4px; color: #475569; }
+        .form-group input, .form-group textarea { width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 4px; font-size: 0.9rem; }
+        .modal-buttons { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
 
-        .stats {
-            font-size: 14px;
-            color: #8e8e93;
-            margin-bottom: 12px;
-        }
-
-        .search-bar {
-            width: 100%;
-            padding: 10px 15px;
-            font-size: 16px;
-            border: none;
-            background-color: #e3e3e9;
-            border-radius: 10px;
-            box-sizing: border-box;
-            outline: none;
-        }
-
-        .store-list {
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            padding-bottom: 50px;
-        }
-
-        .store-item {
-            background-color: var(--card-bg);
-            padding: 16px;
-            border-radius: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            transition: background-color 0.2s ease;
-        }
-
-        .store-name {
-            font-size: 16px;
-            font-weight: 500;
-            padding-right: 10px;
-        }
-
-        /* iOS Style Toggle Switch */
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 51px;
-            height: 31px;
-            flex-shrink: 0;
-        }
-
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #e5e5ea;
-            transition: .3s;
-            border-radius: 31px;
-        }
-
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 27px;
-            width: 27px;
-            left: 2px;
-            bottom: 2px;
-            background-color: white;
-            transition: .3s;
-            border-radius: 50%;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.15);
-        }
-
-        input:checked + .slider {
-            background-color: var(--success-color);
-        }
-
-        input:checked + .slider:before {
-            transform: translateX(20px);
-        }
-
-        .visited {
-            background-color: #f2f9f3;
+        @media(max-width: 600px) {
+            body { padding: 10px; }
+            .days-container { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>Store Tracker</h1>
-        <div class="stats" id="stats">Visited: 0 / 0 stores</div>
-        <input type="text" id="search" class="search-bar" placeholder="Search stores...">
+        <div>
+            <h1>2026 Master Roster</h1>
+            <p style="color: #64748b; font-size: 0.9rem;">Live Date Tracked from 08/06/2026 | QLD/NSW Calendar Logic</p>
+        </div>
+        <div class="controls">
+            <button class="btn btn-secondary" onclick="resetTracker()">Reset Data</button>
+            <button class="btn btn-primary" onclick="exportData()">Export Backup</button>
+        </div>
     </header>
 
-    <div class="store-list" id="storeList"></div>
+    <div class="calendar-grid" id="calendarGrid"></div>
+
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <div class="modal-header" id="modalTitle">Edit Day Schedule</div>
+            <div id="modalFields"></div>
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveDayEdits()">Save Changes</button>
+            </div>
+        </div>
+    </div>
 
     <script>
-        // Cleaned up store list array
-        const rawStores = [
-            "IGA Esk", "Iga Toogoolawah", "Drakes Lowood", "Drakes Samford", "Iga Frenchs Forest",
-            "Iga Dayboro", "Iga Cashmere", "Seasons Iga Burpengary", "Fresh & Save Deagon", "Drakes Mcdowall",
-            "Hoppers Iga Ascot", "Hoppers Iga St Lucia", "Seasons Iga East Brisbane", "Iga Greenslopes", "Iga Carina",
-            "Jones Iga Manly", "Jones Iga Wellington Pt", "Jones Iga Bloomfield", "Jones Iga Cleveland", "Jones Iga Thornlands",
-            "Jones Siga Mt Cotton", "Jones Siga Russell Island", "Iga Acacia Ridge", "Drakes Parkinson", "Drakes Regents Park",
-            "Jones Iga Beaudesert", "Fresh & Save Richlands", "Drakes Yamanto", "Drakes Rosewood", "Supa Iga Laidley",
-            "Iga Hattonvale", "Iga Walloon", "Ritchies Siga Boonah", "Iga West Ipswich", "Foodworks Woodridge",
-            "Drakes Rochedale", "Ritchies Siga Daisy Hill", "Iga Loganholme", "Fresh & Save Eagleby", "Jones Iga Sanctuary Cove",
-            "Drakes Hollywell Rd Market", "Jones Iga Queen St Village", "Drakes Ashmore", "Carlos Siga North Tamborine", "IGA Canungra",
-            "Spanos Iga Mermaid Waters", "Spanos Iga Robina", "Iga Currumbin", "Iga Tugun", "Spanos Siga Gatton",
-            "Iga Dysart (cornetts)", "Cornetts Supa Iga Middlemount", "Cornetts Supa Iga Clermont", "Iga Clermont (beales)", "Cornetts Iga Blackall",
-            "Cornetts Supa Iga Longreach", "Foodworks Tara", "Drakes Chinchilla", "Food works Miles", "Iga Miles",
-            "Cornetts Iga Roma", "Cornetts Supa Iga Charleville", "Iga Cunnamulla", "Cornetts Iga St George", "Foodworks St George",
-            "Foodworks Goondiwindi", "Cornetts Supa Iga Oakey", "Iga Pittsworth", "Iga Crows Nest", "Drakes Toowoomba",
-            "Iga Allora", "Spanos Siga Warwick", "Spanos Siga Stanthorpe", "Foodworks Killarney", "Foodworks Tenterfield",
-            "Iga Tweed Valley (qld)", "Iga Pottsville (qld)", "Iga Byron Bay (qld)", "Ritchies Supa Valu Ballina (qld)", "Cornetts Iga Barcaldine",
-            "Ritchies Siga Kyogle (qld)", "Ritchies Iga Evans Head (qld)", "Iga Iluka (qld)", "Ritchies Siga Maclean Plus Liquor (qld)", "Fresh & Save Grafton",
-            "Carlos Supa Iga Wee Waa", "Bindara Plus Liquor", "Carlos Iga Warialda", "Ritchies Siga Inverell", "Iga Kirks Guyra",
-            "Fresh & Save Armidale", "Foodworks Uralla", "Carlos Iga Manilla", "Carlos Iga Walcha", "Iga Kootingal"
+        // Raw Master Data starting from Monday 08/06/2026
+        const initialRosterData = [
+            { id: "1", week: "W23", date: "08/06/2026", day: "Monday", stores: ["Metcash Drakes Mcdowall", "Metcash IGA M Hoppers Ascot", "Metcash IGA M Frenchs Forest", "Metcash IGA M Dayboro Valley", "Metcash Drakes Samford", "Metcash IGA M Cashmere"], accommodation: "HOME BASE (Bracken Ridge)", notes: "Normal QLD Workday (Note: King's Birthday Holiday in NSW)", isHoliday: false },
+            { id: "2", week: "W23", date: "09/06/2026", day: "Tuesday", stores: ["Metcash IGA M Sanctuary Cove (Jones)", "Metcash Drakes Hollywell Road Markets", "Metcash IGA L Queen Street Village Southport (Jones)", "Metcash Drakes Nerang Road Ashmore", "Metcash IGA M Mermaid Waters", "Metcash IGA M Nerang (Spano)"], accommodation: "HOME BASE (Bracken Ridge)", notes: "Gold Coast Northern Strip Loop", isHoliday: false },
+            { id: "3", week: "W23", date: "10/06/2026", day: "Wednesday", stores: ["Metcash IGA M St Lucia", "Metcash IGA M Greenslopes Legends", "Metcash IGA M Chriss Carina", "Metcash IGA M East Brisbane (Seasons)", "Metcash IGA M Acacia Ridge", "Metcash Foodworks Woodridge"], accommodation: "HOME BASE (Bracken Ridge)", notes: "Brisbane Central & South Core", isHoliday: false },
+            { id: "4", week: "W23", date: "11/06/2026", day: "Thursday", stores: ["Metcash IGA M Evans Head (Ritchies)", "Metcash IGA L Maclean (Ritchies)", "Metcash IGA M Iluka Plus Cbn", "Metcash Fresh & Save Grafton (Shoppingworld)", "ADMIN / REPORTING"], accommodation: "HOME BASE (Bracken Ridge)", notes: "Lower NSW Coast Day Trip (4-Store Travel Exception)", isHoliday: false },
+            { id: "5", week: "W23", date: "12/06/2026", day: "Friday", stores: ["Metcash Fresh & Save Deagon", "Metcash Drakes Mcdowall", "Metcash IGA M Cashmere", "Metcash Drakes Samford", "Metcash IGA M Frenchs Forest", "Metcash IGA L Burpengary (Seasons)"], accommodation: "HOME BASE (Bracken Ridge)", notes: "Friday A: Home Turf Tightly Clustered Loop", isHoliday: false },
+            
+            { id: "6", week: "W24", date: "15/06/2026", day: "Monday", stores: ["Metcash IGA M Augustine Heights", "Metcash Drakes Winston Glades", "Metcash IGA M West Ipswich", "Metcash IGA M Walloon", "Metcash Drakes Rosewood", "Metcash Drakes Lowood"], accommodation: "HOME BASE (Bracken Ridge)", notes: "Ipswich Corridor Day Run", isHoliday: false },
+            { id: "7", week: "W24", date: "16/06/2026", day: "Tuesday", stores: ["Metcash IGA M Miles", "Metcash Foodworks Tara 2020", "Metcash IGA M Roma (Cornetts)", "Metcash Drakes Toowoomba High St", "Metcash IGA L Oakey (Cornetts)", "Metcash IGA M Pittsworth"], accommodation: "🛏️ OVERNIGHT REQUIRED (Book Toowoomba)", notes: "Q2 Regional Trip: Western Fringe & Downs Day 1", isHoliday: false },
+            { id: "8", week: "W24", date: "17/06/2026", day: "Wednesday", stores: ["Metcash IGA M Crows Nest", "Metcash IGA M Allora", "Metcash IGA L Warwick (Spano)", "Metcash IGA L Stanthorpe (Spano)", "Metcash Foodworks Goondiwindi", "Metcash Foodworks Killarney"], accommodation: "🛏️ OVERNIGHT REQUIRED (Book Warwick)", notes: "Q2 Regional Trip: Western Fringe & Downs Day 2", isHoliday: false },
+            { id: "9", week: "W24", date: "18/06/2026", day: "Thursday", stores: ["Metcash IGA M Beaudesert (Jones)", "Metcash IGA M Canungra", "Metcash IGA M Mt Tamborine (Cavallaro)", "Metcash IGA M Russell Island (Jones)", "ADMIN & LOGS IN CAR"], accommodation: "HOME BASE (Bracken Ridge)", notes: "Q2 Trip Day 3: Scenic Rim & Island Clearance", isHoliday: false },
+            { id: "10", week: "W24", date: "19/06/2026", day: "Friday", stores: ["Metcash Drakes Samford", "Metcash IGA M Dayboro Valley", "Metcash IGA M Cashmere", "Metcash IGA M Hoppers Ascot", "Metcash IGA L Burpengary (Seasons)", "Metcash Fresh & Save Deagon"], accommodation: "HOME BASE (Bracken Ridge)", notes: "Friday B: Moreton Bay Near North Loop", isHoliday: false },
+            
+            { id: "11", week: "W25", date: "22/06/2026", day: "Monday", stores: ["Metcash Drakes Mcdowall", "Metcash IGA M Hoppers Ascot", "Metcash IGA M Frenchs Forest", "Metcash IGA M Dayboro Valley", "Metcash Drakes Samford", "Metcash IGA M Cashmere"], accommodation: "HOME BASE (Bracken Ridge)", notes: "Brisbane Near North Local Loop", isHoliday: false },
+            { id: "12", week: "W25", date: "23/06/2026", day: "Tuesday", stores: ["Metcash IGA M Sanctuary Cove (Jones)", "Metcash Drakes Hollywell Road Markets", "Metcash IGA L Queen Street Village Southport (Jones)", "Metcash Drakes Nerang Road Ashmore", "Metcash IGA M Mermaid Waters", "Metcash IGA M Nerang (Spano)"], accommodation: "HOME BASE (Bracken Ridge)", notes: "Gold Coast Northern Strip", isHoliday: false },
+            { id: "13", week: "W25", date: "24/06/2026", day: "Wednesday", stores: ["Metcash IGA M St Lucia", "Metcash IGA M Greenslopes Legends", "Metcash IGA M Chriss Carina", "Metcash IGA M East Brisbane (Seasons)", "Metcash IGA M Acacia Ridge", "Metcash Foodworks Woodridge"], accommodation: "HOME BASE (Bracken Ridge)", notes: "Brisbane Central & South Core", isHoliday: false },
+            { id: "14", week: "W25", date: "25/06/2026", day: "Thursday", stores: ["Metcash Drakes Rochedale", "Metcash IGA M Wellington Point (Jones)", "Metcash IGA M On Bloomfield (Jones)", "Metcash IGA M Cleveland (Jones)", "Metcash IGA M Thornlands (Jones)", "Metcash IGA L Mt Cotton (Jones)"], accommodation: "HOME BASE (Bracken Ridge)", notes: "Bayside Jones & Co Key Accounts", isHoliday: false },
+            { id: "15", week: "W25", date: "26/06/2026", day: "Friday", stores: ["Metcash Fresh & Save Deagon", "Metcash Drakes Mcdowall", "Metcash IGA M Cashmere", "Metcash Drakes Samford", "Metcash IGA M Frenchs Forest", "Metcash IGA L Burpengary (Seasons)"], accommodation: "HOME BASE (Bracken Ridge)", notes: "Friday A: Home Turf Tightly Clustered Loop", isHoliday: false },
+            
+            { id: "16", week: "W32", date: "10/08/2026", day: "Monday", stores: ["Metcash IGA M Augustine Heights", "Metcash Drakes Winston Glades", "Metcash IGA M West Ipswich", "Metcash IGA M Walloon", "Metcash Drakes Rosewood", "Metcash Drakes Lowood"], accommodation: "HOME BASE (Bracken Ridge)", notes: "Ipswich Corridor Day Trip", isHoliday: false },
+            { id: "17", week: "W32", date: "11/08/2026", day: "Tuesday", stores: ["Metcash IGA M Robina (Easy T) (Spano)", "Metcash IGA M Currumbin Fair", "Metcash IGA M Tugun Beach", "Metcash IGA M Tweed Valley Way (Bugg)", "Metcash IGA Local Grocer + Cbn Pottsville", "Metcash Supa Valu Ritchies Ballina"], accommodation: "HOME BASE (Bracken Ridge)", notes: "Gold Coast South & Mid NSW Coast", isHoliday: false },
+            { id: "18", week: "W32", date: "12/08/2026", day: "Wednesday", stores: ["PUBLIC HOLIDAY - EKKA WEDNESDAY"], accommodation: "HOME BASE (Bracken Ridge)", notes: "Brisbane Metro Public Holiday Interruption (Stores Closed / Restricted)", isHoliday: true },
+            { id: "19", week: "W32", date: "13/08/2026", day: "Thursday", stores: ["Metcash Fresh & Save Richlands", "Metcash Drakes Parkinson", "Metcash Drakes Regents Park", "Metcash IGA M Loganholme", "Metcash IGA L Daisy Hill (Ritchies)", "Metcash Fresh & Save Eagleby"], accommodation: "HOME BASE (Bracken Ridge)", notes: "Logan Highway Corridor (Shifted from Wed)", isHoliday: false },
+            { id: "20", week: "W32", date: "14/08/2026", day: "Friday", stores: ["Metcash Drakes Samford", "Metcash IGA M Dayboro Valley", "Metcash IGA M Cashmere", "Metcash IGA M Hoppers Ascot", "Metcash IGA L Burpengary (Seasons)", "Metcash Fresh & Save Deagon"], accommodation: "HOME BASE (Bracken Ridge)", notes: "Friday B: Moreton Bay Near North Loop", isHoliday: false },
+            
+            { id: "21", week: "W40", date: "05/10/2026", day: "Monday", stores: ["PUBLIC HOLIDAY - KING'S BIRTHDAY (QLD)"], accommodation: "HOME BASE (Bracken Ridge)", notes: "Double Public Holiday (QLD King's Birthday & NSW Labour Day) - All Stores Offline", isHoliday: true },
+            { id: "22", week: "W40", date: "06/10/2026", day: "Tuesday", stores: ["Metcash IGA M Chinchilla", "Metcash IGA M Miles", "Metcash IGA M Roma (Cornetts)", "Metcash IGA M Longreach (Cornetts)", "Metcash IGA M Charleville (Cornetts)", "Metcash IGA Local Grocer Cunnamulla"], accommodation: "🛏️ OVERNIGHT REQUIRED (Book Roma)", notes: "Q4 Deep Western Fly-Away / Out-of-Territory Trip Day 1", isHoliday: false },
+            { id: "23", week: "W40", date: "07/10/2026", day: "Wednesday", stores: ["Metcash IGA M Cornett's Barcaldine", "Metcash IGA M Blackall (Cornetts)", "Metcash IGA M Beales Clermont", "Metcash Fwks St George", "Metcash IGA M Fwks St George", "Metcash Foodworks Tara 2020"], accommodation: "🛏️ OVERNIGHT REQUIRED (Book Longreach)", notes: "Q4 Deep Western Fly-Away / Out-of-Territory Trip Day 2", isHoliday: false },
+            
+            { id: "24", week: "W51", date: "25/12/2026", day: "Friday", stores: ["PUBLIC HOLIDAY - CHRISTMAS DAY"], accommodation: "HOME BASE (Bracken Ridge)", notes: "Christmas Day Public Holiday Closure", isHoliday: true }
         ];
 
-        // Format system typos (e.g., lowercase l's or pipes '|' used instead of I)
-        const stores = rawStores.map(store => store.replace(/^[l|]\s*/i, 'IGA ').trim());
+        let roster = JSON.parse(localStorage.getItem('kyal_roster_data')) || initialRosterData;
+        let visitedStores = JSON.parse(localStorage.getItem('kyal_visited_stores')) || {};
+        let currentEditingId = null;
 
-        // Load progress or initiate empty object
-        let visitedStores = JSON.parse(localStorage.getItem('visitedStores')) || {};
-
-        const storeListContainer = document.getElementById('storeList');
-        const searchInput = document.getElementById('search');
-        const statsContainer = document.getElementById('stats');
-
-        function updateStats() {
-            const total = stores.length;
-            const visitedCount = Object.values(visitedStores).filter(Boolean).length;
-            statsContainer.innerText = `Visited: ${visitedCount} / ${total} stores (${Math.round((visitedCount/total)*100)}%)`;
+        function saveData() {
+            localStorage.setItem('kyal_roster_data', JSON.stringify(roster));
+            localStorage.setItem('kyal_visited_stores', JSON.stringify(visitedStores));
         }
 
-        function renderList(filterText = '') {
-            storeListContainer.innerHTML = '';
-            
-            stores.forEach((store, index) => {
-                if (filterText && !store.toLowerCase().includes(filterText.toLowerCase())) {
-                    return;
+        function renderCalendar() {
+            const grid = document.getElementById('calendarGrid');
+            grid.innerHTML = '';
+
+            let currentWeek = "";
+            let currentWeekContainer = null;
+
+            roster.forEach(day => {
+                if (day.week !== currentWeek) {
+                    currentWeek = day.week;
+                    
+                    const weekSection = document.createElement('div');
+                    weekSection.className = 'week-section';
+                    
+                    const weekTitle = document.createElement('div');
+                    weekTitle.className = 'week-title';
+                    weekTitle.innerText = `Roster Week: ${day.week}`;
+                    weekSection.appendChild(weekTitle);
+
+                    currentWeekContainer = document.createElement('div');
+                    currentWeekContainer.className = 'days-container';
+                    weekSection.appendChild(currentWeekContainer);
+                    
+                    grid.appendChild(weekSection);
                 }
 
-                const isChecked = visitedStores[store] || false;
+                const card = document.createElement('div');
+                card.className = `day-card ${day.isHoliday ? 'holiday' : ''}`;
 
-                const item = document.createElement('div');
-                item.className = `store-item ${isChecked ? 'visited' : ''}`;
-                item.id = `item-${index}`;
+                let accommodationHtml = '';
+                if (day.accommodation.includes('🛏️') || day.accommodation.includes('OVERNIGHT')) {
+                    accommodationHtml = `<div class="alert-tag">${day.accommodation}</div>`;
+                }
 
-                item.innerHTML = `
-                    <span class="store-name">${store}</span>
-                    <label class="switch">
-                        <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="toggleVisited('${store}', ${index}, this)">
-                        <span class="slider"></span>
-                    </label>
+                let storeListHtml = '';
+                day.stores.forEach((store, index) => {
+                    if(!store || store.trim() === "" || store === "N/A") return;
+                    const isHolidayText = day.isHoliday || store.includes('PUBLIC HOLIDAY');
+                    const storeKey = `${day.id}-${index}`;
+                    const isVisited = visitedStores[storeKey] ? 'visited' : '';
+                    
+                    storeListHtml += `
+                        <div class="store-item ${isHolidayText ? 'non-visit' : isVisited}" 
+                             onclick="toggleStore('${day.id}', ${index})">
+                            ${store}
+                        </div>`;
+                });
+
+                card.innerHTML = `
+                    <div>
+                        <div class="day-header">
+                            <div class="day-date">${day.date}</div>
+                            <div class="day-name">${day.day}</div>
+                        </div>
+                        ${accommodationHtml}
+                        <div class="route-notes">${day.notes || 'No route strategy notes.'}</div>
+                        <div class="store-list">${storeListHtml}</div>
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn btn-secondary" style="padding:4px 10px; font-size:0.8rem;" onclick="openEditModal('${day.id}')">Edit Day</button>
+                    </div>
                 `;
-                storeListContainer.appendChild(item);
+
+                currentWeekContainer.appendChild(card);
             });
         }
 
-        window.toggleVisited = function(storeName, index, checkbox) {
-            visitedStores[storeName] = checkbox.checked;
-            localStorage.setItem('visitedStores', JSON.stringify(visitedStores));
-            
-            const card = document.getElementById(`item-${index}`);
-            if (checkbox.checked) {
-                card.classList.add('visited');
-            } else {
-                card.classList.remove('visited');
-            }
-            updateStats();
+        function toggleStore(dayId, storeIndex) {
+            const storeKey = `${dayId}-${storeIndex}`;
+            visitedStores[storeKey] = !visitedStores[storeKey];
+            saveData();
+            renderCalendar();
         }
 
-        searchInput.addEventListener('input', (e) => {
-            renderList(e.target.value);
-        });
+        function openEditModal(dayId) {
+            currentEditingId = dayId;
+            const dayData = roster.find(d => d.id === dayId);
+            document.getElementById('modalTitle').innerText = `Edit Run: ${dayData.date} (${dayData.day})`;
+            
+            let fieldsHtml = `
+                <div class="form-group">
+                    <label>Route Strategy / Notes</label>
+                    <textarea id="editNotes" rows="2">${dayData.notes}</textarea>
+                </div>
+                <div class="form-group">
+                    <label>Accommodation Indicator</label>
+                    <input type="text" id="editAccommodation" value="${dayData.accommodation}">
+                </div>
+                <label style="display:block; font-size:0.85rem; font-weight:600; margin-bottom:4px; color:#475569;">Stores (Up to 6)</label>
+            `;
+
+            for(let i = 0; i < 6; i++) {
+                const val = dayData.stores[i] || "";
+                fieldsHtml += `
+                    <div class="form-group" style="margin-bottom:6px;">
+                        <input type="text" id="editStore${i}" value="${val}" placeholder="Store ${i+1} Name">
+                    </div>`;
+            }
+
+            document.getElementById('modalFields').innerHTML = fieldsHtml;
+            document.getElementById('editModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+
+        function saveDayEdits() {
+            const dayData = roster.find(d => d.id === currentEditingId);
+            dayData.notes = document.getElementById('editNotes').value;
+            dayData.accommodation = document.getElementById('editAccommodation').value;
+            
+            dayData.stores = [];
+            for(let i = 0; i < 6; i++) {
+                const val = document.getElementById(`editStore${i}`).value;
+                if(val.trim() !== "") {
+                    dayData.stores.push(val);
+                }
+            }
+
+            saveData();
+            renderCalendar();
+            closeModal();
+        }
+
+        function resetTracker() {
+            if(confirm("Are you sure you want to completely reset all store checkmarks and custom text back to default?")) {
+                localStorage.removeItem('kyal_roster_data');
+                localStorage.removeItem('kyal_visited_stores');
+                roster = [...initialRosterData];
+                visitedStores = {};
+                renderCalendar();
+            }
+        }
+
+        function exportData() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({roster, visitedStores}, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "kyal_roster_backup_2026.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
 
         // Initialize App
-        renderList();
-        updateStats();
+        renderCalendar();
     </script>
 </body>
 </html>
