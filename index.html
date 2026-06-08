@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2026 Master Roster Planner - Drag & Drop Edition</title>
+    <title>2026 Master Roster Planner - Tactile Drag Edition</title>
     <style>
         :root {
             --primary: #0f172a;
@@ -76,7 +76,7 @@
             flex-direction: column; 
             justify-content: space-between;
             min-height: 160px;
-            transition: all 0.2s ease;
+            transition: border-color 0.2s, background-color 0.2s;
         }
         .day-tile.holiday { background-color: #fef2f2; border-color: #fca5a5; }
         .day-tile.annual-leave { background-color: var(--leave-bg); border-color: var(--leave-border); color: var(--leave-text); }
@@ -93,13 +93,13 @@
         .route-notes { font-size: 0.75rem; color: #475569; font-style: italic; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .day-tile.annual-leave .route-notes { color: #0284c7; }
         
-        .store-list { display: flex; flex-direction: column; gap: 4px; min-height: 50px; }
+        .store-list { display: flex; flex-direction: column; gap: 5px; min-height: 60px; padding: 2px; border-radius: 4px; transition: background-color 0.2s; }
         
         .store-chip { 
-            padding: 4px 6px; 
+            padding: 5px 8px; 
             background: #ffffff; 
-            border: 1px solid #e2e8f0; 
-            border-radius: 4px; 
+            border: 1px solid #cbd5e1; 
+            border-radius: 5px; 
             cursor: grab; 
             font-size: 0.78rem; 
             display: flex; 
@@ -109,10 +109,36 @@
             white-space: nowrap; 
             overflow: hidden; 
             text-overflow: ellipsis; 
+            box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+            transition: transform 0.15s, box-shadow 0.15s, background-color 0.1s;
         }
         .store-chip:active { cursor: grabbing; }
-        .store-chip.dragging { opacity: 0.4; background: #e2e8f0; border-style: dashed; }
-        .store-chip:hover { background: #f1f5f9; border-color: #cbd5e1; }
+        
+        /* Interactive Grab Styling */
+        .store-chip.dragging { 
+            transform: scale(1.03);
+            box-shadow: 0 4px 10px rgba(15, 23, 42, 0.15);
+            background: #eff6ff;
+            border-color: var(--accent);
+            opacity: 0.9;
+        }
+        
+        /* Drop Target Preview Placeholder */
+        .store-placeholder {
+            border: 2px dashed #93c5fd;
+            background: #f0fdf4;
+            border-radius: 5px;
+            height: 28px;
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+
+        .store-chip:hover:not(.dragging):not(.non-visit) { background: #f8fafc; border-color: #94a3b8; transform: translateY(-0.5px); }
         .store-chip.visited { background: #d1fae5; border-color: #a7f3d0; color: #065f46; font-weight: 500; text-decoration: line-through; }
         .store-chip.visited::after { content: "✓"; font-weight: 700; margin-left: 3px; font-size: 0.7rem; }
         .store-chip.non-visit { background: #e2e8f0; color: #64748b; font-style: italic; cursor: default; pointer-events: none; text-align: center; justify-content: center;}
@@ -471,13 +497,13 @@
             { id: "150", week: "W52", date: "01/01/2027", day: "Friday", stores: ["STORES OFFLINE - NEW YEARS DAY"], accommodation: "HOME BASE", notes: "New Years Day Closure", isHoliday: true, isLeave: false }
         ];
 
-        let roster = JSON.parse(localStorage.getItem('kyal_roster_data_v4')) || initialRosterData;
-        let visitedStores = JSON.parse(localStorage.getItem('kyal_visited_stores_v4')) || {};
+        let roster = JSON.parse(localStorage.getItem('kyal_roster_data_v5')) || initialRosterData;
+        let visitedStores = JSON.parse(localStorage.getItem('kyal_visited_stores_v5')) || {};
         let currentEditingId = null;
 
         function saveData() {
-            localStorage.setItem('kyal_roster_data_v4', JSON.stringify(roster));
-            localStorage.setItem('kyal_visited_stores_v4', JSON.stringify(visitedStores));
+            localStorage.setItem('kyal_roster_data_v5', JSON.stringify(roster));
+            localStorage.setItem('kyal_visited_stores_v5', JSON.stringify(visitedStores));
         }
 
         function renderCalendar() {
@@ -552,68 +578,92 @@
                 currentWeekRow.appendChild(tile);
             });
 
-            setupDragAndDrop();
+            setupTactileDragAndDrop();
         }
 
-        function setupDragAndDrop() {
+        function setupTactileDragAndDrop() {
             const lists = document.querySelectorAll('.store-list');
             let draggedChip = null;
+            let placeholder = document.createElement('div');
+            placeholder.className = 'store-placeholder';
 
             lists.forEach(list => {
                 list.addEventListener('dragstart', (e) => {
                     if (e.target.classList.contains('store-chip') && !e.target.classList.contains('non-visit')) {
                         draggedChip = e.target;
-                        e.target.classList.add('dragging');
-                    }
-                });
-
-                list.addEventListener('dragend', (e) => {
-                    if (draggedChip) {
-                        draggedChip.classList.remove('dragging');
                         
-                        // Rebuild array sequence for this specific day
-                        const dayId = list.getAttribute('data-day-id');
-                        const targetDay = roster.find(d => d.id === dayId);
-                        const chips = Array.from(list.querySelectorAll('.store-chip'));
+                        // Small timeout keeps the visual feedback sharp during initial detach
+                        setTimeout(() => {
+                            draggedChip.classList.add('dragging');
+                        }, 0);
                         
-                        // Create deep copy tracking checklist status
-                        const oldVisited = { ...visitedStores };
-                        const newStores = [];
-                        
-                        chips.forEach((chip, newIdx) => {
-                            const originalDayId = chip.getAttribute('data-day-id');
-                            const originalIdx = chip.getAttribute('data-index');
-                            const originalStoreName = chip.getAttribute('title');
-                            
-                            newStores.push(originalStoreName);
-                            
-                            // Re-map completion status to the new sequence slot
-                            const oldKey = `${originalDayId}-${originalIdx}`;
-                            const newKey = `${dayId}-${newIdx}`;
-                            if (oldVisited[oldKey] !== undefined) {
-                                visitedStores[newKey] = oldVisited[oldKey];
-                            } else {
-                                delete visitedStores[newKey];
-                            }
-                        });
-
-                        targetDay.stores = newStores;
-                        saveData();
-                        draggedChip = null;
-                        renderCalendar();
+                        // Establish base tracking metrics inside the data Transfer payload
+                        e.dataTransfer.effectAllowed = 'move';
                     }
                 });
 
                 list.addEventListener('dragover', (e) => {
                     e.preventDefault();
+                    
+                    if (!draggedChip) return;
+                    
+                    const dayId = list.getAttribute('data-day-id');
+                    // Prevent shifting stores horizontally between entirely different calendar card objects
+                    if (draggedChip.getAttribute('data-day-id') !== dayId) return;
+
                     const afterElement = getDragAfterElement(list, e.clientY);
-                    if (draggedChip && draggedChip.getAttribute('data-day-id') === list.getAttribute('data-day-id')) {
-                        if (afterElement == null) {
-                            list.appendChild(draggedChip);
-                        } else {
-                            list.insertBefore(draggedChip, afterElement);
-                        }
+                    if (afterElement == null) {
+                        list.appendChild(placeholder);
+                    } else {
+                        list.insertBefore(placeholder, afterElement);
                     }
+                });
+
+                list.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    if (!draggedChip) return;
+
+                    const dayId = list.getAttribute('data-day-id');
+                    if (draggedChip.getAttribute('data-day-id') !== dayId) return;
+
+                    // Swap the item directly contextually where the placeholder preview landed
+                    placeholder.parentNode.insertBefore(draggedChip, placeholder);
+                    placeholder.remove();
+
+                    // Instantly recalculate sequence indexing values across arrays
+                    const targetDay = roster.find(d => d.id === dayId);
+                    const chips = Array.from(list.querySelectorAll('.store-chip'));
+                    
+                    const oldVisited = { ...visitedStores };
+                    const newStores = [];
+                    
+                    chips.forEach((chip, newIdx) => {
+                        const originalDayId = chip.getAttribute('data-day-id');
+                        const originalIdx = chip.getAttribute('data-index');
+                        const originalStoreName = chip.getAttribute('title');
+                        
+                        newStores.push(originalStoreName);
+                        
+                        const oldKey = `${originalDayId}-${originalIdx}`;
+                        const newKey = `${dayId}-${newIdx}`;
+                        if (oldVisited[oldKey] !== undefined) {
+                            visitedStores[newKey] = oldVisited[oldKey];
+                        } else {
+                            delete visitedStores[newKey];
+                        }
+                    });
+
+                    targetDay.stores = newStores;
+                    saveData();
+                    renderCalendar();
+                });
+
+                list.addEventListener('dragend', () => {
+                    if (draggedChip) {
+                        draggedChip.classList.remove('dragging');
+                    }
+                    placeholder.remove();
+                    draggedChip = null;
                 });
             });
         }
@@ -721,8 +771,8 @@
 
         function resetTracker() {
             if(confirm("Are you sure you want to completely clear down all checks and reset back to the default master roster?")) {
-                localStorage.removeItem('kyal_roster_data_v4');
-                localStorage.removeItem('kyal_visited_stores_v4');
+                localStorage.removeItem('kyal_roster_data_v5');
+                localStorage.removeItem('kyal_visited_stores_v5');
                 roster = JSON.parse(JSON.stringify(initialRosterData));
                 visitedStores = {};
                 renderCalendar();
