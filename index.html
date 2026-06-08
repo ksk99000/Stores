@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2026 Master Roster Planner - AI Assistant Edition</title>
+    <title>2026 Master Roster Planner - AI Smart Edit Edition</title>
     <style>
         :root {
             --primary: #0f172a;
@@ -14,10 +14,10 @@
             --card-bg: #ffffff;
             --text: #334155;
             --border: #cbd5e1;
-            --leave-bg: #e0f2fe; /* Soft light blue for Annual Leave */
+            --leave-bg: #e0f2fe;
             --leave-border: #bae6fd;
             --leave-text: #0369a1;
-            --ai-btn: #8b5cf6; /* Purple accent for AI helper button */
+            --ai-btn: #8b5cf6;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
@@ -108,9 +108,7 @@
         .day-tile.annual-leave .tile-actions { border-top-color: var(--leave-border); }
         .edit-lnk { font-size: 0.7rem; color: var(--accent); cursor: pointer; background: none; border: none; font-weight: 600; }
         .edit-lnk:hover { text-decoration: underline; }
-        .day-tile.annual-leave .edit-lnk { color: #0284c7; }
         
-        /* Modal Style for Editing */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 100; }
         .modal-content { background: white; padding: 20px; border-radius: 8px; max-width: 450px; width: 90%; max-height: 90vh; overflow-y: auto; }
         .modal-header { font-size: 1.1rem; font-weight: 700; margin-bottom: 12px; }
@@ -119,7 +117,6 @@
         .form-group input, .form-group textarea { width: 100%; padding: 6px; border: 1px solid var(--border); border-radius: 4px; font-size: 0.85rem; }
         .form-checkbox { display: flex; align-items: center; gap: 8px; background: #f0f9ff; padding: 10px; border-radius: 6px; border: 1px solid #bae6fd; margin-bottom: 12px; }
         .form-checkbox label { font-weight: 700; color: #0369a1; cursor: pointer; font-size: 0.85rem; margin-bottom: 0; user-select: none; }
-        .form-checkbox input { width: auto; scale: 1.2; cursor: pointer; }
         .modal-buttons { display: flex; justify-content: flex-end; gap: 8px; margin-top: 15px; }
 
         @media(max-width: 1200px) {
@@ -133,10 +130,11 @@
     <header>
         <div>
             <h1>2026 Master Roster Planner</h1>
-            <p style="color: #64748b; font-size: 0.8rem; margin-top: 2px;">Widescreen Optimised Tracker | Dropdowns, Annual Leave & AI Export Connected</p>
+            <p style="color: #64748b; font-size: 0.8rem; margin-top: 2px;">Widescreen Optimised Tracker | Connected AI Assistant Updates</p>
         </div>
         <div class="controls">
-            <button class="btn btn-ai" id="aiCopyBtn" onclick="copyRosterForAI()">✨ Copy Roster for AI</button>
+            <button class="btn btn-ai" id="aiCopyBtn" onclick="copyRosterForAI()">✨ 1. Copy Roster for AI</button>
+            <button class="btn btn-ai" style="background-color: #2563eb;" onclick="importAICode()">📥 2. Paste AI Changes</button>
             <button class="btn btn-secondary" onclick="resetTracker()">Reset Roster</button>
             <button class="btn btn-primary" onclick="exportData()">Export JSON Backup</button>
         </div>
@@ -529,151 +527,3 @@
                             <div class="day-name">${day.day}</div>
                         </div>
                         ${accommodationHtml}
-                        <div class="route-notes" title="${day.notes}">${day.isLeave ? 'Annual Leave Leave Period' : (day.notes || '')}</div>
-                        <div class="store-list">${storeListHtml}</div>
-                    </div>
-                    <div class="tile-actions">
-                        <button class="edit-lnk" onclick="openEditModal('${day.id}')">Edit Run</button>
-                    </div>
-                `;
-
-                currentWeekRow.appendChild(tile);
-            });
-        }
-
-        function toggleStore(dayId, storeIndex) {
-            const storeKey = `${dayId}-${storeIndex}`;
-            visitedStores[storeKey] = !visitedStores[storeKey];
-            saveData();
-            renderCalendar();
-        }
-
-        function openEditModal(dayId) {
-            currentEditingId = dayId;
-            const dayData = roster.find(d => d.id === dayId);
-            document.getElementById('modalTitle').innerText = `Modify Run: ${dayData.date} (${dayData.day})`;
-            
-            const leaveCheckbox = document.getElementById('editIsLeave');
-            leaveCheckbox.checked = dayData.isLeave || false;
-
-            generateModalFieldsHtml(dayData);
-            toggleModalLeaveView(dayData.isLeave);
-
-            document.getElementById('editModal').style.display = 'flex';
-        }
-
-        function generateModalFieldsHtml(dayData) {
-            let fieldsHtml = `
-                <div id="conditionalFieldsContainer">
-                    <div class="form-group">
-                        <label>Route Strategy / Notes</label>
-                        <textarea id="editNotes" rows="2">${dayData.notes || ''}</textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>Accommodation Alert</label>
-                        <input type="text" id="editAccommodation" value="${dayData.accommodation || ''}">
-                    </div>
-                    <label style="display:block; font-size:0.8rem; font-weight:600; margin-bottom:4px; color:#475569;">Store Sequence (Search or select from list)</label>
-            `;
-
-            for(let i = 0; i < 6; i++) {
-                const val = dayData.stores[i] || "";
-                fieldsHtml += `
-                    <div class="form-group" style="margin-bottom:4px;">
-                        <input type="text" id="editStore${i}" list="masterStoreList" value="${val}" placeholder="Type to filter or choose store ${i+1}...">
-                    </div>`;
-            }
-            
-            fieldsHtml += `</div>`;
-            document.getElementById('modalFields').innerHTML = fieldsHtml;
-        }
-
-        function toggleModalLeaveView(isLeaveChecked) {
-            const fieldsContainer = document.getElementById('conditionalFieldsContainer');
-            if(fieldsContainer) {
-                if(isLeaveChecked) {
-                    fieldsContainer.style.opacity = '0.3';
-                    fieldsContainer.style.pointerEvents = 'none';
-                } else {
-                    fieldsContainer.style.opacity = '1';
-                    fieldsContainer.style.pointerEvents = 'auto';
-                }
-            }
-        }
-
-        function closeModal() {
-            document.getElementById('editModal').style.display = 'none';
-        }
-
-        function saveDayEdits() {
-            const dayData = roster.find(d => d.id === currentEditingId);
-            const leaveState = document.getElementById('editIsLeave').checked;
-            
-            dayData.isLeave = leaveState;
-            
-            if (!leaveState) {
-                dayData.notes = document.getElementById('editNotes').value;
-                dayData.accommodation = document.getElementById('editAccommodation').value;
-                
-                dayData.stores = [];
-                for(let i = 0; i < 6; i++) {
-                    const val = document.getElementById(`editStore${i}`).value;
-                    if(val.trim() !== "") {
-                        dayData.stores.push(val);
-                    }
-                }
-            }
-
-            saveData();
-            renderCalendar();
-            closeModal();
-        }
-
-        function resetTracker() {
-            if(confirm("Are you sure you want to completely clear down all checks and reset back to the default master roster?")) {
-                localStorage.removeItem('kyal_roster_data_v4');
-                localStorage.removeItem('kyal_visited_stores_v4');
-                roster = JSON.parse(JSON.stringify(initialRosterData));
-                visitedStores = {};
-                renderCalendar();
-            }
-        }
-
-        function exportData() {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({roster, visitedStores}, null, 2));
-            const downloadAnchor = document.createElement('a');
-            downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", "master_roster_backup_2026.json");
-            document.body.appendChild(downloadAnchor);
-            downloadAnchor.click();
-            downloadAnchor.remove();
-        }
-
-        // New feature: Simple clipboard copy function for AI prompts
-        function copyRosterForAI() {
-            let logText = "CURRENT ROSTER SCHEDULE PLAN:\n\n";
-            roster.forEach(day => {
-                logText += `${day.date} (${day.day}) [Week: ${day.week}]\n`;
-                logText += `Status: ${day.isLeave ? 'ANNUAL LEAVE' : 'Working'}\n`;
-                if(!day.isLeave) {
-                    logText += `Notes: ${day.notes || 'None'}\n`;
-                    logText += `Lodging: ${day.accommodation || 'HOME BASE'}\n`;
-                    logText += `Sequence: ${day.stores.join(' -> ')}\n`;
-                }
-                logText += "-----------------------------------\n";
-            });
-
-            navigator.clipboard.writeText(logText).then(() => {
-                const btn = document.getElementById('aiCopyBtn');
-                const origText = btn.innerText;
-                btn.innerText = "✓ Copied to Clipboard!";
-                setTimeout(() => { btn.innerText = origText; }, 2000);
-            }).catch(err => {
-                alert("Could not copy automatically. Please try again.");
-            });
-        }
-
-        renderCalendar();
-    </script>
-</body>
-</html>
