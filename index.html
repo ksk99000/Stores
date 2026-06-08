@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2026 Master Roster Planner - AI Smart Edit Edition</title>
+    <title>2026 Master Roster Planner - Drag & Drop Edition</title>
     <style>
         :root {
             --primary: #0f172a;
@@ -17,7 +17,6 @@
             --leave-bg: #e0f2fe;
             --leave-border: #bae6fd;
             --leave-text: #0369a1;
-            --ai-btn: #8b5cf6;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
@@ -42,8 +41,6 @@
         .btn-primary:hover { background-color: #1d4ed8; }
         .btn-secondary { background-color: #e2e8f0; color: var(--primary); }
         .btn-secondary:hover { background-color: #cbd5e1; }
-        .btn-ai { background-color: var(--ai-btn); color: white; }
-        .btn-ai:hover { background-color: #7c3aed; }
 
         .calendar-container { max-width: 1650px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
         
@@ -96,8 +93,25 @@
         .route-notes { font-size: 0.75rem; color: #475569; font-style: italic; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .day-tile.annual-leave .route-notes { color: #0284c7; }
         
-        .store-list { display: flex; flex-direction: column; gap: 4px; }
-        .store-chip { padding: 4px 6px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 4px; cursor: pointer; font-size: 0.78rem; display: flex; justify-content: space-between; align-items: center; user-select: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .store-list { display: flex; flex-direction: column; gap: 4px; min-height: 50px; }
+        
+        .store-chip { 
+            padding: 4px 6px; 
+            background: #ffffff; 
+            border: 1px solid #e2e8f0; 
+            border-radius: 4px; 
+            cursor: grab; 
+            font-size: 0.78rem; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            user-select: none; 
+            white-space: nowrap; 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+        }
+        .store-chip:active { cursor: grabbing; }
+        .store-chip.dragging { opacity: 0.4; background: #e2e8f0; border-style: dashed; }
         .store-chip:hover { background: #f1f5f9; border-color: #cbd5e1; }
         .store-chip.visited { background: #d1fae5; border-color: #a7f3d0; color: #065f46; font-weight: 500; text-decoration: line-through; }
         .store-chip.visited::after { content: "✓"; font-weight: 700; margin-left: 3px; font-size: 0.7rem; }
@@ -130,11 +144,9 @@
     <header>
         <div>
             <h1>2026 Master Roster Planner</h1>
-            <p style="color: #64748b; font-size: 0.8rem; margin-top: 2px;">Widescreen Optimised Tracker | Connected AI Assistant Updates</p>
+            <p style="color: #64748b; font-size: 0.8rem; margin-top: 2px;">Widescreen Optimised Tracker | Manual Sequence Drag & Drop</p>
         </div>
         <div class="controls">
-            <button class="btn btn-ai" id="aiCopyBtn" onclick="copyRosterForAI()">✨ 1. Copy Roster for AI</button>
-            <button class="btn btn-ai" style="background-color: #2563eb;" onclick="importAICode()">📥 2. Paste AI Changes</button>
             <button class="btn btn-secondary" onclick="resetTracker()">Reset Roster</button>
             <button class="btn btn-primary" onclick="exportData()">Export JSON Backup</button>
         </div>
@@ -513,6 +525,9 @@
                         storeListHtml += `
                             <div class="store-chip ${isHolidayText ? 'non-visit' : isVisited}" 
                                  title="${store}"
+                                 draggable="${!isHolidayText}"
+                                 data-day-id="${day.id}"
+                                 data-index="${index}"
                                  onclick="toggleStore('${day.id}', ${index})">
                                 ${store}
                             </div>`;
@@ -527,7 +542,7 @@
                         </div>
                         ${accommodationHtml}
                         <div class="route-notes" title="${day.notes}">${day.isLeave ? 'Annual Leave Leave Period' : (day.notes || '')}</div>
-                        <div class="store-list">${storeListHtml}</div>
+                        <div class="store-list" data-day-id="${day.id}">${storeListHtml}</div>
                     </div>
                     <div class="tile-actions">
                         <button class="edit-lnk" onclick="openEditModal('${day.id}')">Edit Run</button>
@@ -536,6 +551,84 @@
 
                 currentWeekRow.appendChild(tile);
             });
+
+            setupDragAndDrop();
+        }
+
+        function setupDragAndDrop() {
+            const lists = document.querySelectorAll('.store-list');
+            let draggedChip = null;
+
+            lists.forEach(list => {
+                list.addEventListener('dragstart', (e) => {
+                    if (e.target.classList.contains('store-chip') && !e.target.classList.contains('non-visit')) {
+                        draggedChip = e.target;
+                        e.target.classList.add('dragging');
+                    }
+                });
+
+                list.addEventListener('dragend', (e) => {
+                    if (draggedChip) {
+                        draggedChip.classList.remove('dragging');
+                        
+                        // Rebuild array sequence for this specific day
+                        const dayId = list.getAttribute('data-day-id');
+                        const targetDay = roster.find(d => d.id === dayId);
+                        const chips = Array.from(list.querySelectorAll('.store-chip'));
+                        
+                        // Create deep copy tracking checklist status
+                        const oldVisited = { ...visitedStores };
+                        const newStores = [];
+                        
+                        chips.forEach((chip, newIdx) => {
+                            const originalDayId = chip.getAttribute('data-day-id');
+                            const originalIdx = chip.getAttribute('data-index');
+                            const originalStoreName = chip.getAttribute('title');
+                            
+                            newStores.push(originalStoreName);
+                            
+                            // Re-map completion status to the new sequence slot
+                            const oldKey = `${originalDayId}-${originalIdx}`;
+                            const newKey = `${dayId}-${newIdx}`;
+                            if (oldVisited[oldKey] !== undefined) {
+                                visitedStores[newKey] = oldVisited[oldKey];
+                            } else {
+                                delete visitedStores[newKey];
+                            }
+                        });
+
+                        targetDay.stores = newStores;
+                        saveData();
+                        draggedChip = null;
+                        renderCalendar();
+                    }
+                });
+
+                list.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    const afterElement = getDragAfterElement(list, e.clientY);
+                    if (draggedChip && draggedChip.getAttribute('data-day-id') === list.getAttribute('data-day-id')) {
+                        if (afterElement == null) {
+                            list.appendChild(draggedChip);
+                        } else {
+                            list.insertBefore(draggedChip, afterElement);
+                        }
+                    }
+                });
+            });
+        }
+
+        function getDragAfterElement(container, y) {
+            const collectibleElements = [...container.querySelectorAll('.store-chip:not(.dragging):not(.non-visit)')];
+            return collectibleElements.reduce((closest, child) => {
+                const box = child.getBoundingClientRect();
+                const offset = y - box.top - box.height / 2;
+                if (offset < 0 && offset > closest.offset) {
+                    return { offset: offset, element: child };
+                } else {
+                    return closest;
+                }
+            }, { offset: Number.NEGATIVE_INFINITY }).element;
         }
 
         function toggleStore(dayId, storeIndex) {
@@ -644,58 +737,6 @@
             document.body.appendChild(downloadAnchor);
             downloadAnchor.click();
             downloadAnchor.remove();
-        }
-
-        function copyRosterForAI() {
-            let logText = "CURRENT ROSTER SCHEDULE PLAN:\n\n";
-            roster.forEach(day => {
-                logText += `ID:${day.id} | ${day.date} (${day.day}) [Week: ${day.week}]\n`;
-                logText += `Status: ${day.isLeave ? 'ANNUAL LEAVE' : 'Working'}\n`;
-                if(!day.isLeave) {
-                    logText += `Notes: ${day.notes || 'None'}\n`;
-                    logText += `Lodging: ${day.accommodation || 'HOME BASE'}\n`;
-                    logText += `Sequence: ${day.stores.join(' -> ')}\n`;
-                }
-                logText += "-----------------------------------\n";
-            });
-
-            navigator.clipboard.writeText(logText).then(() => {
-                const btn = document.getElementById('aiCopyBtn');
-                const origText = btn.innerText;
-                btn.innerText = "✓ Copied!";
-                setTimeout(() => { btn.innerText = origText; }, 2000);
-            }).catch(err => {
-                alert("Error copying data.");
-            });
-        }
-
-        function importAICode() {
-            const aiJson = prompt("Paste the AI changes text block here:");
-            if (!aiJson) return;
-
-            try {
-                const changes = JSON.parse(aiJson);
-                if (!Array.isArray(changes)) {
-                    alert("Invalid format. Please ensure you copy the entire code snippet provided by the AI.");
-                    return;
-                }
-
-                changes.forEach(change => {
-                    const targetDay = roster.find(d => String(d.id) === String(change.id) || d.date === change.date);
-                    if (targetDay) {
-                        if (change.isLeave !== undefined) targetDay.isLeave = change.isLeave;
-                        if (change.notes !== undefined) targetDay.notes = change.notes;
-                        if (change.accommodation !== undefined) targetDay.accommodation = change.accommodation;
-                        if (change.stores !== undefined) targetDay.stores = change.stores;
-                    }
-                });
-
-                saveData();
-                renderCalendar();
-                alert("✨ Schedule updated successfully!");
-            } catch (e) {
-                alert("Oops! The text wasn't pasted correctly. Make sure to copy the entire snippet.");
-            }
         }
 
         // Run on load
