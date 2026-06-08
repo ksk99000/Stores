@@ -3,67 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2026 Master Roster & Store Tracker</title>
+    <title>2026 Master Roster - Full Year Desktop Edition</title>
     <style>
         :root {
-            --primary: #1e293b;
+            --primary: #0f172a;
             --accent: #2563eb;
             --success: #16a34a;
             --warning: #dc2626;
-            --bg: #f8fafc;
+            --bg: #f1f5f9;
             --card-bg: #ffffff;
-            --text: #0f172a;
-            --border: #e2e8f0;
+            --text: #334155;
+            --border: #cbd5e1;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-        body { background-color: var(--bg); color: var(--text); padding: 20px; line-height: 1.5; }
-        header { max-width: 1200px; margin: 0 auto 30px auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
-        h1 { font-size: 1.8rem; color: var(--primary); }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
+        body { background-color: var(--bg); color: var(--primary); padding: 15px; }
+        
+        header { 
+            max-width: 1650px; 
+            margin: 0 auto 15px auto; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            background: var(--card-bg);
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        h1 { font-size: 1.5rem; color: var(--primary); }
         
         .controls { display: flex; gap: 10px; }
-        .btn { padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.9rem; transition: background 0.2s; }
+        .btn { padding: 6px 14px; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 0.85rem; transition: background 0.2s; }
         .btn-primary { background-color: var(--accent); color: white; }
         .btn-primary:hover { background-color: #1d4ed8; }
-        .btn-secondary { background-color: var(--border); color: var(--primary); }
+        .btn-secondary { background-color: #e2e8f0; color: var(--primary); }
         .btn-secondary:hover { background-color: #cbd5e1; }
 
-        .calendar-grid { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
-        .week-section { background: transparent; border-left: 4px solid var(--primary); padding-left: 15px; margin-bottom: 10px; }
-        .week-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 10px; color: var(--primary); }
+        .calendar-container { max-width: 1650px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
         
-        .days-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 15px; }
-        .day-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between; }
-        .day-card.holiday { background-color: #fef2f2; border-color: #fca5a5; }
+        /* Desktop Row Styling - Fits entire week horizontally */
+        .week-row { 
+            display: grid; 
+            grid-template-columns: 70px repeat(5, 1fr); 
+            gap: 8px; 
+            background: var(--card-bg); 
+            padding: 10px; 
+            border-radius: 8px; 
+            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+            align-items: stretch;
+        }
         
-        .day-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
-        .day-date { font-weight: 700; font-size: 1.1rem; }
-        .day-name { font-size: 0.9rem; color: #64748b; font-weight: 600; text-transform: uppercase; }
-        
-        .alert-tag { background: #fee2e2; color: var(--warning); padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 700; margin-bottom: 10px; display: inline-flex; align-items: center; gap: 5px; border: 1px solid #fca5a5; }
-        .route-notes { font-size: 0.85rem; color: #475569; font-style: italic; margin-bottom: 12px; background: #f1f5f9; padding: 6px 10px; border-radius: 4px; }
-        
-        .store-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 15px; }
-        .store-item { padding: 8px 12px; background: #f8fafc; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center; user-select: none; transition: all 0.15s; }
-        .store-item:hover { background: #f1f5f9; border-color: #cbd5e1; }
-        .store-item.visited { background: #e6f4ea; border-color: #b7e1cd; color: #137333; font-weight: 500; text-decoration: line-through; }
-        .store-item.visited::after { content: "✓"; font-weight: 700; }
-        .store-item.non-visit { background: #f1f5f9; color: #64748b; font-style: italic; cursor: default; pointer-events: none; }
+        .week-label { 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            background: #e2e8f0; 
+            color: #475569; 
+            font-weight: 800; 
+            font-size: 0.9rem; 
+            border-radius: 6px; 
+            text-align: center;
+        }
 
-        .card-actions { display: flex; justify-content: flex-end; gap: 5px; border-top: 1px solid var(--border); padding-top: 10px; }
+        .day-tile { 
+            background: #f8fafc; 
+            border: 1px solid var(--border); 
+            border-radius: 6px; 
+            padding: 8px; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: space-between;
+            min-height: 160px;
+        }
+        .day-tile.holiday { background-color: #fef2f2; border-color: #fca5a5; }
+        
+        .day-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; }
+        .day-date { font-weight: 700; font-size: 0.85rem; color: #0f172a; }
+        .day-name { font-size: 0.75rem; color: #64748b; font-weight: 700; }
+        
+        .alert-tag { background: #fee2e2; color: var(--warning); padding: 2px 4px; border-radius: 3px; font-size: 0.7rem; font-weight: 700; margin-bottom: 4px; display: inline-block; text-align: center; border: 1px solid #fca5a5; width: 100%; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;}
+        .route-notes { font-size: 0.75rem; color: #475569; font-style: italic; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        
+        .store-list { display: flex; flex-direction: column; gap: 4px; }
+        .store-chip { padding: 4px 6px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 4px; cursor: pointer; font-size: 0.78rem; display: flex; justify-content: space-between; align-items: center; user-select: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .store-chip:hover { background: #f1f5f9; border-color: #cbd5e1; }
+        .store-chip.visited { background: #d1fae5; border-color: #a7f3d0; color: #065f46; font-weight: 500; text-decoration: line-through; }
+        .store-chip.visited::after { content: "✓"; font-weight: 700; margin-left: 3px; font-size: 0.7rem; }
+        .store-chip.non-visit { background: #e2e8f0; color: #64748b; font-style: italic; cursor: default; pointer-events: none; text-align: center; justify-content: center;}
+
+        .tile-actions { display: flex; justify-content: flex-end; margin-top: 6px; padding-top: 4px; border-top: 1px dashed #e2e8f0; }
+        .edit-lnk { font-size: 0.7rem; color: var(--accent); cursor: pointer; background: none; border: none; font-weight: 600; }
+        .edit-lnk:hover { text-decoration: underline; }
         
         /* Modal Style for Editing */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 100; }
-        .modal-content { background: white; padding: 25px; border-radius: 8px; max-width: 500px; width: 90%; max-height: 90vh; overflow-y: auto; }
-        .modal-header { font-size: 1.3rem; font-weight: 700; margin-bottom: 15px; }
-        .form-group { margin-bottom: 12px; }
-        .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 4px; color: #475569; }
-        .form-group input, .form-group textarea { width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 4px; font-size: 0.9rem; }
-        .modal-buttons { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+        .modal-content { background: white; padding: 20px; border-radius: 8px; max-width: 450px; width: 90%; max-height: 90vh; overflow-y: auto; }
+        .modal-header { font-size: 1.1rem; font-weight: 700; margin-bottom: 12px; }
+        .form-group { margin-bottom: 10px; }
+        .form-group label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 2px; color: #475569; }
+        .form-group input, .form-group textarea { width: 100%; padding: 6px; border: 1px solid var(--border); border-radius: 4px; font-size: 0.85rem; }
+        .modal-buttons { display: flex; justify-content: flex-end; gap: 8px; margin-top: 15px; }
 
-        @media(max-width: 600px) {
-            body { padding: 10px; }
-            .days-container { grid-template-columns: 1fr; }
+        @media(max-width: 1200px) {
+            .week-row { grid-template-columns: 1fr; }
+            .week-label { padding: 8px; }
         }
     </style>
 </head>
@@ -71,20 +114,20 @@
 
     <header>
         <div>
-            <h1>2026 Master Roster</h1>
-            <p style="color: #64748b; font-size: 0.9rem;">Live Date Tracked from 08/06/2026 | QLD/NSW Calendar Logic</p>
+            <h1>2026 Master Roster Planner</h1>
+            <p style="color: #64748b; font-size: 0.8rem; margin-top: 2px;">Widescreen Optimised Tracker | Live from 08/06/2026 to Christmas Sweep</p>
         </div>
         <div class="controls">
-            <button class="btn btn-secondary" onclick="resetTracker()">Reset Data</button>
-            <button class="btn btn-primary" onclick="exportData()">Export Backup</button>
+            <button class="btn btn-secondary" onclick="resetTracker()">Reset Roster</button>
+            <button class="btn btn-primary" onclick="exportData()">Export JSON Backup</button>
         </div>
     </header>
 
-    <div class="calendar-grid" id="calendarGrid"></div>
+    <div class="calendar-container" id="calendarContainer"></div>
 
     <div class="modal" id="editModal">
         <div class="modal-content">
-            <div class="modal-header" id="modalTitle">Edit Day Schedule</div>
+            <div class="modal-header" id="modalTitle">Edit Run Details</div>
             <div id="modalFields"></div>
             <div class="modal-buttons">
                 <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
@@ -94,112 +137,292 @@
     </div>
 
     <script>
-        // Raw Master Data starting from Monday 08/06/2026
+        // Generated full continuous rolling cycle loops to map out the entire calendar straight to Christmas 2026.
+        const basePatterns = {
+            MondayA: ["Metcash Drakes Mcdowall", "Metcash IGA M Hoppers Ascot", "Metcash IGA M Frenchs Forest", "Metcash IGA M Dayboro Valley", "Metcash Drakes Samford", "Metcash IGA M Cashmere"],
+            TuesdayA: ["Metcash IGA M Sanctuary Cove (Jones)", "Metcash Drakes Hollywell Road Markets", "Metcash L Queen Street Village Southport", "Metcash Drakes Nerang Road Ashmore", "Metcash IGA M Mermaid Waters", "Metcash IGA M Nerang (Spano)"],
+            WednesdayA: ["Metcash IGA M St Lucia", "Metcash IGA M Greenslopes Legends", "Metcash IGA M Chriss Carina", "Metcash IGA M East Brisbane (Seasons)", "Metcash IGA M Acacia Ridge", "Metcash Foodworks Woodridge"],
+            ThursdayA: ["Metcash Drakes Rochedale", "Metcash IGA M Wellington Point (Jones)", "Metcash IGA M On Bloomfield (Jones)", "Metcash IGA M Cleveland (Jones)", "Metcash IGA M Thornlands (Jones)", "Metcash IGA L Mt Cotton (Jones)"],
+            FridayA: ["Metcash Fresh & Save Deagon", "Metcash Drakes Mcdowall", "Metcash IGA M Cashmere", "Metcash Drakes Samford", "Metcash IGA M Frenchs Forest", "Metcash IGA L Burpengary (Seasons)"],
+            
+            MondayB: ["Metcash IGA M Augustine Heights", "Metcash Drakes Winston Glades", "Metcash IGA M West Ipswich", "Metcash IGA M Walloon", "Metcash Drakes Rosewood", "Metcash Drakes Lowood"],
+            TuesdayB: ["Metcash IGA M Robina (Easy T) (Spano)", "Metcash IGA M Currumbin Fair", "Metcash IGA M Tugun Beach", "Metcash IGA M Tweed Valley Way (Bugg)", "Metcash IGA Local Grocer Pottsville", "Metcash Supa Valu Ritchies Ballina"],
+            WednesdayB: ["Metcash Fresh & Save Richlands", "Metcash Drakes Parkinson", "Metcash Drakes Regents Park", "Metcash IGA M Loganholme", "Metcash IGA L Daisy Hill (Ritchies)", "Metcash Fresh & Save Eagleby"],
+            ThursdayB: ["Metcash IGA M Laidley (Choundings)", "Metcash IGA L Gatton (Spano)", "Metcash IGA M Hatton Vale", "Metcash IGA M Esk (Co-op)", "Metcash IGA M Toogoolawah Coop", "Metcash IGA L Boonah (Ritchies)"],
+            FridayB: ["Metcash Drakes Samford", "Metcash IGA M Dayboro Valley", "Metcash IGA M Cashmere", "Metcash IGA M Hoppers Ascot", "Metcash IGA L Burpengary (Seasons)", "Metcash Fresh & Save Deagon"]
+        };
+
         const initialRosterData = [
-            { id: "1", week: "W23", date: "08/06/2026", day: "Monday", stores: ["Metcash Drakes Mcdowall", "Metcash IGA M Hoppers Ascot", "Metcash IGA M Frenchs Forest", "Metcash IGA M Dayboro Valley", "Metcash Drakes Samford", "Metcash IGA M Cashmere"], accommodation: "HOME BASE (Bracken Ridge)", notes: "Normal QLD Workday (Note: King's Birthday Holiday in NSW)", isHoliday: false },
-            { id: "2", week: "W23", date: "09/06/2026", day: "Tuesday", stores: ["Metcash IGA M Sanctuary Cove (Jones)", "Metcash Drakes Hollywell Road Markets", "Metcash IGA L Queen Street Village Southport (Jones)", "Metcash Drakes Nerang Road Ashmore", "Metcash IGA M Mermaid Waters", "Metcash IGA M Nerang (Spano)"], accommodation: "HOME BASE (Bracken Ridge)", notes: "Gold Coast Northern Strip Loop", isHoliday: false },
-            { id: "3", week: "W23", date: "10/06/2026", day: "Wednesday", stores: ["Metcash IGA M St Lucia", "Metcash IGA M Greenslopes Legends", "Metcash IGA M Chriss Carina", "Metcash IGA M East Brisbane (Seasons)", "Metcash IGA M Acacia Ridge", "Metcash Foodworks Woodridge"], accommodation: "HOME BASE (Bracken Ridge)", notes: "Brisbane Central & South Core", isHoliday: false },
-            { id: "4", week: "W23", date: "11/06/2026", day: "Thursday", stores: ["Metcash IGA M Evans Head (Ritchies)", "Metcash IGA L Maclean (Ritchies)", "Metcash IGA M Iluka Plus Cbn", "Metcash Fresh & Save Grafton (Shoppingworld)", "ADMIN / REPORTING"], accommodation: "HOME BASE (Bracken Ridge)", notes: "Lower NSW Coast Day Trip (4-Store Travel Exception)", isHoliday: false },
-            { id: "5", week: "W23", date: "12/06/2026", day: "Friday", stores: ["Metcash Fresh & Save Deagon", "Metcash Drakes Mcdowall", "Metcash IGA M Cashmere", "Metcash Drakes Samford", "Metcash IGA M Frenchs Forest", "Metcash IGA L Burpengary (Seasons)"], accommodation: "HOME BASE (Bracken Ridge)", notes: "Friday A: Home Turf Tightly Clustered Loop", isHoliday: false },
+            // WEEK 23
+            { id: "1", week: "W23", date: "08/06/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", notes: "Normal QLD (NSW Holiday)", isHoliday: false },
+            { id: "2", week: "W23", date: "09/06/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", notes: "Gold Coast North Loop", isHoliday: false },
+            { id: "3", week: "W23", date: "10/06/2026", day: "Wednesday", stores: [...basePatterns.WednesdayA], accommodation: "HOME BASE", notes: "Brisbane Core Run", isHoliday: false },
+            { id: "4", week: "W23", date: "11/06/2026", day: "Thursday", stores: ["Metcash IGA M Evans Head (Ritchies)", "Metcash IGA L Maclean (Ritchies)", "Metcash IGA M Iluka Plus Cbn", "Metcash Fresh & Save Grafton"], accommodation: "HOME BASE", notes: "Lower NSW Coast Travel Run", isHoliday: false },
+            { id: "5", week: "W23", date: "12/06/2026", day: "Friday", stores: [...basePatterns.FridayA], accommodation: "HOME BASE", notes: "Home Turf Loop", isHoliday: false },
             
-            { id: "6", week: "W24", date: "15/06/2026", day: "Monday", stores: ["Metcash IGA M Augustine Heights", "Metcash Drakes Winston Glades", "Metcash IGA M West Ipswich", "Metcash IGA M Walloon", "Metcash Drakes Rosewood", "Metcash Drakes Lowood"], accommodation: "HOME BASE (Bracken Ridge)", notes: "Ipswich Corridor Day Run", isHoliday: false },
-            { id: "7", week: "W24", date: "16/06/2026", day: "Tuesday", stores: ["Metcash IGA M Miles", "Metcash Foodworks Tara 2020", "Metcash IGA M Roma (Cornetts)", "Metcash Drakes Toowoomba High St", "Metcash IGA L Oakey (Cornetts)", "Metcash IGA M Pittsworth"], accommodation: "🛏️ OVERNIGHT REQUIRED (Book Toowoomba)", notes: "Q2 Regional Trip: Western Fringe & Downs Day 1", isHoliday: false },
-            { id: "8", week: "W24", date: "17/06/2026", day: "Wednesday", stores: ["Metcash IGA M Crows Nest", "Metcash IGA M Allora", "Metcash IGA L Warwick (Spano)", "Metcash IGA L Stanthorpe (Spano)", "Metcash Foodworks Goondiwindi", "Metcash Foodworks Killarney"], accommodation: "🛏️ OVERNIGHT REQUIRED (Book Warwick)", notes: "Q2 Regional Trip: Western Fringe & Downs Day 2", isHoliday: false },
-            { id: "9", week: "W24", date: "18/06/2026", day: "Thursday", stores: ["Metcash IGA M Beaudesert (Jones)", "Metcash IGA M Canungra", "Metcash IGA M Mt Tamborine (Cavallaro)", "Metcash IGA M Russell Island (Jones)", "ADMIN & LOGS IN CAR"], accommodation: "HOME BASE (Bracken Ridge)", notes: "Q2 Trip Day 3: Scenic Rim & Island Clearance", isHoliday: false },
-            { id: "10", week: "W24", date: "19/06/2026", day: "Friday", stores: ["Metcash Drakes Samford", "Metcash IGA M Dayboro Valley", "Metcash IGA M Cashmere", "Metcash IGA M Hoppers Ascot", "Metcash IGA L Burpengary (Seasons)", "Metcash Fresh & Save Deagon"], accommodation: "HOME BASE (Bracken Ridge)", notes: "Friday B: Moreton Bay Near North Loop", isHoliday: false },
+            // WEEK 24 (REGIONAL WEEK)
+            { id: "6", week: "W24", date: "15/06/2026", day: "Monday", stores: [...basePatterns.MondayB], accommodation: "HOME BASE", notes: "Ipswich Day Corridor", isHoliday: false },
+            { id: "7", week: "W24", date: "16/06/2026", day: "Tuesday", stores: ["Metcash IGA M Miles", "Metcash Foodworks Tara 2020", "Metcash IGA M Roma (Cornetts)", "Metcash Drakes Toowoomba High St", "Metcash IGA L Oakey (Cornetts)", "Metcash IGA M Pittsworth"], accommodation: "🛏️ BOOK TRIP (Toowoomba)", notes: "Western Fringe Day 1", isHoliday: false },
+            { id: "8", week: "W24", date: "17/06/2026", day: "Wednesday", stores: ["Metcash IGA M Crows Nest", "Metcash IGA M Allora", "Metcash IGA L Warwick (Spano)", "Metcash IGA L Stanthorpe (Spano)", "Metcash Foodworks Goondiwindi", "Metcash Foodworks Killarney"], accommodation: "🛏️ BOOK TRIP (Warwick)", notes: "Western Fringe Day 2", isHoliday: false },
+            { id: "9", week: "W24", date: "18/06/2026", day: "Thursday", stores: ["Metcash IGA M Beaudesert (Jones)", "Metcash IGA M Canungra", "Metcash IGA M Mt Tamborine", "Metcash IGA M Russell Island", "ADMIN & VEHICLE LOGS"], accommodation: "HOME BASE", notes: "Scenic Rim Catchup", isHoliday: false },
+            { id: "10", week: "W24", date: "19/06/2026", day: "Friday", stores: [...basePatterns.FridayB], accommodation: "HOME BASE", notes: "Moreton Bay Loop", isHoliday: false },
             
-            { id: "11", week: "W25", date: "22/06/2026", day: "Monday", stores: ["Metcash Drakes Mcdowall", "Metcash IGA M Hoppers Ascot", "Metcash IGA M Frenchs Forest", "Metcash IGA M Dayboro Valley", "Metcash Drakes Samford", "Metcash IGA M Cashmere"], accommodation: "HOME BASE (Bracken Ridge)", notes: "Brisbane Near North Local Loop", isHoliday: false },
-            { id: "12", week: "W25", date: "23/06/2026", day: "Tuesday", stores: ["Metcash IGA M Sanctuary Cove (Jones)", "Metcash Drakes Hollywell Road Markets", "Metcash IGA L Queen Street Village Southport (Jones)", "Metcash Drakes Nerang Road Ashmore", "Metcash IGA M Mermaid Waters", "Metcash IGA M Nerang (Spano)"], accommodation: "HOME BASE (Bracken Ridge)", notes: "Gold Coast Northern Strip", isHoliday: false },
-            { id: "13", week: "W25", date: "24/06/2026", day: "Wednesday", stores: ["Metcash IGA M St Lucia", "Metcash IGA M Greenslopes Legends", "Metcash IGA M Chriss Carina", "Metcash IGA M East Brisbane (Seasons)", "Metcash IGA M Acacia Ridge", "Metcash Foodworks Woodridge"], accommodation: "HOME BASE (Bracken Ridge)", notes: "Brisbane Central & South Core", isHoliday: false },
-            { id: "14", week: "W25", date: "25/06/2026", day: "Thursday", stores: ["Metcash Drakes Rochedale", "Metcash IGA M Wellington Point (Jones)", "Metcash IGA M On Bloomfield (Jones)", "Metcash IGA M Cleveland (Jones)", "Metcash IGA M Thornlands (Jones)", "Metcash IGA L Mt Cotton (Jones)"], accommodation: "HOME BASE (Bracken Ridge)", notes: "Bayside Jones & Co Key Accounts", isHoliday: false },
-            { id: "15", week: "W25", date: "26/06/2026", day: "Friday", stores: ["Metcash Fresh & Save Deagon", "Metcash Drakes Mcdowall", "Metcash IGA M Cashmere", "Metcash Drakes Samford", "Metcash IGA M Frenchs Forest", "Metcash IGA L Burpengary (Seasons)"], accommodation: "HOME BASE (Bracken Ridge)", notes: "Friday A: Home Turf Tightly Clustered Loop", isHoliday: false },
+            // WEEK 25
+            { id: "11", week: "W25", date: "22/06/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", notes: "Near North Loop", isHoliday: false },
+            { id: "12", week: "W25", date: "23/06/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", notes: "Gold Coast North Strip", isHoliday: false },
+            { id: "13", week: "W25", date: "24/06/2026", day: "Wednesday", stores: [...basePatterns.WednesdayA], accommodation: "HOME BASE", notes: "Brisbane Core Run", isHoliday: false },
+            { id: "14", week: "W25", date: "25/06/2026", day: "Thursday", stores: [...basePatterns.ThursdayA], accommodation: "HOME BASE", notes: "Bayside Key Accounts", isHoliday: false },
+            { id: "15", week: "W25", date: "26/06/2026", day: "Friday", stores: [...basePatterns.FridayA], accommodation: "HOME BASE", notes: "Home Turf Loop", isHoliday: false },
             
-            { id: "16", week: "W32", date: "10/08/2026", day: "Monday", stores: ["Metcash IGA M Augustine Heights", "Metcash Drakes Winston Glades", "Metcash IGA M West Ipswich", "Metcash IGA M Walloon", "Metcash Drakes Rosewood", "Metcash Drakes Lowood"], accommodation: "HOME BASE (Bracken Ridge)", notes: "Ipswich Corridor Day Trip", isHoliday: false },
-            { id: "17", week: "W32", date: "11/08/2026", day: "Tuesday", stores: ["Metcash IGA M Robina (Easy T) (Spano)", "Metcash IGA M Currumbin Fair", "Metcash IGA M Tugun Beach", "Metcash IGA M Tweed Valley Way (Bugg)", "Metcash IGA Local Grocer + Cbn Pottsville", "Metcash Supa Valu Ritchies Ballina"], accommodation: "HOME BASE (Bracken Ridge)", notes: "Gold Coast South & Mid NSW Coast", isHoliday: false },
-            { id: "18", week: "W32", date: "12/08/2026", day: "Wednesday", stores: ["PUBLIC HOLIDAY - EKKA WEDNESDAY"], accommodation: "HOME BASE (Bracken Ridge)", notes: "Brisbane Metro Public Holiday Interruption (Stores Closed / Restricted)", isHoliday: true },
-            { id: "19", week: "W32", date: "13/08/2026", day: "Thursday", stores: ["Metcash Fresh & Save Richlands", "Metcash Drakes Parkinson", "Metcash Drakes Regents Park", "Metcash IGA M Loganholme", "Metcash IGA L Daisy Hill (Ritchies)", "Metcash Fresh & Save Eagleby"], accommodation: "HOME BASE (Bracken Ridge)", notes: "Logan Highway Corridor (Shifted from Wed)", isHoliday: false },
-            { id: "20", week: "W32", date: "14/08/2026", day: "Friday", stores: ["Metcash Drakes Samford", "Metcash IGA M Dayboro Valley", "Metcash IGA M Cashmere", "Metcash IGA M Hoppers Ascot", "Metcash IGA L Burpengary (Seasons)", "Metcash Fresh & Save Deagon"], accommodation: "HOME BASE (Bracken Ridge)", notes: "Friday B: Moreton Bay Near North Loop", isHoliday: false },
-            
-            { id: "21", week: "W40", date: "05/10/2026", day: "Monday", stores: ["PUBLIC HOLIDAY - KING'S BIRTHDAY (QLD)"], accommodation: "HOME BASE (Bracken Ridge)", notes: "Double Public Holiday (QLD King's Birthday & NSW Labour Day) - All Stores Offline", isHoliday: true },
-            { id: "22", week: "W40", date: "06/10/2026", day: "Tuesday", stores: ["Metcash IGA M Chinchilla", "Metcash IGA M Miles", "Metcash IGA M Roma (Cornetts)", "Metcash IGA M Longreach (Cornetts)", "Metcash IGA M Charleville (Cornetts)", "Metcash IGA Local Grocer Cunnamulla"], accommodation: "🛏️ OVERNIGHT REQUIRED (Book Roma)", notes: "Q4 Deep Western Fly-Away / Out-of-Territory Trip Day 1", isHoliday: false },
-            { id: "23", week: "W40", date: "07/10/2026", day: "Wednesday", stores: ["Metcash IGA M Cornett's Barcaldine", "Metcash IGA M Blackall (Cornetts)", "Metcash IGA M Beales Clermont", "Metcash Fwks St George", "Metcash IGA M Fwks St George", "Metcash Foodworks Tara 2020"], accommodation: "🛏️ OVERNIGHT REQUIRED (Book Longreach)", notes: "Q4 Deep Western Fly-Away / Out-of-Territory Trip Day 2", isHoliday: false },
-            
-            { id: "24", week: "W51", date: "25/12/2026", day: "Friday", stores: ["PUBLIC HOLIDAY - CHRISTMAS DAY"], accommodation: "HOME BASE (Bracken Ridge)", notes: "Christmas Day Public Holiday Closure", isHoliday: true }
+            // WEEK 26
+            { id: "16", week: "W26", date: "29/06/2026", day: "Monday", stores: [...basePatterns.MondayB], accommodation: "HOME BASE", notes: "Ipswich Run", isHoliday: false },
+            { id: "17", week: "W26", date: "30/06/2026", day: "Tuesday", stores: [...basePatterns.TuesdayB], accommodation: "HOME BASE", notes: "GC South & NSW Coast", isHoliday: false },
+            { id: "18", week: "W26", date: "01/07/2026", day: "Wednesday", stores: [...basePatterns.WednesdayB], accommodation: "HOME BASE", notes: "Logan Highway Corridor", isHoliday: false },
+            { id: "19", week: "W26", date: "02/07/2026", day: "Thursday", stores: [...basePatterns.ThursdayB], accommodation: "HOME BASE", notes: "Brisbane Valley Country", isHoliday: false },
+            { id: "20", week: "W26", date: "03/07/2026", day: "Friday", stores: [...basePatterns.FridayB], accommodation: "HOME BASE", notes: "Moreton Bay Near North", isHoliday: false },
+
+            // WEEK 27
+            { id: "21", week: "W27", date: "06/07/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", notes: "Near North Loop", isHoliday: false },
+            { id: "22", week: "W27", date: "07/07/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", notes: "GC Strip Run", isHoliday: false },
+            { id: "23", week: "W27", date: "08/07/2026", day: "Wednesday", stores: [...basePatterns.WednesdayA], accommodation: "HOME BASE", notes: "Brisbane Core Run", isHoliday: false },
+            { id: "24", week: "W27", date: "09/07/2026", day: "Thursday", stores: ["Metcash IGA M Evans Head (Ritchies)", "Metcash IGA L Maclean (Ritchies)", "Metcash IGA M Iluka Plus Cbn", "Metcash Fresh & Save Grafton"], accommodation: "HOME BASE", notes: "Lower NSW South Trip", isHoliday: false },
+            { id: "25", week: "W27", date: "10/07/2026", day: "Friday", stores: [...basePatterns.FridayA], accommodation: "HOME BASE", notes: "Home Turf Loop", isHoliday: false },
+
+            // WEEK 28 (BARGE DEDICATED TRIP)
+            { id: "26", week: "W28", date: "13/07/2026", day: "Monday", stores: [...basePatterns.MondayB], accommodation: "HOME BASE", notes: "Ipswich Run", isHoliday: false },
+            { id: "27", week: "W28", date: "14/07/2026", day: "Tuesday", stores: [...basePatterns.WednesdayB], accommodation: "HOME BASE", notes: "Logan Highway Corridor", isHoliday: false },
+            { id: "28", week: "W28", date: "15/07/2026", day: "Wednesday", stores: [...basePatterns.ThursdayA], accommodation: "HOME BASE", notes: "Bayside Key Accounts", isHoliday: false },
+            { id: "29", week: "W28", date: "16/07/2026", day: "Thursday", stores: ["Metcash IGA M Russell Island", "DISPLAY BUILD OUT DAY", "PLANOGRAM AUDIT CHECK", "TERRITORY ADMIN REVIEW"], accommodation: "HOME BASE", notes: "Russell Island Dedicated Barge Run", isHoliday: false },
+            { id: "30", week: "W28", date: "17/07/2026", day: "Friday", stores: [...basePatterns.FridayB], accommodation: "HOME BASE", notes: "Moreton Bay Sweep", isHoliday: false },
+
+            // WEEK 29
+            { id: "31", week: "W29", date: "20/07/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", notes: "Near North Loop", isHoliday: false },
+            { id: "32", week: "W29", date: "21/07/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", notes: "Gold Coast North Strip", isHoliday: false },
+            { id: "33", week: "W29", date: "22/07/2026", day: "Wednesday", stores: [...basePatterns.WednesdayA], accommodation: "HOME BASE", notes: "Brisbane Core Run", isHoliday: false },
+            { id: "34", week: "W29", date: "23/07/2026", day: "Thursday", stores: [...basePatterns.ThursdayA], accommodation: "HOME BASE", notes: "Bayside Loop", isHoliday: false },
+            { id: "35", week: "W29", date: "24/07/2026", day: "Friday", stores: [...basePatterns.FridayA], accommodation: "HOME BASE", notes: "Home Turf Loop", isHoliday: false },
+
+            // WEEK 30
+            { id: "36", week: "W30", date: "27/07/2026", day: "Monday", stores: [...basePatterns.MondayB], accommodation: "HOME BASE", notes: "Ipswich Run", isHoliday: false },
+            { id: "37", week: "W30", date: "28/07/2026", day: "Tuesday", stores: [...basePatterns.TuesdayB], accommodation: "HOME BASE", notes: "Gold Coast South Loop", isHoliday: false },
+            { id: "38", week: "W30", date: "29/07/2026", day: "Wednesday", stores: [...basePatterns.WednesdayB], accommodation: "HOME BASE", notes: "Logan Highway", isHoliday: false },
+            { id: "39", week: "W30", date: "30/07/2026", day: "Thursday", stores: [...basePatterns.ThursdayB], accommodation: "HOME BASE", notes: "Brisbane Valley Run", isHoliday: false },
+            { id: "40", week: "W30", date: "31/07/2026", day: "Friday", stores: [...basePatterns.FridayB], accommodation: "HOME BASE", notes: "Moreton Bay North", isHoliday: false },
+
+            // WEEK 31
+            { id: "41", week: "W31", date: "03/08/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", notes: "Near North Run", isHoliday: false },
+            { id: "42", week: "W31", date: "04/08/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", notes: "Gold Coast Run", isHoliday: false },
+            { id: "43", week: "W31", date: "05/08/2026", day: "Wednesday", stores: [...basePatterns.WednesdayA], accommodation: "HOME BASE", notes: "Brisbane Core", isHoliday: false },
+            { id: "44", week: "W31", date: "06/08/2026", day: "Thursday", stores: [...basePatterns.ThursdayA], accommodation: "HOME BASE", notes: "Bayside Accounts", isHoliday: false },
+            { id: "45", week: "W31", date: "07/08/2026", day: "Friday", stores: [...basePatterns.FridayA], accommodation: "HOME BASE", notes: "Home Turf Loop", isHoliday: false },
+
+            // WEEK 32 (EKKA PUBLIC HOLIDAY SPLIT WEEK)
+            { id: "46", week: "W32", date: "10/08/2026", day: "Monday", stores: [...basePatterns.MondayB], accommodation: "HOME BASE", notes: "Ipswich Run", isHoliday: false },
+            { id: "47", week: "W32", date: "11/08/2026", day: "Tuesday", stores: [...basePatterns.TuesdayB], accommodation: "HOME BASE", notes: "GC & NSW Border Run", isHoliday: false },
+            { id: "48", week: "W32", date: "12/08/2026", day: "Wednesday", stores: ["STORES OFFLINE - EKKA WEDNESDAY HOLIDAY"], accommodation: "HOME BASE", notes: "Ekka Holiday (Brisbane Dist. Closed)", isHoliday: true },
+            { id: "49", week: "W32", date: "13/08/2026", day: "Thursday", stores: [...basePatterns.WednesdayB], accommodation: "HOME BASE", notes: "Logan Highway (Shifted from Wed)", isHoliday: false },
+            { id: "50", week: "W32", date: "14/08/2026", day: "Friday", stores: [...basePatterns.FridayB], accommodation: "HOME BASE", notes: "Moreton Bay Run", isHoliday: false },
+
+            // WEEK 33 TO WEEK 35 (AUGUST CORE BLOCK)
+            { id: "51", week: "W33", date: "17/08/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", notes: "Near North Run", isHoliday: false },
+            { id: "52", week: "W33", date: "18/08/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", notes: "Gold Coast Run", isHoliday: false },
+            { id: "53", week: "W33", date: "19/08/2026", day: "Wednesday", stores: [...basePatterns.WednesdayA], accommodation: "HOME BASE", notes: "Brisbane Central Core", isHoliday: false },
+            { id: "54", week: "W33", date: "20/08/2026", day: "Thursday", stores: [...basePatterns.ThursdayA], accommodation: "HOME BASE", notes: "Bayside Accounts", isHoliday: false },
+            { id: "55", week: "W33", date: "21/08/2026", day: "Friday", stores: [...basePatterns.FridayA], accommodation: "HOME BASE", notes: "Home Turf Loop", isHoliday: false },
+
+            { id: "56", week: "W34", date: "24/08/2026", day: "Monday", stores: [...basePatterns.MondayB], accommodation: "HOME BASE", notes: "Ipswich Run", isHoliday: false },
+            { id: "57", week: "W34", date: "24/08/2026", day: "Tuesday", stores: [...basePatterns.TuesdayB], accommodation: "HOME BASE", notes: "Gold Coast South Coast", isHoliday: false },
+            { id: "58", week: "W34", date: "26/08/2026", day: "Wednesday", stores: [...basePatterns.WednesdayB], accommodation: "HOME BASE", notes: "Logan Corridor", isHoliday: false },
+            { id: "59", week: "W34", date: "27/08/2026", day: "Thursday", stores: [...basePatterns.ThursdayB], accommodation: "HOME BASE", notes: "Brisbane Valley Run", isHoliday: false },
+            { id: "60", week: "W34", date: "28/08/2026", day: "Friday", stores: [...basePatterns.FridayB], accommodation: "HOME BASE", notes: "Moreton Bay", isHoliday: false },
+
+            { id: "61", week: "W35", date: "31/08/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", notes: "Near North Run", isHoliday: false },
+            { id: "62", week: "W35", date: "01/09/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", notes: "Gold Coast North Strip", isHoliday: false },
+            { id: "63", week: "W35", date: "02/09/2026", day: "Wednesday", stores: [...basePatterns.WednesdayA], accommodation: "HOME BASE", notes: "Brisbane Core Run", isHoliday: false },
+            { id: "64", week: "W35", date: "03/09/2026", day: "Thursday", stores: [...basePatterns.ThursdayA], accommodation: "HOME BASE", notes: "Bayside Key Accounts", isHoliday: false },
+            { id: "65", week: "W35", date: "04/09/2026", day: "Friday", stores: [...basePatterns.FridayA], accommodation: "HOME BASE", notes: "Home Turf Loop", isHoliday: false },
+
+            // WEEK 36 (Q3 NEW ENGLAND COUNTRY ROAD TRIP)
+            { id: "66", week: "W36", date: "07/09/2026", day: "Monday", stores: [...basePatterns.MondayB], accommodation: "HOME BASE", notes: "Ipswich Run Pre-Trip", isHoliday: false },
+            { id: "67", week: "W36", date: "08/09/2026", day: "Tuesday", stores: ["Metcash Fwks Tenterfield", "Metcash IGA L Inverell", "Metcash IGA M Bingara", "Metcash IGA M Warialda", "Metcash IGA M Guyra", "Metcash F&S Armidale"], accommodation: "🛏️ BOOK TRIP (Armidale)", notes: "New England Tour Day 1", isHoliday: false },
+            { id: "68", week: "W36", date: "09/09/2026", day: "Wednesday", stores: ["Metcash Fwks Uralla", "Metcash IGA L Tamworth", "Metcash IGA M Kootingal", "Metcash IGA L Quirindi", "Metcash IGA M Walcha Plus", "Metcash IGA M Manilla Plus"], accommodation: "🛏️ BOOK TRIP (Tamworth)", notes: "New England Tour Day 2", isHoliday: false },
+            { id: "69", week: "W36", date: "10/09/2026", day: "Thursday", stores: ["Metcash IGA L Wee Waa", "Metcash IGA M L Kyogle (Ritchies)", "Metcash IGA M Russell Island", "ADMIN DATA LOGS IN MOTEL"], accommodation: "🛏️ BOOK TRIP (Kyogle)", notes: "New England Border Clearance", isHoliday: false },
+            { id: "70", week: "W36", date: "11/09/2026", day: "Friday", stores: [...basePatterns.FridayB], accommodation: "HOME BASE", notes: "Moreton North (Return Home Day)", isHoliday: false },
+
+            // WEEK 37 TO WEEK 39 (SEPTEMBER BLOCK)
+            { id: "71", week: "W37", date: "14/09/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", notes: "Near North Run", isHoliday: false },
+            { id: "72", week: "W37", date: "15/09/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", notes: "Gold Coast Run", isHoliday: false },
+            { id: "73", week: "W37", date: "16/09/2026", day: "Wednesday", stores: [...basePatterns.WednesdayA], accommodation: "HOME BASE", notes: "Brisbane Core", isHoliday: false },
+            { id: "74", week: "W37", date: "17/09/2026", day: "Thursday", stores: [...basePatterns.ThursdayA], accommodation: "HOME BASE", notes: "Bayside Accounts", isHoliday: false },
+            { id: "75", week: "W37", date: "18/09/2026", day: "Friday", stores: [...basePatterns.FridayA], accommodation: "HOME BASE", notes: "Home Turf Loop", isHoliday: false },
+
+            { id: "76", week: "W38", date: "21/09/2026", day: "Monday", stores: [...basePatterns.MondayB], accommodation: "HOME BASE", notes: "Ipswich Run", isHoliday: false },
+            { id: "77", week: "W38", date: "22/09/2026", day: "Tuesday", stores: [...basePatterns.TuesdayB], accommodation: "HOME BASE", notes: "Gold Coast South Coast", isHoliday: false },
+            { id: "78", week: "W38", date: "23/09/2026", day: "Wednesday", stores: [...basePatterns.WednesdayB], accommodation: "HOME BASE", notes: "Logan Corridor", isHoliday: false },
+            { id: "79", week: "W38", date: "24/09/2026", day: "Thursday", stores: [...basePatterns.ThursdayB], accommodation: "HOME BASE", notes: "Brisbane Valley Run", isHoliday: false },
+            { id: "80", week: "W38", date: "25/09/2026", day: "Friday", stores: [...basePatterns.FridayB], accommodation: "HOME BASE", notes: "Moreton Bay North", isHoliday: false },
+
+            { id: "81", week: "W39", date: "28/09/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", notes: "Near North Run", isHoliday: false },
+            { id: "82", week: "W39", date: "29/09/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", notes: "Gold Coast Strip", isHoliday: false },
+            { id: "83", week: "W39", date: "30/09/2026", day: "Wednesday", stores: [...basePatterns.WednesdayA], accommodation: "HOME BASE", notes: "Brisbane Core", isHoliday: false },
+            { id: "84", week: "W39", date: "01/10/2026", day: "Thursday", stores: [...basePatterns.ThursdayA], accommodation: "HOME BASE", notes: "Bayside Key Run", isHoliday: false },
+            { id: "85", week: "W39", date: "02/10/2026", day: "Friday", stores: [...basePatterns.FridayA], accommodation: "HOME BASE", notes: "Home Turf Loop", isHoliday: false },
+
+            // WEEK 40 (OCTOBER DOUBLE PUBLIC HOLIDAY & DEEP WESTERN RUN)
+            { id: "86", week: "W40", date: "05/10/2026", day: "Monday", stores: ["STORES OFFLINE - DOUBLE PUBLIC HOLIDAY"], accommodation: "HOME BASE", notes: "QLD King's Birthday & NSW Labour Day (All Closed)", isHoliday: true },
+            { id: "87", week: "W40", date: "06/10/2026", day: "Tuesday", stores: ["Metcash IGA M Chinchilla", "Metcash IGA M Miles", "Metcash IGA M Roma (Cornetts)", "Metcash IGA M Longreach", "Metcash IGA M Charleville", "Metcash IGA Grocer Cunnamulla"], accommodation: "🛏️ BOOK TRIP (Roma)", notes: "Deep Western Trip Day 1", isHoliday: false },
+            { id: "88", week: "W40", date: "07/10/2026", day: "Wednesday", stores: ["Metcash IGA Barcaldine", "Metcash IGA Blackall", "Metcash M Beales Clermont", "Metcash Fwks St George", "Metcash Foodworks Tara 2020"], accommodation: "🛏️ BOOK TRIP (Longreach)", notes: "Deep Western Trip Day 2", isHoliday: false },
+            { id: "89", week: "W40", date: "08/10/2026", day: "Thursday", stores: ["Metcash IGA Middlemount", "Metcash IGA Clermont", "Metcash IGA Dysart Plaza", "Metcash IGA M Russell Island", "ADMIN STORAGE ROAD ANALYSIS"], accommodation: "🛏️ BOOK TRIP (Toowoomba)", notes: "Deep Western Trip Day 3", isHoliday: false },
+            { id: "90", week: "W40", date: "09/10/2026", day: "Friday", stores: [...basePatterns.FridayB], accommodation: "HOME BASE", notes: "Moreton Bay (Return Flight/Drive Home)", isHoliday: false },
+
+            // WEEK 41 TO WEEK 47 (OCTOBER - NOVEMBER STANDARD ROLLING BLOCKS)
+            { id: "91", week: "W41", date: "12/10/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", notes: "Near North Run", isHoliday: false },
+            { id: "92", week: "W41", date: "13/10/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", notes: "Gold Coast Run", isHoliday: false },
+            { id: "93", week: "W41", date: "14/10/2026", day: "Wednesday", stores: [...basePatterns.WednesdayA], accommodation: "HOME BASE", notes: "Brisbane Core", isHoliday: false },
+            { id: "94", week: "W41", date: "15/10/2026", day: "Thursday", stores: [...basePatterns.ThursdayA], accommodation: "HOME BASE", notes: "Bayside Accounts", isHoliday: false },
+            { id: "95", week: "W41", date: "16/10/2026", day: "Friday", stores: [...basePatterns.FridayA], accommodation: "HOME BASE", notes: "Home Turf Loop", isHoliday: false },
+
+            { id: "96", week: "W42", date: "19/10/2026", day: "Monday", stores: [...basePatterns.MondayB], accommodation: "HOME BASE", notes: "Ipswich Day Corridor", isHoliday: false },
+            { id: "97", week: "W42", date: "20/10/2026", day: "Tuesday", stores: [...basePatterns.TuesdayB], accommodation: "HOME BASE", notes: "GC South & NSW Coast", isHoliday: false },
+            { id: "98", week: "W42", date: "21/10/2026", day: "Wednesday", stores: [...basePatterns.WednesdayB], accommodation: "HOME BASE", notes: "Logan Corridor", isHoliday: false },
+            { id: "99", week: "W42", date: "22/10/2026", day: "Thursday", stores: [...basePatterns.ThursdayB], accommodation: "HOME BASE", notes: "Brisbane Valley Run", isHoliday: false },
+            { id: "100", week: "W42", date: "23/10/2026", day: "Friday", stores: [...basePatterns.FridayB], accommodation: "HOME BASE", notes: "Moreton Bay Run", isHoliday: false },
+
+            { id: "101", week: "W43", date: "26/10/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", notes: "Near North Run", isHoliday: false },
+            { id: "102", week: "W43", date: "27/10/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", notes: "Gold Coast Strip", isHoliday: false },
+            { id: "103", week: "W43", date: "28/10/2026", day: "Wednesday", stores: [...basePatterns.WednesdayA], accommodation: "HOME BASE", notes: "Brisbane Central Run", isHoliday: false },
+            { id: "104", week: "W43", date: "29/10/2026", day: "Thursday", stores: ["Metcash IGA M Evans Head (Ritchies)", "Metcash IGA L Maclean (Ritchies)", "Metcash IGA M Iluka Plus Cbn", "Metcash Fresh & Save Grafton"], accommodation: "HOME BASE", notes: "Lower NSW Coast Catchup", isHoliday: false },
+            { id: "105", week: "W43", date: "30/10/2026", day: "Friday", stores: [...basePatterns.FridayA], accommodation: "HOME BASE", notes: "Home Turf Loop", isHoliday: false },
+
+            { id: "106", week: "W44", date: "02/11/2026", day: "Monday", stores: [...basePatterns.MondayB], accommodation: "HOME BASE", notes: "Ipswich Run", isHoliday: false },
+            { id: "107", week: "W44", date: "03/11/2026", day: "Tuesday", stores: [...basePatterns.WednesdayB], accommodation: "HOME BASE", notes: "Logan Highway Run", isHoliday: false },
+            { id: "108", week: "W44", date: "04/11/2026", day: "Wednesday", stores: [...basePatterns.ThursdayA], accommodation: "HOME BASE", notes: "Bayside Key Run", isHoliday: false },
+            { id: "109", week: "W44", date: "05/11/2026", day: "Thursday", stores: ["Metcash IGA M Russell Island", "DISPLAY BUILD OUT DAY", "PLANOGRAM AUDIT FIELD DAY", "TERRITORY ADMIN REVIEW"], accommodation: "HOME BASE", notes: "Russell Island Dedicated Barge Run", isHoliday: false },
+            { id: "110", week: "W44", date: "06/11/2026", day: "Friday", stores: [...basePatterns.FridayB], accommodation: "HOME BASE", notes: "Moreton Bay North", isHoliday: false },
+
+            { id: "111", week: "W45", date: "09/11/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", notes: "Near North Run", isHoliday: false },
+            { id: "112", week: "W45", date: "10/11/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", notes: "Gold Coast Run", isHoliday: false },
+            { id: "113", week: "W45", date: "11/11/2026", day: "Wednesday", stores: [...basePatterns.WednesdayA], accommodation: "HOME BASE", notes: "Brisbane Core Run", isHoliday: false },
+            { id: "114", week: "W45", date: "12/11/2026", day: "Thursday", stores: [...basePatterns.ThursdayA], accommodation: "HOME BASE", notes: "Bayside Loop", isHoliday: false },
+            { id: "115", week: "W45", date: "13/11/2026", day: "Friday", stores: [...basePatterns.FridayA], accommodation: "HOME BASE", notes: "Home Turf Loop", isHoliday: false },
+
+            { id: "116", week: "W46", date: "16/11/2026", day: "Monday", stores: [...basePatterns.MondayB], accommodation: "HOME BASE", notes: "Ipswich Run", isHoliday: false },
+            { id: "117", week: "W46", date: "17/11/2026", day: "Tuesday", stores: [...basePatterns.TuesdayB], accommodation: "HOME BASE", notes: "GC South & NSW Coast", isHoliday: false },
+            { id: "118", week: "W46", date: "18/11/2026", day: "Wednesday", stores: [...basePatterns.WednesdayB], accommodation: "HOME BASE", notes: "Logan Corridor", isHoliday: false },
+            { id: "119", week: "W46", date: "19/11/2026", day: "Thursday", stores: [...basePatterns.ThursdayB], accommodation: "HOME BASE", notes: "Brisbane Valley Country", isHoliday: false },
+            { id: "120", week: "W46", date: "20/11/2026", day: "Friday", stores: [...basePatterns.FridayB], accommodation: "HOME BASE", notes: "Moreton Bay Run", isHoliday: false },
+
+            { id: "121", week: "W47", date: "23/11/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", notes: "Near North Loop", isHoliday: false },
+            { id: "122", week: "W47", date: "24/11/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", notes: "Gold Coast Run", isHoliday: false },
+            { id: "123", week: "W47", date: "25/11/2026", day: "Wednesday", stores: [...basePatterns.WednesdayA], accommodation: "HOME BASE", notes: "Brisbane Core", isHoliday: false },
+            { id: "124", week: "W47", date: "26/11/2026", day: "Thursday", stores: ["Metcash IGA M Evans Head (Ritchies)", "Metcash IGA L Maclean (Ritchies)", "Metcash IGA M Iluka Plus Cbn", "Metcash Fresh & Save Grafton"], accommodation: "HOME BASE", notes: "Lower NSW Coast Travel Run", isHoliday: false },
+            { id: "125", week: "W47", date: "27/11/2026", day: "Friday", stores: [...basePatterns.FridayA], accommodation: "HOME BASE", notes: "Home Turf Loop", isHoliday: false },
+
+            // WEEK 48 (FINAL NEW ENGLAND PRE-CHRISTMAS CAMPAIGN)
+            { id: "126", week: "W48", date: "30/11/2026", day: "Monday", stores: [...basePatterns.MondayB], accommodation: "HOME BASE", notes: "Ipswich Run Pre-Trip", isHoliday: false },
+            { id: "127", week: "W48", date: "01/12/2026", day: "Tuesday", stores: ["Metcash Fwks Tenterfield", "Metcash IGA L Inverell", "Metcash IGA M Bingara", "Metcash IGA M Warialda", "Metcash IGA M Guyra", "Metcash F&S Armidale"], accommodation: "🛏️ BOOK TRIP (Armidale)", notes: "Pre-Christmas Country Day 1", isHoliday: false },
+            { id: "128", week: "W48", date: "02/12/2026", day: "Wednesday", stores: ["Metcash Fwks Uralla", "Metcash IGA L Tamworth", "Metcash IGA M Kootingal", "Metcash IGA L Quirindi", "Metcash IGA M Walcha Plus", "Metcash IGA M Manilla Plus"], accommodation: "🛏️ BOOK TRIP (Tamworth)", notes: "Pre-Christmas Country Day 2", isHoliday: false },
+            { id: "129", week: "W48", date: "03/12/2026", day: "Thursday", stores: ["Metcash IGA L Wee Waa", "Metcash IGA M L Kyogle (Ritchies)", "Metcash IGA M Russell Island", "PRE-XMAS COMPLIANCE CHECKS"], accommodation: "🛏️ BOOK TRIP (Kyogle)", notes: "Pre-Christmas Country Day 3", isHoliday: false },
+            { id: "130", week: "W48", date: "04/12/2026", day: "Friday", stores: [...basePatterns.FridayB], accommodation: "HOME BASE", notes: "Moreton Bay (Return Home Sweep)", isHoliday: false },
+
+            // WEEK 49 TO WEEK 50 (DECEMBER INTENSE VOLUME CYCLES)
+            { id: "131", week: "W49", date: "07/12/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", notes: "Near North Run", isHoliday: false },
+            { id: "132", week: "W49", date: "08/12/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", notes: "Gold Coast Run", isHoliday: false },
+            { id: "133", week: "W49", date: "09/12/2026", day: "Wednesday", stores: [...basePatterns.WednesdayA], accommodation: "HOME BASE", notes: "Brisbane Core", isHoliday: false },
+            { id: "134", week: "W49", date: "10/12/2026", day: "Thursday", stores: [...basePatterns.ThursdayA], accommodation: "HOME BASE", notes: "Bayside Key Run", isHoliday: false },
+            { id: "135", week: "W49", date: "11/12/2026", day: "Friday", stores: [...basePatterns.FridayA], accommodation: "HOME BASE", notes: "Home Turf Loop", isHoliday: false },
+
+            { id: "136", week: "W50", date: "14/12/2026", day: "Monday", stores: [...basePatterns.MondayB], accommodation: "HOME BASE", notes: "Ipswich Run", isHoliday: false },
+            { id: "137", week: "W50", date: "15/12/2026", day: "Tuesday", stores: [...basePatterns.TuesdayB], accommodation: "HOME BASE", notes: "GC South Loop", isHoliday: false },
+            { id: "138", week: "W50", date: "16/12/2026", day: "Wednesday", stores: [...basePatterns.WednesdayB], accommodation: "HOME BASE", notes: "Logan Corridor", isHoliday: false },
+            { id: "139", week: "W50", date: "17/12/2026", day: "Thursday", stores: [...basePatterns.ThursdayB], accommodation: "HOME BASE", notes: "Brisbane Valley Run", isHoliday: false },
+            { id: "140", week: "W50", date: "18/12/2026", day: "Friday", stores: [...basePatterns.FridayB], accommodation: "HOME BASE", notes: "Moreton Bay North Run", isHoliday: false },
+
+            // WEEK 51 (THE CHRISTMAS WEEK SQUEEZE)
+            { id: "141", week: "W51", date: "21/12/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", notes: "Near North Christmas Run", isHoliday: false },
+            { id: "142", week: "W51", date: "22/12/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", notes: "Gold Coast Christmas Run", isHoliday: false },
+            { id: "143", week: "W51", date: "23/12/2026", day: "Wednesday", stores: [...basePatterns.WednesdayA], accommodation: "HOME BASE", notes: "Brisbane Core Christmas Run", isHoliday: false },
+            { id: "144", week: "W51", date: "24/12/2026", day: "Thursday", stores: [...basePatterns.ThursdayA], accommodation: "HOME BASE", notes: "Bayside Christmas Final Sweep", isHoliday: false },
+            { id: "145", week: "W51", date: "25/12/2026", day: "Friday", stores: ["STORES OFFLINE - CHRISTMAS DAY"], accommodation: "HOME BASE", notes: "Christmas Day Public Holiday", isHoliday: true },
+
+            // WEEK 52 (BOXING DAY CATCHUP TO NEW YEAR)
+            { id: "146", week: "W52", date: "28/12/2026", day: "Monday", stores: ["STORES OFFLINE - BOXING DAY HOLIDAY"], accommodation: "HOME BASE", notes: "Boxing Day Observed Closure", isHoliday: true },
+            { id: "147", week: "W52", date: "29/12/2026", day: "Tuesday", stores: [...basePatterns.WednesdayB], accommodation: "HOME BASE", notes: "Logan Highway End of Year Sweep", isHoliday: false },
+            { id: "148", week: "W52", date: "30/12/2026", day: "Wednesday", stores: [...basePatterns.MondayB], accommodation: "HOME BASE", notes: "Ipswich Corridor End of Year Sweep", isHoliday: false },
+            { id: "149", week: "W52", date: "31/12/2026", day: "Thursday", stores: [...basePatterns.ThursdayA], accommodation: "HOME BASE", notes: "Bayside New Years Eve Check", isHoliday: false },
+            { id: "150", week: "W52", date: "01/01/2027", day: "Friday", stores: ["STORES OFFLINE - NEW YEARS DAY"], accommodation: "HOME BASE", notes: "New Years Day Closure", isHoliday: true }
         ];
 
-        let roster = JSON.parse(localStorage.getItem('kyal_roster_data')) || initialRosterData;
-        let visitedStores = JSON.parse(localStorage.getItem('kyal_visited_stores')) || {};
+        let roster = JSON.parse(localStorage.getItem('kyal_roster_data_v2')) || initialRosterData;
+        let visitedStores = JSON.parse(localStorage.getItem('kyal_visited_stores_v2')) || {};
         let currentEditingId = null;
 
         function saveData() {
-            localStorage.setItem('kyal_roster_data', JSON.stringify(roster));
-            localStorage.setItem('kyal_visited_stores', JSON.stringify(visitedStores));
+            localStorage.setItem('kyal_roster_data_v2', JSON.stringify(roster));
+            localStorage.setItem('kyal_visited_stores_v2', JSON.stringify(visitedStores));
         }
 
         function renderCalendar() {
-            const grid = document.getElementById('calendarGrid');
-            grid.innerHTML = '';
+            const container = document.getElementById('calendarContainer');
+            container.innerHTML = '';
 
             let currentWeek = "";
-            let currentWeekContainer = null;
+            let currentWeekRow = null;
 
             roster.forEach(day => {
                 if (day.week !== currentWeek) {
                     currentWeek = day.week;
                     
-                    const weekSection = document.createElement('div');
-                    weekSection.className = 'week-section';
+                    currentWeekRow = document.createElement('div');
+                    currentWeekRow.className = 'week-row';
                     
-                    const weekTitle = document.createElement('div');
-                    weekTitle.className = 'week-title';
-                    weekTitle.innerText = `Roster Week: ${day.week}`;
-                    weekSection.appendChild(weekTitle);
-
-                    currentWeekContainer = document.createElement('div');
-                    currentWeekContainer.className = 'days-container';
-                    weekSection.appendChild(currentWeekContainer);
+                    const weekLabel = document.createElement('div');
+                    weekLabel.className = 'week-label';
+                    weekLabel.innerText = day.week;
+                    currentWeekRow.appendChild(weekLabel);
                     
-                    grid.appendChild(weekSection);
+                    container.appendChild(currentWeekRow);
                 }
 
-                const card = document.createElement('div');
-                card.className = `day-card ${day.isHoliday ? 'holiday' : ''}`;
+                const tile = document.createElement('div');
+                tile.className = `day-tile ${day.isHoliday ? 'holiday' : ''}`;
 
                 let accommodationHtml = '';
-                if (day.accommodation.includes('🛏️') || day.accommodation.includes('OVERNIGHT')) {
-                    accommodationHtml = `<div class="alert-tag">${day.accommodation}</div>`;
+                if (day.accommodation.includes('🛏️') || day.accommodation.includes('BOOK')) {
+                    accommodationHtml = `<div class="alert-tag" title="${day.accommodation}">${day.accommodation}</div>`;
                 }
 
                 let storeListHtml = '';
                 day.stores.forEach((store, index) => {
                     if(!store || store.trim() === "" || store === "N/A") return;
-                    const isHolidayText = day.isHoliday || store.includes('PUBLIC HOLIDAY');
+                    const isHolidayText = day.isHoliday || store.includes('OFFLINE');
                     const storeKey = `${day.id}-${index}`;
                     const isVisited = visitedStores[storeKey] ? 'visited' : '';
                     
                     storeListHtml += `
-                        <div class="store-item ${isHolidayText ? 'non-visit' : isVisited}" 
+                        <div class="store-chip ${isHolidayText ? 'non-visit' : isVisited}" 
+                             title="${store}"
                              onclick="toggleStore('${day.id}', ${index})">
                             ${store}
                         </div>`;
                 });
 
-                card.innerHTML = `
+                tile.innerHTML = `
                     <div>
                         <div class="day-header">
-                            <div class="day-date">${day.date}</div>
+                            <div class="day-date">${day.date.substring(0,5)}</div>
                             <div class="day-name">${day.day}</div>
                         </div>
                         ${accommodationHtml}
-                        <div class="route-notes">${day.notes || 'No route strategy notes.'}</div>
+                        <div class="route-notes" title="${day.notes}">${day.notes || ''}</div>
                         <div class="store-list">${storeListHtml}</div>
                     </div>
-                    <div class="card-actions">
-                        <button class="btn btn-secondary" style="padding:4px 10px; font-size:0.8rem;" onclick="openEditModal('${day.id}')">Edit Day</button>
+                    <div class="tile-actions">
+                        <button class="edit-lnk" onclick="openEditModal('${day.id}')">Edit Run</button>
                     </div>
                 `;
 
-                currentWeekContainer.appendChild(card);
+                currentWeekRow.appendChild(tile);
             });
         }
 
@@ -213,7 +436,7 @@
         function openEditModal(dayId) {
             currentEditingId = dayId;
             const dayData = roster.find(d => d.id === dayId);
-            document.getElementById('modalTitle').innerText = `Edit Run: ${dayData.date} (${dayData.day})`;
+            document.getElementById('modalTitle').innerText = `Modify Run: ${dayData.date} (${dayData.day})`;
             
             let fieldsHtml = `
                 <div class="form-group">
@@ -221,17 +444,17 @@
                     <textarea id="editNotes" rows="2">${dayData.notes}</textarea>
                 </div>
                 <div class="form-group">
-                    <label>Accommodation Indicator</label>
+                    <label>Accommodation Alert</label>
                     <input type="text" id="editAccommodation" value="${dayData.accommodation}">
                 </div>
-                <label style="display:block; font-size:0.85rem; font-weight:600; margin-bottom:4px; color:#475569;">Stores (Up to 6)</label>
+                <label style="display:block; font-size:0.8rem; font-weight:600; margin-bottom:4px; color:#475569;">Store Sequence</label>
             `;
 
             for(let i = 0; i < 6; i++) {
                 const val = dayData.stores[i] || "";
                 fieldsHtml += `
-                    <div class="form-group" style="margin-bottom:6px;">
-                        <input type="text" id="editStore${i}" value="${val}" placeholder="Store ${i+1} Name">
+                    <div class="form-group" style="margin-bottom:4px;">
+                        <input type="text" id="editStore${i}" value="${val}" placeholder="Store ${i+1}">
                     </div>`;
             }
 
@@ -262,9 +485,9 @@
         }
 
         function resetTracker() {
-            if(confirm("Are you sure you want to completely reset all store checkmarks and custom text back to default?")) {
-                localStorage.removeItem('kyal_roster_data');
-                localStorage.removeItem('kyal_visited_stores');
+            if(confirm("Are you sure you want to completely clear down all checks and reset back to the default master roster?")) {
+                localStorage.removeItem('kyal_roster_data_v2');
+                localStorage.removeItem('kyal_visited_stores_v2');
                 roster = [...initialRosterData];
                 visitedStores = {};
                 renderCalendar();
@@ -275,13 +498,12 @@
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({roster, visitedStores}, null, 2));
             const downloadAnchor = document.createElement('a');
             downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", "kyal_roster_backup_2026.json");
+            downloadAnchor.setAttribute("download", "master_roster_backup_2026.json");
             document.body.appendChild(downloadAnchor);
             downloadAnchor.click();
             downloadAnchor.remove();
         }
 
-        // Initialize App
         renderCalendar();
     </script>
 </body>
