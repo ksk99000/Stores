@@ -3,119 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2026 Master Roster - Full Year & AI Toggle</title>
+    <title>2026 Master Roster - Offline Version</title>
     <style>
         :root {
             --primary: #0f172a; --accent: #2563eb; --success: #16a34a; --warning: #dc2626;
             --bg: #f1f5f9; --card-bg: #ffffff; --text: #334155; --border: #cbd5e1;
             --leave-bg: #e0f2fe; --leave-border: #bae6fd; --leave-text: #0369a1;
-            --ai-accent: #8b5cf6;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
         
         body { 
-            display: flex; 
-            height: 100vh; 
-            overflow: hidden; 
             background-color: var(--bg); 
             color: var(--primary); 
+            padding: 20px;
+            overflow-y: auto;
         }
         
-        /* Layout Split & Toggle Animation */
-        .main-content { flex: 1; overflow-y: auto; padding: 15px; transition: width 0.3s ease; }
-        
-        .ai-sidebar {
-            width: 380px;
-            background: var(--card-bg);
-            border-left: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            box-shadow: -4px 0 15px rgba(0,0,0,0.03);
-            z-index: 10;
-            transition: transform 0.3s ease, margin-right 0.3s ease;
-        }
-        
-        .ai-sidebar.collapsed {
-            transform: translateX(100%);
-            margin-right: -380px; 
-        }
+        .main-content { max-width: 1600px; margin: 0 auto; padding: 15px; }
 
         header { 
             max-width: 100%; margin: 0 auto 15px auto; display: flex; justify-content: space-between; 
             align-items: center; background: var(--card-bg); padding: 15px 20px; border-radius: 8px; border: 1px solid var(--border);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
         h1 { font-size: 1.4rem; color: var(--primary); }
         
         .controls { display: flex; gap: 10px; align-items: center; }
         .btn { padding: 8px 14px; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 0.85rem; transition: background 0.2s; white-space: nowrap; }
         .btn-primary { background-color: var(--accent); color: white; }
+        .btn-primary:hover { background-color: #1d4ed8; }
         .btn-secondary { background-color: #e2e8f0; color: var(--primary); }
         .btn-secondary:hover { background-color: #cbd5e1; }
-        .btn-ai-toggle { background: var(--ai-accent); color: white; }
-        .btn-ai-toggle:hover { background: #7c3aed; }
 
-        .calendar-container { max-width: 100%; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; padding-bottom: 40px;}
+        .calendar-container { max-width: 100%; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; padding-bottom: 40px;}
         
-        .week-row { display: grid; grid-template-columns: 60px repeat(5, 1fr); gap: 8px; background: var(--card-bg); padding: 8px; border-radius: 8px; border: 1px solid var(--border); align-items: stretch; }
-        .week-label { display: flex; align-items: center; justify-content: center; background: #e2e8f0; color: #475569; font-weight: 800; font-size: 0.85rem; border-radius: 6px; text-align: center; }
+        .week-row { display: grid; grid-template-columns: 70px repeat(5, 1fr); gap: 10px; background: var(--card-bg); padding: 10px; border-radius: 8px; border: 1px solid var(--border); align-items: stretch; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
+        .week-label { display: flex; align-items: center; justify-content: center; background: #e2e8f0; color: #475569; font-weight: 800; font-size: 0.9rem; border-radius: 6px; text-align: center; }
 
-        .day-tile { background: #f8fafc; border: 1px solid var(--border); border-radius: 6px; padding: 8px; display: flex; flex-direction: column; justify-content: space-between; min-height: 160px; transition: all 0.2s ease; }
+        .day-tile { background: #f8fafc; border: 1px solid var(--border); border-radius: 6px; padding: 10px; display: flex; flex-direction: column; justify-content: space-between; min-height: 170px; transition: all 0.2s ease; position: relative; }
         .day-tile.holiday { background-color: #fef2f2; border-color: #fca5a5; }
         .day-tile.annual-leave { background-color: var(--leave-bg); border-color: var(--leave-border); color: var(--leave-text); }
         
-        .day-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; pointer-events: none; }
-        .day-date { font-weight: 700; font-size: 0.85rem; color: #0f172a; }
-        .day-name { font-size: 0.75rem; color: #64748b; font-weight: 700; }
+        .day-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; pointer-events: none; }
+        .day-date { font-weight: 700; font-size: 0.9rem; color: #0f172a; }
+        .day-name { font-size: 0.75rem; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
         
-        .alert-tag { background: #fee2e2; color: var(--warning); padding: 2px 4px; border-radius: 3px; font-size: 0.7rem; font-weight: 700; margin-bottom: 4px; display: inline-block; text-align: center; border: 1px solid #fca5a5; width: 100%; pointer-events: none; }
+        .alert-tag { background: #fee2e2; color: var(--warning); padding: 3px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: 700; margin-bottom: 6px; display: inline-block; text-align: center; border: 1px solid #fca5a5; width: 100%; pointer-events: none; }
         .alert-tag.leave-tag { background: #bae6fd; color: #0369a1; border-color: #7dd3fc; }
         .alert-tag.nsw-holiday-tag { background: #fef3c7; color: #b45309; border-color: #fcd34d; }
         
-        .store-list { display: flex; flex-direction: column; gap: 5px; min-height: 60px; padding: 2px; }
+        .store-list { display: flex; flex-direction: column; gap: 5px; min-height: 70px; padding: 2px; }
         
-        .store-chip { padding: 5px 8px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 5px; cursor: pointer; font-size: 0.75rem; display: flex; justify-content: space-between; align-items: center; user-select: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; box-shadow: 0 1px 2px rgba(0,0,0,0.03); transition: transform 0.15s; }
+        .store-chip { padding: 6px 10px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 5px; cursor: pointer; font-size: 0.75rem; display: flex; justify-content: space-between; align-items: center; user-select: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; box-shadow: 0 1px 2px rgba(0,0,0,0.03); transition: transform 0.15s; font-weight: 500; color: #334155; }
         .store-chip.dragging { transform: scale(1.03); background: #eff6ff; border-color: var(--accent); opacity: 0.9; }
         .store-placeholder { border: 2px dashed #93c5fd; background: #f0fdf4; border-radius: 5px; height: 28px; }
         
         .store-chip:hover:not(.dragging):not(.non-visit) { background: #fee2e2; border-color: #fca5a5; color: #991b1b; }
-        .store-chip:hover:not(.dragging):not(.non-visit)::after { content: "✕"; font-weight: 700; font-size: 0.7rem; color: #ef4444; margin-left: 4px; }
+        .store-chip:hover:not(.dragging):not(.non-visit)::after { content: "✕"; font-weight: 700; font-size: 0.7rem; color: #ef4444; margin-left: 6px; }
         
-        .store-chip.non-visit { background: #e2e8f0; color: #64748b; font-style: italic; cursor: default; text-align: center; justify-content: center;}
-        .store-chip.leave-chip { background: #f0f9ff; color: #0369a1; border-color: #cbd5e1; text-align: center; justify-content: center; font-weight: bold; padding: 12px 6px; cursor: default; }
+        .store-chip.non-visit { background: #e2e8f0; color: #64748b; font-style: italic; cursor: default; text-align: center; justify-content: center; font-weight: 600;}
+        .store-chip.leave-chip { background: #f0f9ff; color: #0369a1; border-color: #cbd5e1; text-align: center; justify-content: center; font-weight: bold; padding: 16px 6px; cursor: default; font-size: 0.85rem; }
+
+        .tile-actions { margin-top: 10px; padding-top: 6px; border-top: 1px dashed #e2e8f0; text-align: right; }
+        .edit-lnk { background: none; border: none; color: var(--accent); font-size: 0.75rem; font-weight: 600; cursor: pointer; text-decoration: none; }
+        .edit-lnk:hover { text-decoration: underline; color: #1d4ed8; }
 
         /* Floating Picker */
-        .floating-picker { display: none; position: fixed; background: white; border: 1px solid #94a3b8; border-radius: 8px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.15); z-index: 2000; width: 320px; max-height: 400px; flex-direction: column; overflow: hidden; }
-        .picker-header { background: #f8fafc; padding: 8px 12px; font-size: 0.8rem; font-weight: 700; border-bottom: 1px solid #e2e8f0; }
-        .picker-search { width: 100%; padding: 8px 10px; border: none; border-bottom: 1px solid #e2e8f0; font-size: 0.85rem; outline: none; }
-        .picker-list { overflow-y: auto; flex-grow: 1; padding: 4px 0; }
-        .picker-item { display: flex; align-items: center; gap: 8px; padding: 6px 12px; font-size: 0.78rem; cursor: pointer; color: #334155; }
+        .floating-picker { display: none; position: fixed; background: white; border: 1px solid #94a3b8; border-radius: 8px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.15); z-index: 2000; width: 340px; max-height: 400px; flex-direction: column; overflow: hidden; }
+        .picker-header { background: #f8fafc; padding: 10px 14px; font-size: 0.85rem; font-weight: 700; border-bottom: 1px solid #e2e8f0; }
+        .picker-search { width: 100%; padding: 10px 12px; border: none; border-bottom: 1px solid #e2e8f0; font-size: 0.85rem; outline: none; }
+        .picker-list { overflow-y: auto; flex-grow: 1; padding: 6px 0; }
+        .picker-item { display: flex; align-items: center; gap: 10px; padding: 8px 14px; font-size: 0.8rem; cursor: pointer; color: #334155; user-select: none; }
         .picker-item:hover { background: #f1f5f9; }
-        .picker-footer { padding: 8px 12px; border-top: 1px solid #e2e8f0; background: #f8fafc; display: flex; justify-content: flex-end; gap: 6px; }
+        .picker-item input { scale: 1.1; }
+        .picker-footer { padding: 10px 14px; border-top: 1px solid #e2e8f0; background: #f8fafc; display: flex; justify-content: flex-end; gap: 8px; }
 
-        /* AI Sidebar Styles */
-        .ai-header { background: var(--ai-accent); color: white; padding: 15px; font-weight: 700; font-size: 1.1rem; display: flex; justify-content: space-between; align-items: center; }
-        .ai-chat-area { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; background: #f8fafc; }
-        .chat-bubble { padding: 10px 14px; border-radius: 8px; font-size: 0.85rem; line-height: 1.4; max-width: 85%; word-wrap: break-word;}
-        .bubble-sys { background: #e2e8f0; color: #334155; align-self: flex-start; border-bottom-left-radius: 2px; }
-        .bubble-ai { background: #ede9fe; color: #4c1d95; align-self: flex-start; border-bottom-left-radius: 2px; border: 1px solid #ddd6fe; }
-        .bubble-user { background: var(--ai-accent); color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
-        .bubble-error { background: #fee2e2; color: #991b1b; align-self: flex-start; border-bottom-left-radius: 2px; border: 1px solid #fca5a5; font-family: monospace; font-size: 0.75rem;}
-        
-        .ai-input-area { padding: 15px; background: white; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 10px; }
-        .api-key-input { width: 100%; padding: 8px; font-size: 0.75rem; border: 1px dashed #cbd5e1; border-radius: 4px; outline: none; background: #f8fafc; }
-        .api-key-input:focus { border-color: var(--ai-accent); }
-        .chat-input-row { display: flex; gap: 8px; }
-        .chat-input-row input { flex: 1; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.85rem; outline: none; }
-        .btn-send { background: var(--ai-accent); color: white; border: none; padding: 0 15px; border-radius: 6px; font-weight: bold; cursor: pointer; }
-        .btn-send:hover { background: #7c3aed; }
-        
         /* Modal */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 3000; }
-        .modal-content { background: white; padding: 20px; border-radius: 8px; width: 350px; }
+        .modal-content { background: white; padding: 22px; border-radius: 8px; width: 380px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
         .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 5px; color: #475569; }
-        .form-group input { width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 4px; font-size: 0.85rem; }
+        .form-group label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 6px; color: #475569; }
+        .form-group input { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 4px; font-size: 0.85rem; outline: none; }
+        .form-group input:focus { border-color: var(--accent); }
 
         @media(max-width: 1200px) { .week-row { grid-template-columns: 1fr; } }
     </style>
@@ -126,66 +96,46 @@
         <header>
             <div>
                 <h1>2026 Master Roster</h1>
-                <p style="color: #64748b; font-size: 0.8rem; margin-top: 2px;">Left-Click: Delete | Right-Click: Add | Drag: Move | Ask AI Questions</p>
+                <p style="color: #64748b; font-size: 0.85rem; margin-top: 2px;">Left-Click: Delete Chip | Right-Click Tile: Add Accounts | Drag: Move Order</p>
             </div>
             <div class="controls">
-                <button class="btn btn-ai-toggle" onclick="toggleSidebar()">🤖 Toggle AI Helper</button>
                 <button class="btn btn-secondary" onclick="resetTracker()">Reset Data</button>
-                <button class="btn btn-primary" style="background:#0f172a;" onclick="exportData()">Export JSON</button>
+                <button class="btn btn-primary" onclick="exportData()">Export JSON Backup</button>
             </div>
         </header>
 
         <div class="calendar-container" id="calendarContainer"></div>
     </div>
 
-    <div class="ai-sidebar" id="aiSidebar">
-        <div class="ai-header">
-            ✨ Gemini Route AI
-            <button style="background:none; border:none; color:white; cursor:pointer; font-size:1.2rem;" onclick="toggleSidebar()">✕</button>
-        </div>
-        <div class="ai-chat-area" id="chatArea">
-            <div class="chat-bubble bubble-sys"><strong>Welcome!</strong><br><br>You can ask me questions about your schedule (e.g. "How many times am I at Acacia Ridge?"), or you can tell me to make changes to your route.</div>
-        </div>
-        <div class="ai-input-area">
-            <input type="password" id="apiKey" class="api-key-input" placeholder="Paste Google API Key here..." onchange="saveKey()">
-            <div class="chat-input-row">
-                <input type="text" id="aiInput" placeholder="Ask a question or request a change..." onkeypress="handleEnter(event)">
-                <button class="btn-send" onclick="askAI()">Send</button>
-            </div>
-        </div>
-    </div>
-
     <div class="floating-picker" id="floatingStorePicker">
         <div class="picker-header"><span>Quick Add Accounts</span></div>
-        <input type="text" class="picker-search" id="pickerSearch" placeholder="Search..." oninput="filterPickerStores()">
+        <input type="text" class="picker-search" id="pickerSearch" placeholder="Filter stores..." oninput="filterPickerStores()">
         <div class="picker-list" id="pickerList"></div>
         <div class="picker-footer">
-            <button class="btn btn-secondary" style="padding: 4px 8px; font-size: 0.75rem;" onclick="closePicker()">Cancel</button>
-            <button class="btn btn-primary" style="padding: 4px 8px; font-size: 0.75rem;" id="pickerSubmitBtn">Add Selected</button>
+            <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.8rem;" onclick="closePicker()">Cancel</button>
+            <button class="btn btn-primary" style="padding: 6px 12px; font-size: 0.8rem;" id="pickerSubmitBtn">Add Selected</button>
         </div>
     </div>
 
     <div class="modal" id="editModal">
         <div class="modal-content">
-            <h3 style="font-size:1.1rem; margin-bottom: 15px;">Edit Day Logistics</h3>
-            <div style="display:flex; align-items:center; gap:8px; background:#f0f9ff; padding:10px; border:1px solid #bae6fd; border-radius:6px; margin-bottom:15px;">
-                <input type="checkbox" id="editIsLeave" style="scale:1.2;">
-                <label for="editIsLeave" style="font-weight:bold; color:#0369a1; font-size:0.85rem; margin:0;">🌴 Mark as Annual Leave</label>
+            <h3 style="font-size:1.1rem; margin-bottom: 15px; color: var(--primary);">Edit Day Logistics</h3>
+            <div style="display:flex; align-items:center; gap:10px; background:#f0f9ff; padding:12px; border:1px solid #bae6fd; border-radius:6px; margin-bottom:15px;">
+                <input type="checkbox" id="editIsLeave" style="scale:1.25; cursor: pointer;">
+                <label for="editIsLeave" style="font-weight:bold; color:#0369a1; font-size:0.85rem; margin:0; cursor: pointer;">🌴 Mark as Annual Leave</label>
             </div>
             <div class="form-group" id="accomGroup">
-                <label>Accommodation / Booking Alert</label>
+                <label>Accommodation / Booking Status</label>
                 <input type="text" id="editAccommodation" placeholder="e.g. 🛏️ BOOK TRIP (Toowoomba)">
             </div>
-            <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:15px;">
+            <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:20px;">
                 <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
-                <button class="btn btn-primary" onclick="saveDayEdits()">Save</button>
+                <button class="btn btn-primary" onclick="saveDayEdits()">Save Changes</button>
             </div>
         </div>
     </div>
 
     <script>
-        function toggleSidebar() { document.getElementById('aiSidebar').classList.toggle('collapsed'); }
-
         const masterStores = [
             "Metcash Drakes Mcdowall", "Metcash IGA M Hoppers Ascot", "Metcash IGA M Frenchs Forest", "Metcash IGA M Dayboro Valley", "Metcash Drakes Samford", "Metcash IGA M Cashmere", "Metcash Fresh & Save Deagon", "Metcash IGA L Burpengary (Seasons)",
             "Metcash IGA M Sanctuary Cove (Jones)", "Metcash Drakes Hollywell Road Markets", "Metcash L Queen Street Village Southport", "Metcash Drakes Nerang Road Ashmore", "Metcash IGA M Mermaid Waters", "Metcash IGA M Nerang (Spano)", "Metcash IGA M Robina (Easy T) (Spano)", "Metcash IGA M Currumbin Fair", "Metcash IGA M Tugun Beach", "Metcash IGA M Tweed Valley Way (Bugg)", "Metcash IGA Local Grocer Pottsville", "Metcash Supa Valu Ritchies Ballina",
@@ -292,7 +242,7 @@
             { id: "65", week: "W35", date: "04/09/2026", day: "Friday", stores: [...basePatterns.FridayA], accommodation: "HOME BASE", isLeave: false },
 
             { id: "66", week: "W36", date: "07/09/2026", day: "Monday", stores: [...basePatterns.MondayB], accommodation: "HOME BASE", isLeave: false },
-            { id: "67", week: "W36", date: "08/09/2026", day: "Tuesday", stores: ["Metcash Fwks Tenterfield", "Metcash IGA L Inverell", "Metcash IGA M Bingara", "Metcash IGA M Warialda", "Metcash IGA M Guyra", "Metcash F&S Armidale"], accommodation: "🛏️ BOOK TRIP (Armidale)", isLeave: false },
+            { id: "67", week: "W36", date: "08/09/2026", day: "Tuesday", stores: ["Metcash IGA M Miles", "Metcash IGA L Inverell", "Metcash IGA M Bingara", "Metcash IGA M Warialda", "Metcash IGA M Guyra", "Metcash F&S Armidale"], accommodation: "🛏️ BOOK TRIP (Armidale)", isLeave: false },
             { id: "68", week: "W36", date: "09/09/2026", day: "Wednesday", stores: ["Metcash Fwks Uralla", "Metcash IGA L Tamworth", "Metcash IGA M Kootingal", "Metcash IGA L Quirindi", "Metcash IGA M Walcha Plus", "Metcash IGA M Manilla Plus"], accommodation: "🛏️ BOOK TRIP (Tamworth)", isLeave: false },
             { id: "69", week: "W36", date: "10/09/2026", day: "Thursday", stores: ["Metcash IGA L Wee Waa", "Metcash IGA M L Kyogle (Ritchies)", "Metcash IGA M Russell Island", "ADMIN DATA LOGS IN MOTEL"], accommodation: "🛏️ BOOK TRIP (Kyogle)", isLeave: false },
             { id: "70", week: "W36", date: "11/09/2026", day: "Friday", stores: [...basePatterns.FridayB], accommodation: "HOME BASE", isLeave: false },
@@ -522,7 +472,9 @@
                 item.style.display = item.querySelector('span').innerText.toLowerCase().includes(f) ? 'flex' : 'none';
             });
         }
+
         function closePicker() { document.getElementById('floatingStorePicker').style.display = 'none'; currentPickerDayId = null; }
+        
         document.addEventListener('click', (e) => {
             const picker = document.getElementById('floatingStorePicker');
             if (picker.style.display === 'flex' && !picker.contains(e.target)) closePicker();
@@ -587,6 +539,7 @@
         });
 
         function closeModal() { document.getElementById('editModal').style.display = 'none'; }
+        
         function saveDayEdits() {
             const dayData = roster.find(d => d.id === currentEditingId);
             dayData.isLeave = document.getElementById('editIsLeave').checked;
@@ -595,7 +548,11 @@
         }
 
         function resetTracker() {
-            if(confirm("Reset entire roster?")) { localStorage.removeItem('kyal_roster_data_v13'); roster = JSON.parse(JSON.stringify(initialRosterData)); renderCalendar(); }
+            if(confirm("Are you sure you want to reset the entire roster back to default layouts? All custom entries will be lost.")) { 
+                localStorage.removeItem('kyal_roster_data_v13'); 
+                roster = JSON.parse(JSON.stringify(initialRosterData)); 
+                renderCalendar(); 
+            }
         }
 
         function exportData() {
@@ -606,113 +563,6 @@
             document.body.appendChild(downloadAnchor);
             downloadAnchor.click();
             downloadAnchor.remove();
-        }
-
-        // --- AI LOGIC (WITH STRICT ERROR REPORTING) ---
-        window.addEventListener('DOMContentLoaded', () => {
-            if(localStorage.getItem('gemini_api_key')) document.getElementById('apiKey').value = localStorage.getItem('gemini_api_key');
-        });
-        function saveKey() { localStorage.setItem('gemini_api_key', document.getElementById('apiKey').value.trim()); }
-        function handleEnter(e) { if(e.key === 'Enter') askAI(); }
-        
-        function appendChat(role, text) {
-            const area = document.getElementById('chatArea');
-            const bubble = document.createElement('div');
-            
-            if(role === 'System') bubble.className = 'chat-bubble bubble-sys';
-            else if(role === 'AI') bubble.className = 'chat-bubble bubble-ai';
-            else if(role === 'Error') bubble.className = 'chat-bubble bubble-error';
-            else bubble.className = 'chat-bubble bubble-user';
-            
-            bubble.innerHTML = text;
-            area.appendChild(bubble);
-            area.scrollTop = area.scrollHeight;
-        }
-
-        async function askAI() {
-            const key = document.getElementById('apiKey').value.trim();
-            const input = document.getElementById('aiInput');
-            const promptText = input.value.trim();
-            
-            if (!key) return alert("Please enter your Google API key in the box first.");
-            if (!promptText) return;
-
-            appendChat("User", promptText);
-            input.value = '';
-            
-            const minRoster = roster.map(d => ({id: d.id, date: d.date, day: d.day, week: d.week, stores: d.stores, isLeave: !!d.isLeave}));
-            
-            const systemPrompt = `You are an expert field sales scheduling AI. Below is the user's current roster in JSON format:
-${JSON.stringify(minRoster)}
-
-The user request is: "${promptText}"
-
-INSTRUCTIONS:
-1. If the user is asking a conversational or factual question about the schedule (e.g., "How many times do I visit Acacia Ridge?", "When is my next trip?"), answer them directly and clearly in plain text. DO NOT output JSON.
-2. If the user is asking to MAKE CHANGES to the schedule (e.g. move, delete, add stores, or change to annual leave), reply with a brief friendly message, AND you MUST output a JSON array formatted exactly like this inside a markdown block:
-\`\`\`json
-[
-  {"id": "1", "stores": ["Store A", "Store B"]},
-  {"id": "2", "isLeave": true}
-]
-\`\`\`
-Only include the days that are changing. Do not modify IDs. If no changes are needed, DO NOT output JSON.`;
-
-            appendChat("System", "<em>Processing request...</em>");
-
-            try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: systemPrompt }] }]
-                    })
-                });
-
-                const data = await response.json();
-                
-                // Remove the "Processing..." message
-                const chatArea = document.getElementById('chatArea');
-                chatArea.removeChild(chatArea.lastChild);
-
-                // **NEW: Strict Error Handling to catch Google API Rejections**
-                if (data.error) {
-                    appendChat("Error", `<b>Google API Error:</b><br>${data.error.message}<br><br><i>Tip: Check if your API key is correct and has no extra spaces.</i>`);
-                    return;
-                }
-
-                if(data.candidates && data.candidates[0].content.parts[0].text) {
-                    const fullReply = data.candidates[0].content.parts[0].text;
-                    
-                    const jsonMatch = fullReply.match(/```json\n([\s\S]*?)\n```/);
-                    if (jsonMatch) {
-                        try {
-                            const changes = JSON.parse(jsonMatch[1]);
-                            changes.forEach(c => {
-                                const target = roster.find(r => r.id === c.id);
-                                if (target) {
-                                    if (c.stores) target.stores = c.stores;
-                                    if (c.isLeave !== undefined) target.isLeave = c.isLeave;
-                                }
-                            });
-                            saveData();
-                            renderCalendar();
-                        } catch(e) {
-                            console.error("AI JSON Parse Error: ", e);
-                        }
-                    }
-                    
-                    const cleanReply = fullReply.replace(/```json\n[\s\S]*?\n```/, '').trim();
-                    if (cleanReply) appendChat("AI", cleanReply);
-                    
-                } else {
-                    appendChat("Error", "⚠️ Unexpected response format received from Google.");
-                }
-            } catch (err) {
-                const chatArea = document.getElementById('chatArea');
-                chatArea.removeChild(chatArea.lastChild);
-                appendChat("Error", `⚠️ Network Connection Failed.<br>Error: ${err.message}`);
-            }
         }
 
         renderCalendar();
