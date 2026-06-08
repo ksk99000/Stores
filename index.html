@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2026 Master Roster Planner - Annual Leave Edition</title>
+    <title>2026 Master Roster Planner - AI Assistant Edition</title>
     <style>
         :root {
             --primary: #0f172a;
@@ -17,6 +17,7 @@
             --leave-bg: #e0f2fe; /* Soft light blue for Annual Leave */
             --leave-border: #bae6fd;
             --leave-text: #0369a1;
+            --ai-btn: #8b5cf6; /* Purple accent for AI helper button */
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
@@ -41,6 +42,8 @@
         .btn-primary:hover { background-color: #1d4ed8; }
         .btn-secondary { background-color: #e2e8f0; color: var(--primary); }
         .btn-secondary:hover { background-color: #cbd5e1; }
+        .btn-ai { background-color: var(--ai-btn); color: white; }
+        .btn-ai:hover { background-color: #7c3aed; }
 
         .calendar-container { max-width: 1650px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
         
@@ -130,9 +133,10 @@
     <header>
         <div>
             <h1>2026 Master Roster Planner</h1>
-            <p style="color: #64748b; font-size: 0.8rem; margin-top: 2px;">Widescreen Optimised Tracker | Dropdowns & Annual Leave Toggle Enabled</p>
+            <p style="color: #64748b; font-size: 0.8rem; margin-top: 2px;">Widescreen Optimised Tracker | Dropdowns, Annual Leave & AI Export Connected</p>
         </div>
         <div class="controls">
+            <button class="btn btn-ai" id="aiCopyBtn" onclick="copyRosterForAI()">✨ Copy Roster for AI</button>
             <button class="btn btn-secondary" onclick="resetTracker()">Reset Roster</button>
             <button class="btn btn-primary" onclick="exportData()">Export JSON Backup</button>
         </div>
@@ -489,7 +493,6 @@
                     container.appendChild(currentWeekRow);
                 }
 
-                // Append custom styling class if day is marked as Annual Leave
                 const tile = document.createElement('div');
                 tile.className = `day-tile ${day.isHoliday ? 'holiday' : ''} ${day.isLeave ? 'annual-leave' : ''}`;
 
@@ -553,7 +556,6 @@
             const leaveCheckbox = document.getElementById('editIsLeave');
             leaveCheckbox.checked = dayData.isLeave || false;
 
-            // Generate content inside inner field wrapper
             generateModalFieldsHtml(dayData);
             toggleModalLeaveView(dayData.isLeave);
 
@@ -609,7 +611,6 @@
             
             dayData.isLeave = leaveState;
             
-            // Only scrape normal fields if leave wasn't activated
             if (!leaveState) {
                 dayData.notes = document.getElementById('editNotes').value;
                 dayData.accommodation = document.getElementById('editAccommodation').value;
@@ -646,6 +647,30 @@
             document.body.appendChild(downloadAnchor);
             downloadAnchor.click();
             downloadAnchor.remove();
+        }
+
+        // New feature: Simple clipboard copy function for AI prompts
+        function copyRosterForAI() {
+            let logText = "CURRENT ROSTER SCHEDULE PLAN:\n\n";
+            roster.forEach(day => {
+                logText += `${day.date} (${day.day}) [Week: ${day.week}]\n`;
+                logText += `Status: ${day.isLeave ? 'ANNUAL LEAVE' : 'Working'}\n`;
+                if(!day.isLeave) {
+                    logText += `Notes: ${day.notes || 'None'}\n`;
+                    logText += `Lodging: ${day.accommodation || 'HOME BASE'}\n`;
+                    logText += `Sequence: ${day.stores.join(' -> ')}\n`;
+                }
+                logText += "-----------------------------------\n";
+            });
+
+            navigator.clipboard.writeText(logText).then(() => {
+                const btn = document.getElementById('aiCopyBtn');
+                const origText = btn.innerText;
+                btn.innerText = "✓ Copied to Clipboard!";
+                setTimeout(() => { btn.innerText = origText; }, 2000);
+            }).catch(err => {
+                alert("Could not copy automatically. Please try again.");
+            });
         }
 
         renderCalendar();
