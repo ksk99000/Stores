@@ -3,221 +3,149 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2026 Master Roster Planner - Automation Edition</title>
+    <title>2026 Master Roster - AI Pro Edition</title>
     <style>
         :root {
-            --primary: #0f172a;
-            --accent: #2563eb;
-            --success: #16a34a;
-            --warning: #dc2626;
-            --bg: #f1f5f9;
-            --card-bg: #ffffff;
-            --text: #334155;
-            --border: #cbd5e1;
-            --leave-bg: #e0f2fe;
-            --leave-border: #bae6fd;
-            --leave-text: #0369a1;
+            --primary: #0f172a; --accent: #2563eb; --success: #16a34a; --warning: #dc2626;
+            --bg: #f1f5f9; --card-bg: #ffffff; --text: #334155; --border: #cbd5e1;
+            --leave-bg: #e0f2fe; --leave-border: #bae6fd; --leave-text: #0369a1;
+            --ai-accent: #8b5cf6;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
-        body { background-color: var(--bg); color: var(--primary); padding: 15px; }
         
-        header { 
-            max-width: 1650px; 
-            margin: 0 auto 15px auto; 
+        body { 
             display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            background: var(--card-bg);
-            padding: 15px 20px;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            height: 100vh; 
+            overflow: hidden; 
+            background-color: var(--bg); 
+            color: var(--primary); 
         }
-        h1 { font-size: 1.5rem; color: var(--primary); }
+        
+        /* Layout Split */
+        .main-content { flex: 1; overflow-y: auto; padding: 15px; }
+        
+        .ai-sidebar {
+            width: 380px;
+            background: var(--card-bg);
+            border-left: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            box-shadow: -4px 0 15px rgba(0,0,0,0.03);
+            z-index: 10;
+        }
+
+        header { 
+            max-width: 1650px; margin: 0 auto 15px auto; display: flex; justify-content: space-between; 
+            align-items: center; background: var(--card-bg); padding: 15px 20px; border-radius: 8px; border: 1px solid var(--border);
+        }
+        h1 { font-size: 1.4rem; color: var(--primary); }
         
         .controls { display: flex; gap: 10px; align-items: center; }
         .btn { padding: 8px 14px; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 0.85rem; transition: background 0.2s; white-space: nowrap; }
         .btn-primary { background-color: var(--accent); color: white; }
-        .btn-primary:hover { background-color: #1d4ed8; }
         .btn-secondary { background-color: #e2e8f0; color: var(--primary); }
         .btn-secondary:hover { background-color: #cbd5e1; }
 
-        .calendar-container { max-width: 1650px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
+        .calendar-container { max-width: 1650px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; padding-bottom: 40px;}
         
-        .week-row { 
-            display: grid; 
-            grid-template-columns: 70px repeat(5, 1fr); 
-            gap: 8px; 
-            background: var(--card-bg); 
-            padding: 10px; 
-            border-radius: 8px; 
-            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
-            align-items: stretch;
-        }
-        
-        .week-label { 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            background: #e2e8f0; 
-            color: #475569; 
-            font-weight: 800; 
-            font-size: 0.9rem; 
-            border-radius: 6px; 
-            text-align: center;
-        }
+        .week-row { display: grid; grid-template-columns: 60px repeat(5, 1fr); gap: 8px; background: var(--card-bg); padding: 8px; border-radius: 8px; border: 1px solid var(--border); align-items: stretch; }
+        .week-label { display: flex; align-items: center; justify-content: center; background: #e2e8f0; color: #475569; font-weight: 800; font-size: 0.85rem; border-radius: 6px; text-align: center; }
 
-        .day-tile { 
-            background: #f8fafc; 
-            border: 1px solid var(--border); 
-            border-radius: 6px; 
-            padding: 8px; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: space-between;
-            min-height: 160px;
-            position: relative;
-            transition: border-color 0.2s, background-color 0.2s;
-        }
+        .day-tile { background: #f8fafc; border: 1px solid var(--border); border-radius: 6px; padding: 8px; display: flex; flex-direction: column; justify-content: space-between; min-height: 160px; transition: all 0.2s ease; }
         .day-tile.holiday { background-color: #fef2f2; border-color: #fca5a5; }
         .day-tile.annual-leave { background-color: var(--leave-bg); border-color: var(--leave-border); color: var(--leave-text); }
         
         .day-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; pointer-events: none; }
-        .day-tile.annual-leave .day-header { border-bottom-color: var(--leave-border); }
         .day-date { font-weight: 700; font-size: 0.85rem; color: #0f172a; }
         .day-name { font-size: 0.75rem; color: #64748b; font-weight: 700; }
         
-        .alert-tag { background: #fee2e2; color: var(--warning); padding: 2px 4px; border-radius: 3px; font-size: 0.7rem; font-weight: 700; margin-bottom: 4px; display: inline-block; text-align: center; border: 1px solid #fca5a5; width: 100%; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; pointer-events: none; }
+        .alert-tag { background: #fee2e2; color: var(--warning); padding: 2px 4px; border-radius: 3px; font-size: 0.7rem; font-weight: 700; margin-bottom: 4px; display: inline-block; text-align: center; border: 1px solid #fca5a5; width: 100%; pointer-events: none; }
         .alert-tag.leave-tag { background: #bae6fd; color: #0369a1; border-color: #7dd3fc; }
         .alert-tag.nsw-holiday-tag { background: #fef3c7; color: #b45309; border-color: #fcd34d; }
         
-        .store-list { display: flex; flex-direction: column; gap: 5px; min-height: 60px; padding: 2px; border-radius: 4px; }
+        .store-list { display: flex; flex-direction: column; gap: 5px; min-height: 60px; padding: 2px; }
         
-        .store-chip { 
-            padding: 5px 8px; 
-            background: #ffffff; 
-            border: 1px solid #cbd5e1; 
-            border-radius: 5px; 
-            cursor: pointer; 
-            font-size: 0.78rem; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            user-select: none; 
-            white-space: nowrap; 
-            overflow: hidden; 
-            text-overflow: ellipsis; 
-            box-shadow: 0 1px 2px rgba(0,0,0,0.03);
-            transition: transform 0.15s, box-shadow 0.15s;
-        }
-        .store-chip:active { cursor: grabbing; }
-        .store-chip.dragging { transform: scale(1.03); box-shadow: 0 4px 10px rgba(15, 23, 42, 0.15); background: #eff6ff; border-color: var(--accent); opacity: 0.9; }
-        
+        .store-chip { padding: 5px 8px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 5px; cursor: pointer; font-size: 0.75rem; display: flex; justify-content: space-between; align-items: center; user-select: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; box-shadow: 0 1px 2px rgba(0,0,0,0.03); transition: transform 0.15s; }
+        .store-chip.dragging { transform: scale(1.03); background: #eff6ff; border-color: var(--accent); opacity: 0.9; }
         .store-placeholder { border: 2px dashed #93c5fd; background: #f0fdf4; border-radius: 5px; height: 28px; }
-
+        
         .store-chip:hover:not(.dragging):not(.non-visit) { background: #fee2e2; border-color: #fca5a5; color: #991b1b; }
         .store-chip:hover:not(.dragging):not(.non-visit)::after { content: "✕"; font-weight: 700; font-size: 0.7rem; color: #ef4444; margin-left: 4px; }
         
-        .store-chip.non-visit { background: #e2e8f0; color: #64748b; font-style: italic; cursor: default; pointer-events: none; text-align: center; justify-content: center;}
-        .store-chip.leave-chip { background: #f0f9ff; color: #0369a1; border-color: #cbd5e1; text-align: center; justify-content: center; font-weight: bold; padding: 12px 6px; cursor: default; pointer-events: none; }
+        .store-chip.non-visit { background: #e2e8f0; color: #64748b; font-style: italic; cursor: default; text-align: center; justify-content: center;}
+        .store-chip.leave-chip { background: #f0f9ff; color: #0369a1; border-color: #cbd5e1; text-align: center; justify-content: center; font-weight: bold; padding: 12px 6px; cursor: default; }
 
-        .tile-actions { display: flex; justify-content: flex-end; margin-top: 6px; padding-top: 4px; border-top: 1px dashed #e2e8f0; }
-        .edit-lnk { font-size: 0.7rem; color: var(--accent); cursor: pointer; background: none; border: none; font-weight: 600; }
-
-        /* Floating Store Selector Dropdown */
-        .floating-picker {
-            display: none;
-            position: fixed;
-            background: white;
-            border: 1px solid #94a3b8;
-            border-radius: 8px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.15);
-            z-index: 2000;
-            width: 320px;
-            max-height: 400px;
-            flex-direction: column;
-            overflow: hidden;
-        }
-        .picker-header {
-            background: #f8fafc;
-            padding: 8px 12px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            border-bottom: 1px solid #e2e8f0;
-            color: #1e293b;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .picker-search {
-            width: 100%;
-            padding: 6px 10px;
-            border: none;
-            border-bottom: 1px solid #e2e8f0;
-            font-size: 0.8rem;
-            outline: none;
-        }
-        .picker-list {
-            overflow-y: auto;
-            flex-grow: 1;
-            padding: 4px 0;
-        }
-        .picker-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 6px 12px;
-            font-size: 0.78rem;
-            cursor: pointer;
-            color: #334155;
-            user-select: none;
-        }
+        /* Floating Picker */
+        .floating-picker { display: none; position: fixed; background: white; border: 1px solid #94a3b8; border-radius: 8px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.15); z-index: 2000; width: 320px; max-height: 400px; flex-direction: column; overflow: hidden; }
+        .picker-header { background: #f8fafc; padding: 8px 12px; font-size: 0.8rem; font-weight: 700; border-bottom: 1px solid #e2e8f0; }
+        .picker-search { width: 100%; padding: 8px 10px; border: none; border-bottom: 1px solid #e2e8f0; font-size: 0.85rem; outline: none; }
+        .picker-list { overflow-y: auto; flex-grow: 1; padding: 4px 0; }
+        .picker-item { display: flex; align-items: center; gap: 8px; padding: 6px 12px; font-size: 0.78rem; cursor: pointer; color: #334155; }
         .picker-item:hover { background: #f1f5f9; }
-        .picker-item input { cursor: pointer; }
-        .picker-footer {
-            padding: 8px 12px;
-            border-top: 1px solid #e2e8f0;
-            background: #f8fafc;
-            display: flex;
-            justify-content: flex-end;
-            gap: 6px;
-        }
-        
-        /* Modal Base Setup */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 100; }
-        .modal-content { background: white; padding: 20px; border-radius: 8px; max-width: 450px; width: 90%; }
-        .form-group { margin-bottom: 10px; }
-        .form-group label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 2px; color: #475569; }
-        .form-group input { width: 100%; padding: 6px; border: 1px solid var(--border); border-radius: 4px; font-size: 0.85rem; }
-        .form-checkbox { display: flex; align-items: center; gap: 8px; background: #f0f9ff; padding: 10px; border-radius: 6px; border: 1px solid #bae6fd; margin-bottom: 12px; }
-        .form-checkbox label { font-weight: 700; color: #0369a1; cursor: pointer; font-size: 0.85rem; }
-        .modal-buttons { display: flex; justify-content: flex-end; gap: 8px; margin-top: 15px; }
+        .picker-footer { padding: 8px 12px; border-top: 1px solid #e2e8f0; background: #f8fafc; display: flex; justify-content: flex-end; gap: 6px; }
 
-        @media(max-width: 1200px) {
-            .week-row { grid-template-columns: 1fr; }
-        }
+        /* AI Sidebar Styles */
+        .ai-header { background: var(--ai-accent); color: white; padding: 15px; font-weight: 700; font-size: 1.1rem; display: flex; justify-content: space-between; align-items: center; }
+        .ai-chat-area { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; background: #f8fafc; }
+        .chat-bubble { padding: 10px 14px; border-radius: 8px; font-size: 0.85rem; line-height: 1.4; max-width: 85%; }
+        .bubble-sys { background: #e2e8f0; color: #334155; align-self: flex-start; border-bottom-left-radius: 2px; }
+        .bubble-ai { background: #ede9fe; color: #4c1d95; align-self: flex-start; border-bottom-left-radius: 2px; border: 1px solid #ddd6fe; }
+        .bubble-user { background: var(--ai-accent); color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
+        
+        .ai-input-area { padding: 15px; background: white; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 10px; }
+        .api-key-input { width: 100%; padding: 8px; font-size: 0.75rem; border: 1px dashed #cbd5e1; border-radius: 4px; outline: none; background: #f8fafc; }
+        .api-key-input:focus { border-color: var(--ai-accent); }
+        .chat-input-row { display: flex; gap: 8px; }
+        .chat-input-row input { flex: 1; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.85rem; outline: none; }
+        .chat-input-row input:focus { border-color: var(--ai-accent); }
+        .btn-send { background: var(--ai-accent); color: white; border: none; padding: 0 15px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .btn-send:hover { background: #7c3aed; }
+        
+        /* Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 3000; }
+        .modal-content { background: white; padding: 20px; border-radius: 8px; width: 350px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 5px; color: #475569; }
+        .form-group input { width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 4px; font-size: 0.85rem; }
     </style>
 </head>
 <body>
 
-    <header>
-        <div>
-            <h1>2026 Master Roster Planner</h1>
-            <p style="color: #64748b; font-size: 0.8rem; margin-top: 2px;">Left-Click to Delete Store | Right-Click Card to Quick-Add | Public Holidays Automated & Locked</p>
-        </div>
-        <div class="controls">
-            <button class="btn btn-secondary" onclick="resetTracker()">Reset Roster</button>
-            <button class="btn btn-primary" onclick="exportData()">Export JSON Backup</button>
-        </div>
-    </header>
+    <div class="main-content">
+        <header>
+            <div>
+                <h1>2026 Master Roster</h1>
+                <p style="color: #64748b; font-size: 0.8rem; margin-top: 2px;">Left-Click: Delete | Right-Click: Add | Drag: Move | Sidepanel: AI Commands</p>
+            </div>
+            <div class="controls">
+                <button class="btn btn-secondary" onclick="resetTracker()">Reset Data</button>
+                <button class="btn btn-primary" style="background:#0f172a;" onclick="exportData()">Export JSON</button>
+            </div>
+        </header>
 
-    <div class="calendar-container" id="calendarContainer"></div>
+        <div class="calendar-container" id="calendarContainer"></div>
+    </div>
+
+    <div class="ai-sidebar">
+        <div class="ai-header">
+            ✨ Gemini Route AI
+        </div>
+        <div class="ai-chat-area" id="chatArea">
+            <div class="chat-bubble bubble-sys"><strong>Welcome!</strong><br><br>1. Paste your Gemini API Key below.<br>2. Tell me what you want to change (e.g. "Mark next week as Annual Leave" or "Move all Gold Coast stores to Thursday").<br>3. I will update your calendar automatically.</div>
+        </div>
+        <div class="ai-input-area">
+            <input type="password" id="apiKey" class="api-key-input" placeholder="Paste Google API Key here..." onchange="saveKey()">
+            <div class="chat-input-row">
+                <input type="text" id="aiInput" placeholder="Tell me what to update..." onkeypress="handleEnter(event)">
+                <button class="btn-send" onclick="askAI()">Send</button>
+            </div>
+        </div>
+    </div>
 
     <div class="floating-picker" id="floatingStorePicker">
-        <div class="picker-header">
-            <span>Quick Add Territory Accounts</span>
-        </div>
-        <input type="text" class="picker-search" id="pickerSearch" placeholder="Search accounts..." oninput="filterPickerStores()">
+        <div class="picker-header"><span>Quick Add Accounts</span></div>
+        <input type="text" class="picker-search" id="pickerSearch" placeholder="Search..." oninput="filterPickerStores()">
         <div class="picker-list" id="pickerList"></div>
         <div class="picker-footer">
             <button class="btn btn-secondary" style="padding: 4px 8px; font-size: 0.75rem;" onclick="closePicker()">Cancel</button>
@@ -227,15 +155,18 @@
 
     <div class="modal" id="editModal">
         <div class="modal-content">
-            <div class="modal-header" id="modalTitle" style="font-weight:700; margin-bottom:10px;">Edit Day Logistics</div>
-            <div class="form-checkbox">
-                <input type="checkbox" id="editIsLeave" onchange="toggleModalLeaveView(this.checked)">
-                <label for="editIsLeave">🌴 Mark day as Annual Leave (A/L)</label>
+            <h3 style="font-size:1.1rem; margin-bottom: 15px;">Edit Day Logistics</h3>
+            <div style="display:flex; align-items:center; gap:8px; background:#f0f9ff; padding:10px; border:1px solid #bae6fd; border-radius:6px; margin-bottom:15px;">
+                <input type="checkbox" id="editIsLeave" style="scale:1.2;">
+                <label for="editIsLeave" style="font-weight:bold; color:#0369a1; font-size:0.85rem; margin:0;">🌴 Mark as Annual Leave</label>
             </div>
-            <div id="modalFields"></div>
-            <div class="modal-buttons">
+            <div class="form-group" id="accomGroup">
+                <label>Accommodation / Booking Alert</label>
+                <input type="text" id="editAccommodation" placeholder="e.g. 🛏️ BOOK TRIP (Toowoomba)">
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:15px;">
                 <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
-                <button class="btn btn-primary" onclick="saveDayEdits()">Save Changes</button>
+                <button class="btn btn-primary" onclick="saveDayEdits()">Save</button>
             </div>
         </div>
     </div>
@@ -277,132 +208,132 @@
             { id: "7", week: "W24", date: "16/06/2026", day: "Tuesday", stores: ["Metcash IGA M Miles", "Metcash Foodworks Tara 2020", "Metcash IGA M Roma (Cornetts)", "Metcash Drakes Toowoomba High St", "Metcash IGA L Oakey (Cornetts)", "Metcash IGA M Pittsworth"], accommodation: "🛏️ BOOK TRIP (Toowoomba)", isLeave: false },
             { id: "8", week: "W24", date: "17/06/2026", day: "Wednesday", stores: ["Metcash IGA M Crows Nest", "Metcash IGA M Allora", "Metcash IGA L Warwick (Spano)", "Metcash IGA L Stanthorpe (Spano)", "Metcash Foodworks Goondiwindi", "Metcash Foodworks Killarney"], accommodation: "🛏️ BOOK TRIP (Warwick)", isLeave: false },
             { id: "9", week: "W24", date: "18/06/2026", day: "Thursday", stores: ["Metcash IGA M Beaudesert (Jones)", "Metcash IGA M Canungra", "Metcash IGA M Mt Tamborine", "Metcash IGA M Russell Island", "ADMIN & VEHICLE LOGS"], accommodation: "HOME BASE", isLeave: false },
-            { id: "10", week: "W24", date: "19/06/2026", day: "Friday", stores: [...basePatterns.FridayB], accommodation: "HOME BASE", isLeave: false }
+            { id: "10", week: "W24", date: "19/06/2026", day: "Friday", stores: [...basePatterns.FridayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "11", week: "W25", date: "22/06/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "12", week: "W25", date: "23/06/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "13", week: "W25", date: "24/06/2026", day: "Wednesday", stores: [...basePatterns.WednesdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "14", week: "W25", date: "25/06/2026", day: "Thursday", stores: [...basePatterns.ThursdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "15", week: "W25", date: "26/06/2026", day: "Friday", stores: [...basePatterns.FridayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "16", week: "W26", date: "29/06/2026", day: "Monday", stores: [...basePatterns.MondayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "17", week: "W26", date: "30/06/2026", day: "Tuesday", stores: [...basePatterns.TuesdayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "18", week: "W26", date: "01/07/2026", day: "Wednesday", stores: [...basePatterns.WednesdayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "19", week: "W26", date: "02/07/2026", day: "Thursday", stores: [...basePatterns.ThursdayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "20", week: "W26", date: "03/07/2026", day: "Friday", stores: [...basePatterns.FridayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "21", week: "W27", date: "06/07/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "22", week: "W27", date: "07/07/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "23", week: "W27", date: "08/07/2026", day: "Wednesday", stores: [...basePatterns.WednesdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "24", week: "W27", date: "09/07/2026", day: "Thursday", stores: ["Metcash IGA M Evans Head (Ritchies)", "Metcash IGA L Maclean (Ritchies)", "Metcash IGA M Iluka Plus Cbn", "Metcash Fresh & Save Grafton"], accommodation: "HOME BASE", isLeave: false },
+            { id: "25", week: "W27", date: "10/07/2026", day: "Friday", stores: [...basePatterns.FridayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "26", week: "W28", date: "13/07/2026", day: "Monday", stores: [...basePatterns.MondayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "27", week: "W28", date: "14/07/2026", day: "Tuesday", stores: [...basePatterns.WednesdayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "28", week: "W28", date: "15/07/2026", day: "Wednesday", stores: [...basePatterns.ThursdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "29", week: "W28", date: "16/07/2026", day: "Thursday", stores: ["Metcash IGA M Russell Island", "DISPLAY BUILD OUT DAY", "PLANOGRAM AUDIT CHECK", "TERRITORY ADMIN REVIEW"], accommodation: "HOME BASE", isLeave: false },
+            { id: "30", week: "W28", date: "17/07/2026", day: "Friday", stores: [...basePatterns.FridayB], accommodation: "HOME BASE", isLeave: false }
+            // Note: Truncated to W28 here for space, but dynamic rendering supports any amount of data you add.
         ];
 
-        let roster = JSON.parse(localStorage.getItem('kyal_roster_data_v7')) || initialRosterData;
+        let roster = JSON.parse(localStorage.getItem('kyal_roster_data_v9')) || initialRosterData;
         let currentEditingId = null;
         let currentPickerDayId = null;
 
-        function saveData() {
-            localStorage.setItem('kyal_roster_data_v7', JSON.stringify(roster));
-        }
+        function saveData() { localStorage.setItem('kyal_roster_data_v9', JSON.stringify(roster)); }
+        function isNswPublicHoliday(dateStr) { return dateStr === "08/06/2026"; }
 
-        function isNswPublicHoliday(dateStr) {
-            // Native lock check for King's Birthday Holiday Mon June 8, 2026
-            return dateStr === "08/06/2026";
-        }
-
+        // --- Core Rendering with Dynamic Week Support ---
         function renderCalendar() {
             const container = document.getElementById('calendarContainer');
             container.innerHTML = '';
 
-            let currentWeek = "";
-            let currentWeekRow = null;
+            // This fixes the bug: dynamically pulls every unique week found in your saved data
+            const weeks = [...new Set(roster.map(item => item.week))].sort();
 
-            roster.forEach(day => {
-                if (day.week !== currentWeek) {
-                    currentWeek = day.week;
-                    currentWeekRow = document.createElement('div');
-                    currentWeekRow.className = 'week-row';
-                    const weekLabel = document.createElement('div');
-                    weekLabel.className = 'week-label';
-                    weekLabel.innerText = day.week;
-                    currentWeekRow.appendChild(weekLabel);
-                    container.appendChild(currentWeekRow);
-                }
+            weeks.forEach(weekName => {
+                const currentWeekRow = document.createElement('div');
+                currentWeekRow.className = 'week-row';
+                
+                const weekLabel = document.createElement('div');
+                weekLabel.className = 'week-label';
+                weekLabel.innerText = weekName;
+                currentWeekRow.appendChild(weekLabel);
 
-                const hasNswHoliday = isNswPublicHoliday(day.date);
-                const tile = document.createElement('div');
-                tile.className = `day-tile ${hasNswHoliday ? 'holiday' : ''} ${day.isLeave ? 'annual-leave' : ''}`;
-                tile.setAttribute('data-day-id', day.id);
+                const weekDays = roster.filter(day => day.week === weekName);
 
-                tile.addEventListener('contextmenu', (e) => {
-                    e.preventDefault();
-                    toggleStorePicker(day.id, e.clientX, e.clientY);
-                });
+                weekDays.forEach(day => {
+                    const hasNswHoliday = isNswPublicHoliday(day.date);
+                    const tile = document.createElement('div');
+                    tile.className = `day-tile ${hasNswHoliday ? 'holiday' : ''} ${day.isLeave ? 'annual-leave' : ''}`;
+                    tile.setAttribute('data-day-id', day.id);
 
-                let alertsHtml = '';
-                if (day.isLeave) {
-                    alertsHtml = `<div class="alert-tag leave-tag">🌴 ANNUAL LEAVE (A/L)</div>`;
-                } else {
-                    if (hasNswHoliday) {
-                        alertsHtml += `<div class="alert-tag nsw-holiday-tag">⚠️ NSW PUBLIC HOLIDAY</div>`;
-                    }
-                    if (day.accommodation && (day.accommodation.includes('🛏️') || day.accommodation.includes('BOOK'))) {
-                        alertsHtml += `<div class="alert-tag">${day.accommodation}</div>`;
-                    }
-                }
-
-                let storeListHtml = '';
-                if (day.isLeave) {
-                    storeListHtml = `<div class="store-chip leave-chip">🌴 Out of Office (A/L)</div>`;
-                } else {
-                    day.stores.forEach((store, index) => {
-                        if(!store || store.trim() === "") return;
-                        const isHolidayChip = store.includes('OFFLINE');
-                        
-                        storeListHtml += `
-                            <div class="store-chip ${isHolidayChip ? 'non-visit' : ''}" 
-                                 title="${store}"
-                                 draggable="${!isHolidayChip}"
-                                 data-day-id="${day.id}"
-                                 data-index="${index}"
-                                 onclick="deleteStore('${day.id}', ${index}); event.stopPropagation();">
-                                ${store}
-                            </div>`;
+                    // Right click picker
+                    tile.addEventListener('contextmenu', (e) => {
+                        e.preventDefault();
+                        toggleStorePicker(day.id, e.clientX, e.clientY);
                     });
-                }
 
-                tile.innerHTML = `
-                    <div>
-                        <div class="day-header">
-                            <div class="day-date">${day.date.substring(0,5)}</div>
-                            <div class="day-name">${day.day}</div>
+                    let alertsHtml = '';
+                    if (day.isLeave) {
+                        alertsHtml = `<div class="alert-tag leave-tag">🌴 ANNUAL LEAVE (A/L)</div>`;
+                    } else {
+                        if (hasNswHoliday) alertsHtml += `<div class="alert-tag nsw-holiday-tag">⚠️ NSW PUBLIC HOLIDAY</div>`;
+                        if (day.accommodation && (day.accommodation.includes('🛏️') || day.accommodation.includes('BOOK'))) {
+                            alertsHtml += `<div class="alert-tag">${day.accommodation}</div>`;
+                        }
+                    }
+
+                    let storeListHtml = '';
+                    if (day.isLeave) {
+                        storeListHtml = `<div class="store-chip leave-chip">🌴 Out of Office</div>`;
+                    } else {
+                        day.stores.forEach((store, index) => {
+                            if(!store || store.trim() === "") return;
+                            const isHolidayChip = store.includes('OFFLINE');
+                            
+                            storeListHtml += `
+                                <div class="store-chip ${isHolidayChip ? 'non-visit' : ''}" 
+                                     title="${store}" draggable="${!isHolidayChip}" data-day-id="${day.id}" data-index="${index}"
+                                     onclick="deleteStore('${day.id}', ${index}); event.stopPropagation();">
+                                    ${store}
+                                </div>`;
+                        });
+                    }
+
+                    tile.innerHTML = `
+                        <div>
+                            <div class="day-header">
+                                <div class="day-date">${day.date.substring(0,5)}</div>
+                                <div class="day-name">${day.day}</div>
+                            </div>
+                            ${alertsHtml}
+                            <div class="store-list" data-day-id="${day.id}">${storeListHtml}</div>
                         </div>
-                        ${alertsHtml}
-                        <div class="store-list" data-day-id="${day.id}">${storeListHtml}</div>
-                    </div>
-                    <div class="tile-actions">
-                        <button class="edit-lnk" onclick="openEditModal('${day.id}'); event.stopPropagation();">Edit Logistics</button>
-                    </div>
-                `;
-
-                currentWeekRow.appendChild(tile);
+                        <div class="tile-actions">
+                            <button class="edit-lnk" onclick="openEditModal('${day.id}'); event.stopPropagation();">Edit</button>
+                        </div>
+                    `;
+                    currentWeekRow.appendChild(tile);
+                });
+                container.appendChild(currentWeekRow);
             });
-
             setupTactileDragAndDrop();
         }
 
         function deleteStore(dayId, storeIndex) {
             const targetDay = roster.find(d => d.id === dayId);
-            if (targetDay) {
-                targetDay.stores.splice(storeIndex, 1);
-                saveData();
-                renderCalendar();
-            }
+            if (targetDay) { targetDay.stores.splice(storeIndex, 1); saveData(); renderCalendar(); }
         }
 
+        // --- Picker Logic ---
         function toggleStorePicker(dayId, mouseX, mouseY) {
             const picker = document.getElementById('floatingStorePicker');
-            
-            if (picker.style.display === 'flex' && currentPickerDayId === dayId) {
-                closePicker();
-                return;
-            }
-
+            if (picker.style.display === 'flex' && currentPickerDayId === dayId) { closePicker(); return; }
             currentPickerDayId = dayId;
             document.getElementById('pickerSearch').value = '';
             
-            let topPos = mouseY;
-            let leftPos = mouseX;
+            let topPos = mouseY; let leftPos = mouseX;
             if (window.innerHeight - mouseY < 420) topPos = window.innerHeight - 420;
             if (window.innerWidth - mouseX < 340) leftPos = window.innerWidth - 340;
 
-            picker.style.top = `${topPos}px`;
-            picker.style.left = `${leftPos}px`;
-            picker.style.display = 'flex';
-
+            picker.style.top = `${topPos}px`; picker.style.left = `${leftPos}px`; picker.style.display = 'flex';
             buildPickerList();
             
             document.getElementById('pickerSubmitBtn').onclick = () => {
@@ -410,8 +341,7 @@
                 if (checkedBoxes.length > 0) {
                     const targetDay = roster.find(d => d.id === currentPickerDayId);
                     checkedBoxes.forEach(cb => targetDay.stores.push(cb.value));
-                    saveData();
-                    renderCalendar();
+                    saveData(); renderCalendar();
                 }
                 closePicker();
             };
@@ -420,10 +350,8 @@
         function buildPickerList() {
             const listContainer = document.getElementById('pickerList');
             listContainer.innerHTML = '';
-            
             masterStores.forEach(store => {
-                const item = document.createElement('label');
-                item.className = 'picker-item';
+                const item = document.createElement('label'); item.className = 'picker-item';
                 item.innerHTML = `<input type="checkbox" value="${store}"> <span>${store}</span>`;
                 item.addEventListener('click', (e) => e.stopPropagation()); 
                 listContainer.appendChild(item);
@@ -433,77 +361,49 @@
         function filterPickerStores() {
             const f = document.getElementById('pickerSearch').value.toLowerCase();
             document.querySelectorAll('.picker-item').forEach(item => {
-                const text = item.querySelector('span').innerText.toLowerCase();
-                item.style.display = text.includes(f) ? 'flex' : 'none';
+                item.style.display = item.querySelector('span').innerText.toLowerCase().includes(f) ? 'flex' : 'none';
             });
         }
-
-        function closePicker() {
-            document.getElementById('floatingStorePicker').style.display = 'none';
-            currentPickerDayId = null;
-        }
-
+        function closePicker() { document.getElementById('floatingStorePicker').style.display = 'none'; currentPickerDayId = null; }
         document.addEventListener('click', (e) => {
             const picker = document.getElementById('floatingStorePicker');
-            if (picker.style.display === 'flex' && !picker.contains(e.target)) {
-                closePicker();
-            }
+            if (picker.style.display === 'flex' && !picker.contains(e.target)) closePicker();
         });
 
+        // --- Drag and Drop ---
         function setupTactileDragAndDrop() {
             const lists = document.querySelectorAll('.store-list');
             let draggedChip = null;
-            let placeholder = document.createElement('div');
-            placeholder.className = 'store-placeholder';
+            let placeholder = document.createElement('div'); placeholder.className = 'store-placeholder';
 
             lists.forEach(list => {
                 list.addEventListener('dragstart', (e) => {
                     if (e.target.classList.contains('store-chip') && !e.target.classList.contains('non-visit')) {
-                        draggedChip = e.target;
-                        setTimeout(() => draggedChip.classList.add('dragging'), 0);
+                        draggedChip = e.target; setTimeout(() => draggedChip.classList.add('dragging'), 0);
                         e.dataTransfer.effectAllowed = 'move';
                     }
                 });
-
                 list.addEventListener('dragover', (e) => {
                     e.preventDefault();
-                    if (!draggedChip) return;
-                    if (draggedChip.getAttribute('data-day-id') !== list.getAttribute('data-day-id')) return;
-
+                    if (!draggedChip || draggedChip.getAttribute('data-day-id') !== list.getAttribute('data-day-id')) return;
                     const afterElement = getDragAfterElement(list, e.clientY);
-                    if (afterElement == null) {
-                        list.appendChild(placeholder);
-                    } else {
-                        list.insertBefore(placeholder, afterElement);
-                    }
+                    if (afterElement == null) list.appendChild(placeholder); else list.insertBefore(placeholder, afterElement);
                 });
-
                 list.addEventListener('drop', (e) => {
                     e.preventDefault();
                     if (!draggedChip) return;
                     const dayId = list.getAttribute('data-day-id');
                     if (draggedChip.getAttribute('data-day-id') !== dayId) return;
 
-                    placeholder.parentNode.insertBefore(draggedChip, placeholder);
-                    placeholder.remove();
-
+                    placeholder.parentNode.insertBefore(draggedChip, placeholder); placeholder.remove();
                     const targetDay = roster.find(d => d.id === dayId);
                     const chips = Array.from(list.querySelectorAll('.store-chip'));
-                    const newStores = [];
-                    
-                    chips.forEach((chip) => {
-                        newStores.push(chip.getAttribute('title'));
-                    });
-
-                    targetDay.stores = newStores;
-                    saveData();
-                    renderCalendar();
+                    targetDay.stores = chips.map(chip => chip.getAttribute('title'));
+                    saveData(); renderCalendar();
                 });
-
                 list.addEventListener('dragend', () => {
                     if (draggedChip) draggedChip.classList.remove('dragging');
-                    placeholder.remove();
-                    draggedChip = null;
+                    placeholder.remove(); draggedChip = null;
                 });
             });
         }
@@ -511,71 +411,128 @@
         function getDragAfterElement(container, y) {
             const collectibleElements = [...container.querySelectorAll('.store-chip:not(.dragging):not(.non-visit)')];
             return collectibleElements.reduce((closest, child) => {
-                const box = child.getBoundingClientRect();
-                const offset = y - box.top - box.height / 2;
-                if (offset < 0 && offset > closest.offset) {
-                    return { offset: offset, element: child };
-                } else {
-                    return closest;
-                }
+                const box = child.getBoundingClientRect(); const offset = y - box.top - box.height / 2;
+                return (offset < 0 && offset > closest.offset) ? { offset: offset, element: child } : closest;
             }, { offset: Number.NEGATIVE_INFINITY }).element;
         }
 
+        // --- Modals & Data Control ---
         function openEditModal(dayId) {
-            currentEditingId = dayId;
-            const dayData = roster.find(d => d.id === dayId);
-            document.getElementById('modalTitle').innerText = `Modify Logistics: ${dayData.date}`;
+            currentEditingId = dayId; const dayData = roster.find(d => d.id === dayId);
             document.getElementById('editIsLeave').checked = dayData.isLeave || false;
-
-            document.getElementById('modalFields').innerHTML = `
-                <div id="conditionalFieldsContainer">
-                    <div class="form-group">
-                        <label>Accommodation Alert</label>
-                        <input type="text" id="editAccommodation" value="${dayData.accommodation || ''}">
-                    </div>
-                </div>`;
-            
-            toggleModalLeaveView(dayData.isLeave);
+            document.getElementById('editAccommodation').value = dayData.accommodation || '';
+            document.getElementById('accomGroup').style.display = dayData.isLeave ? 'none' : 'block';
             document.getElementById('editModal').style.display = 'flex';
         }
-
-        function toggleModalLeaveView(isLeaveChecked) {
-            const container = document.getElementById('conditionalFieldsContainer');
-            if(container) {
-                container.style.opacity = isLeaveChecked ? '0.3' : '1';
-                container.style.pointerEvents = isLeaveChecked ? 'none' : 'auto';
-            }
-        }
+        
+        document.getElementById('editIsLeave').addEventListener('change', (e) => {
+            document.getElementById('accomGroup').style.display = e.target.checked ? 'none' : 'block';
+        });
 
         function closeModal() { document.getElementById('editModal').style.display = 'none'; }
-
         function saveDayEdits() {
             const dayData = roster.find(d => d.id === currentEditingId);
             dayData.isLeave = document.getElementById('editIsLeave').checked;
-            if (!dayData.isLeave) {
-                dayData.accommodation = document.getElementById('editAccommodation').value;
-            }
-            saveData();
-            renderCalendar();
-            closeModal();
+            if (!dayData.isLeave) dayData.accommodation = document.getElementById('editAccommodation').value;
+            saveData(); renderCalendar(); closeModal();
         }
 
         function resetTracker() {
-            if(confirm("Reset entire roster history?")) {
-                localStorage.removeItem('kyal_roster_data_v7');
-                roster = JSON.parse(JSON.stringify(initialRosterData));
-                renderCalendar();
-            }
+            if(confirm("Reset entire roster?")) { localStorage.removeItem('kyal_roster_data_v9'); roster = JSON.parse(JSON.stringify(initialRosterData)); renderCalendar(); }
         }
 
-        function exportData() {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({roster}, null, 2));
-            const downloadAnchor = document.createElement('a');
-            downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", "master_roster_backup.json");
-            document.body.appendChild(downloadAnchor);
-            downloadAnchor.click();
-            downloadAnchor.remove();
+        // --- AI LOGIC ---
+        // Load key on boot
+        window.addEventListener('DOMContentLoaded', () => {
+            if(localStorage.getItem('gemini_api_key')) document.getElementById('apiKey').value = localStorage.getItem('gemini_api_key');
+        });
+        function saveKey() { localStorage.setItem('gemini_api_key', document.getElementById('apiKey').value.trim()); }
+        function handleEnter(e) { if(e.key === 'Enter') askAI(); }
+        
+        function appendChat(role, text) {
+            const area = document.getElementById('chatArea');
+            const bubble = document.createElement('div');
+            bubble.className = `chat-bubble ${role === 'System' ? 'bubble-sys' : (role === 'AI' ? 'bubble-ai' : 'bubble-user')}`;
+            bubble.innerHTML = text;
+            area.appendChild(bubble);
+            area.scrollTop = area.scrollHeight;
+        }
+
+        async function askAI() {
+            const key = document.getElementById('apiKey').value.trim();
+            const input = document.getElementById('aiInput');
+            const promptText = input.value.trim();
+            
+            if (!key) return alert("Please enter your free Google API key first.");
+            if (!promptText) return;
+
+            appendChat("User", promptText);
+            input.value = '';
+            
+            // Clean up roster payload to save tokens
+            const minRoster = roster.map(d => ({id: d.id, date: d.date, day: d.day, week: d.week, stores: d.stores, isLeave: !!d.isLeave}));
+            
+            const systemPrompt = `You are an expert scheduling AI. Below is the user's current roster schedule in JSON format:
+${JSON.stringify(minRoster)}
+
+The user request is: "${promptText}"
+
+Respond with a brief friendly message about what you did. Then, if you are making changes to the schedule, you MUST output a JSON array formatted exactly like this inside a markdown block:
+\`\`\`json
+[
+  {"id": "1", "stores": ["Store A", "Store B"]},
+  {"id": "2", "isLeave": true}
+]
+\`\`\`
+Only include the days that are changing. Do not modify IDs.`;
+
+            appendChat("System", "<em>Analyzing schedule...</em>");
+
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: systemPrompt }] }]
+                    })
+                });
+
+                const data = await response.json();
+                
+                // Remove the "Analyzing..." message
+                const chatArea = document.getElementById('chatArea');
+                chatArea.removeChild(chatArea.lastChild);
+
+                if(data.candidates && data.candidates[0].content.parts[0].text) {
+                    const fullReply = data.candidates[0].content.parts[0].text;
+                    
+                    // Parse the JSON block if it exists
+                    const jsonMatch = fullReply.match(/```json\n([\s\S]*?)\n```/);
+                    if (jsonMatch) {
+                        const changes = JSON.parse(jsonMatch[1]);
+                        changes.forEach(c => {
+                            const target = roster.find(r => r.id === c.id);
+                            if (target) {
+                                if (c.stores) target.stores = c.stores;
+                                if (c.isLeave !== undefined) target.isLeave = c.isLeave;
+                            }
+                        });
+                        saveData();
+                        renderCalendar();
+                    }
+                    
+                    // Display the text (remove the ugly json block from the chat)
+                    const cleanReply = fullReply.replace(/```json\n[\s\S]*?\n```/, '').trim();
+                    if (cleanReply) appendChat("AI", cleanReply);
+                    
+                } else {
+                    appendChat("System", "⚠️ Error reading response from AI.");
+                }
+            } catch (err) {
+                const chatArea = document.getElementById('chatArea');
+                chatArea.removeChild(chatArea.lastChild);
+                appendChat("System", "⚠️ Connection failed. Check your API key and network.");
+            }
         }
 
         renderCalendar();
