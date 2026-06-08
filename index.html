@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2026 Master Roster - AI Pro Edition</title>
+    <title>2026 Master Roster - Full Year & AI Toggle</title>
     <style>
         :root {
             --primary: #0f172a; --accent: #2563eb; --success: #16a34a; --warning: #dc2626;
@@ -22,8 +22,8 @@
             color: var(--primary); 
         }
         
-        /* Layout Split */
-        .main-content { flex: 1; overflow-y: auto; padding: 15px; }
+        /* Layout Split & Toggle Animation */
+        .main-content { flex: 1; overflow-y: auto; padding: 15px; transition: width 0.3s ease; }
         
         .ai-sidebar {
             width: 380px;
@@ -33,10 +33,16 @@
             flex-direction: column;
             box-shadow: -4px 0 15px rgba(0,0,0,0.03);
             z-index: 10;
+            transition: transform 0.3s ease, margin-right 0.3s ease;
+        }
+        
+        .ai-sidebar.collapsed {
+            transform: translateX(100%);
+            margin-right: -380px; /* Pulls the calendar wide when hidden */
         }
 
         header { 
-            max-width: 1650px; margin: 0 auto 15px auto; display: flex; justify-content: space-between; 
+            max-width: 100%; margin: 0 auto 15px auto; display: flex; justify-content: space-between; 
             align-items: center; background: var(--card-bg); padding: 15px 20px; border-radius: 8px; border: 1px solid var(--border);
         }
         h1 { font-size: 1.4rem; color: var(--primary); }
@@ -46,8 +52,10 @@
         .btn-primary { background-color: var(--accent); color: white; }
         .btn-secondary { background-color: #e2e8f0; color: var(--primary); }
         .btn-secondary:hover { background-color: #cbd5e1; }
+        .btn-ai-toggle { background: var(--ai-accent); color: white; }
+        .btn-ai-toggle:hover { background: #7c3aed; }
 
-        .calendar-container { max-width: 1650px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; padding-bottom: 40px;}
+        .calendar-container { max-width: 100%; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; padding-bottom: 40px;}
         
         .week-row { display: grid; grid-template-columns: 60px repeat(5, 1fr); gap: 8px; background: var(--card-bg); padding: 8px; border-radius: 8px; border: 1px solid var(--border); align-items: stretch; }
         .week-label { display: flex; align-items: center; justify-content: center; background: #e2e8f0; color: #475569; font-weight: 800; font-size: 0.85rem; border-radius: 6px; text-align: center; }
@@ -98,7 +106,6 @@
         .api-key-input:focus { border-color: var(--ai-accent); }
         .chat-input-row { display: flex; gap: 8px; }
         .chat-input-row input { flex: 1; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.85rem; outline: none; }
-        .chat-input-row input:focus { border-color: var(--ai-accent); }
         .btn-send { background: var(--ai-accent); color: white; border: none; padding: 0 15px; border-radius: 6px; font-weight: bold; cursor: pointer; }
         .btn-send:hover { background: #7c3aed; }
         
@@ -108,6 +115,8 @@
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 5px; color: #475569; }
         .form-group input { width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 4px; font-size: 0.85rem; }
+
+        @media(max-width: 1200px) { .week-row { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -116,9 +125,10 @@
         <header>
             <div>
                 <h1>2026 Master Roster</h1>
-                <p style="color: #64748b; font-size: 0.8rem; margin-top: 2px;">Left-Click: Delete | Right-Click: Add | Drag: Move | Sidepanel: AI Commands</p>
+                <p style="color: #64748b; font-size: 0.8rem; margin-top: 2px;">All Weeks Loaded | Right-Click Card: Add | Left-Click Chip: Delete</p>
             </div>
             <div class="controls">
+                <button class="btn btn-ai-toggle" onclick="toggleSidebar()">🤖 Toggle AI Helper</button>
                 <button class="btn btn-secondary" onclick="resetTracker()">Reset Data</button>
                 <button class="btn btn-primary" style="background:#0f172a;" onclick="exportData()">Export JSON</button>
             </div>
@@ -127,12 +137,13 @@
         <div class="calendar-container" id="calendarContainer"></div>
     </div>
 
-    <div class="ai-sidebar">
+    <div class="ai-sidebar collapsed" id="aiSidebar">
         <div class="ai-header">
             ✨ Gemini Route AI
+            <button style="background:none; border:none; color:white; cursor:pointer; font-size:1.2rem;" onclick="toggleSidebar()">✕</button>
         </div>
         <div class="ai-chat-area" id="chatArea">
-            <div class="chat-bubble bubble-sys"><strong>Welcome!</strong><br><br>1. Paste your Gemini API Key below.<br>2. Tell me what you want to change (e.g. "Mark next week as Annual Leave" or "Move all Gold Coast stores to Thursday").<br>3. I will update your calendar automatically.</div>
+            <div class="chat-bubble bubble-sys"><strong>Welcome!</strong><br><br>1. Paste your Gemini API Key below.<br>2. Tell me what to change on the roster (e.g. "Move Logan stores to Thursday").<br>3. I will update it automatically.</div>
         </div>
         <div class="ai-input-area">
             <input type="password" id="apiKey" class="api-key-input" placeholder="Paste Google API Key here..." onchange="saveKey()">
@@ -172,6 +183,11 @@
     </div>
 
     <script>
+        // Sidebar Toggle UI Logic
+        function toggleSidebar() {
+            document.getElementById('aiSidebar').classList.toggle('collapsed');
+        }
+
         const masterStores = [
             "Metcash Drakes Mcdowall", "Metcash IGA M Hoppers Ascot", "Metcash IGA M Frenchs Forest", "Metcash IGA M Dayboro Valley", "Metcash Drakes Samford", "Metcash IGA M Cashmere", "Metcash Fresh & Save Deagon", "Metcash IGA L Burpengary (Seasons)",
             "Metcash IGA M Sanctuary Cove (Jones)", "Metcash Drakes Hollywell Road Markets", "Metcash L Queen Street Village Southport", "Metcash Drakes Nerang Road Ashmore", "Metcash IGA M Mermaid Waters", "Metcash IGA M Nerang (Spano)", "Metcash IGA M Robina (Easy T) (Spano)", "Metcash IGA M Currumbin Fair", "Metcash IGA M Tugun Beach", "Metcash IGA M Tweed Valley Way (Bugg)", "Metcash IGA Local Grocer Pottsville", "Metcash Supa Valu Ritchies Ballina",
@@ -204,48 +220,206 @@
             { id: "3", week: "W23", date: "10/06/2026", day: "Wednesday", stores: [...basePatterns.WednesdayA], accommodation: "HOME BASE", isLeave: false },
             { id: "4", week: "W23", date: "11/06/2026", day: "Thursday", stores: ["Metcash IGA M Evans Head (Ritchies)", "Metcash IGA L Maclean (Ritchies)", "Metcash IGA M Iluka Plus Cbn", "Metcash Fresh & Save Grafton"], accommodation: "HOME BASE", isLeave: false },
             { id: "5", week: "W23", date: "12/06/2026", day: "Friday", stores: [...basePatterns.FridayA], accommodation: "HOME BASE", isLeave: false },
+            
             { id: "6", week: "W24", date: "15/06/2026", day: "Monday", stores: [...basePatterns.MondayB], accommodation: "HOME BASE", isLeave: false },
             { id: "7", week: "W24", date: "16/06/2026", day: "Tuesday", stores: ["Metcash IGA M Miles", "Metcash Foodworks Tara 2020", "Metcash IGA M Roma (Cornetts)", "Metcash Drakes Toowoomba High St", "Metcash IGA L Oakey (Cornetts)", "Metcash IGA M Pittsworth"], accommodation: "🛏️ BOOK TRIP (Toowoomba)", isLeave: false },
             { id: "8", week: "W24", date: "17/06/2026", day: "Wednesday", stores: ["Metcash IGA M Crows Nest", "Metcash IGA M Allora", "Metcash IGA L Warwick (Spano)", "Metcash IGA L Stanthorpe (Spano)", "Metcash Foodworks Goondiwindi", "Metcash Foodworks Killarney"], accommodation: "🛏️ BOOK TRIP (Warwick)", isLeave: false },
             { id: "9", week: "W24", date: "18/06/2026", day: "Thursday", stores: ["Metcash IGA M Beaudesert (Jones)", "Metcash IGA M Canungra", "Metcash IGA M Mt Tamborine", "Metcash IGA M Russell Island", "ADMIN & VEHICLE LOGS"], accommodation: "HOME BASE", isLeave: false },
             { id: "10", week: "W24", date: "19/06/2026", day: "Friday", stores: [...basePatterns.FridayB], accommodation: "HOME BASE", isLeave: false },
+            
             { id: "11", week: "W25", date: "22/06/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", isLeave: false },
             { id: "12", week: "W25", date: "23/06/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", isLeave: false },
             { id: "13", week: "W25", date: "24/06/2026", day: "Wednesday", stores: [...basePatterns.WednesdayA], accommodation: "HOME BASE", isLeave: false },
             { id: "14", week: "W25", date: "25/06/2026", day: "Thursday", stores: [...basePatterns.ThursdayA], accommodation: "HOME BASE", isLeave: false },
             { id: "15", week: "W25", date: "26/06/2026", day: "Friday", stores: [...basePatterns.FridayA], accommodation: "HOME BASE", isLeave: false },
+            
             { id: "16", week: "W26", date: "29/06/2026", day: "Monday", stores: [...basePatterns.MondayB], accommodation: "HOME BASE", isLeave: false },
             { id: "17", week: "W26", date: "30/06/2026", day: "Tuesday", stores: [...basePatterns.TuesdayB], accommodation: "HOME BASE", isLeave: false },
             { id: "18", week: "W26", date: "01/07/2026", day: "Wednesday", stores: [...basePatterns.WednesdayB], accommodation: "HOME BASE", isLeave: false },
             { id: "19", week: "W26", date: "02/07/2026", day: "Thursday", stores: [...basePatterns.ThursdayB], accommodation: "HOME BASE", isLeave: false },
             { id: "20", week: "W26", date: "03/07/2026", day: "Friday", stores: [...basePatterns.FridayB], accommodation: "HOME BASE", isLeave: false },
+            
             { id: "21", week: "W27", date: "06/07/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", isLeave: false },
             { id: "22", week: "W27", date: "07/07/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", isLeave: false },
             { id: "23", week: "W27", date: "08/07/2026", day: "Wednesday", stores: [...basePatterns.WednesdayA], accommodation: "HOME BASE", isLeave: false },
             { id: "24", week: "W27", date: "09/07/2026", day: "Thursday", stores: ["Metcash IGA M Evans Head (Ritchies)", "Metcash IGA L Maclean (Ritchies)", "Metcash IGA M Iluka Plus Cbn", "Metcash Fresh & Save Grafton"], accommodation: "HOME BASE", isLeave: false },
             { id: "25", week: "W27", date: "10/07/2026", day: "Friday", stores: [...basePatterns.FridayA], accommodation: "HOME BASE", isLeave: false },
+            
             { id: "26", week: "W28", date: "13/07/2026", day: "Monday", stores: [...basePatterns.MondayB], accommodation: "HOME BASE", isLeave: false },
             { id: "27", week: "W28", date: "14/07/2026", day: "Tuesday", stores: [...basePatterns.WednesdayB], accommodation: "HOME BASE", isLeave: false },
             { id: "28", week: "W28", date: "15/07/2026", day: "Wednesday", stores: [...basePatterns.ThursdayA], accommodation: "HOME BASE", isLeave: false },
             { id: "29", week: "W28", date: "16/07/2026", day: "Thursday", stores: ["Metcash IGA M Russell Island", "DISPLAY BUILD OUT DAY", "PLANOGRAM AUDIT CHECK", "TERRITORY ADMIN REVIEW"], accommodation: "HOME BASE", isLeave: false },
-            { id: "30", week: "W28", date: "17/07/2026", day: "Friday", stores: [...basePatterns.FridayB], accommodation: "HOME BASE", isLeave: false }
-            // Note: Truncated to W28 here for space, but dynamic rendering supports any amount of data you add.
+            { id: "30", week: "W28", date: "17/07/2026", day: "Friday", stores: [...basePatterns.FridayB], accommodation: "HOME BASE", isLeave: false },
+
+            { id: "31", week: "W29", date: "20/07/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "32", week: "W29", date: "21/07/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "33", week: "W29", date: "22/07/2026", day: "Wednesday", stores: [...basePatterns.WednesdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "34", week: "W29", date: "23/07/2026", day: "Thursday", stores: [...basePatterns.ThursdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "35", week: "W29", date: "24/07/2026", day: "Friday", stores: [...basePatterns.FridayA], accommodation: "HOME BASE", isLeave: false },
+
+            { id: "36", week: "W30", date: "27/07/2026", day: "Monday", stores: [...basePatterns.MondayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "37", week: "W30", date: "28/07/2026", day: "Tuesday", stores: [...basePatterns.TuesdayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "38", week: "W30", date: "29/07/2026", day: "Wednesday", stores: [...basePatterns.WednesdayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "39", week: "W30", date: "30/07/2026", day: "Thursday", stores: [...basePatterns.ThursdayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "40", week: "W30", date: "31/07/2026", day: "Friday", stores: [...basePatterns.FridayB], accommodation: "HOME BASE", isLeave: false },
+
+            { id: "41", week: "W31", date: "03/08/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "42", week: "W31", date: "04/08/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "43", week: "W31", date: "05/08/2026", day: "Wednesday", stores: [...basePatterns.WednesdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "44", week: "W31", date: "06/08/2026", day: "Thursday", stores: [...basePatterns.ThursdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "45", week: "W31", date: "07/08/2026", day: "Friday", stores: [...basePatterns.FridayA], accommodation: "HOME BASE", isLeave: false },
+
+            { id: "46", week: "W32", date: "10/08/2026", day: "Monday", stores: [...basePatterns.MondayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "47", week: "W32", date: "11/08/2026", day: "Tuesday", stores: [...basePatterns.TuesdayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "48", week: "W32", date: "12/08/2026", day: "Wednesday", stores: ["STORES OFFLINE - EKKA WEDNESDAY HOLIDAY"], accommodation: "HOME BASE", isLeave: false },
+            { id: "49", week: "W32", date: "13/08/2026", day: "Thursday", stores: [...basePatterns.WednesdayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "50", week: "W32", date: "14/08/2026", day: "Friday", stores: [...basePatterns.FridayB], accommodation: "HOME BASE", isLeave: false },
+
+            { id: "51", week: "W33", date: "17/08/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "52", week: "W33", date: "18/08/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "53", week: "W33", date: "19/08/2026", day: "Wednesday", stores: [...basePatterns.WednesdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "54", week: "W33", date: "20/08/2026", day: "Thursday", stores: [...basePatterns.ThursdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "55", week: "W33", date: "21/08/2026", day: "Friday", stores: [...basePatterns.FridayA], accommodation: "HOME BASE", isLeave: false },
+
+            { id: "56", week: "W34", date: "24/08/2026", day: "Monday", stores: [...basePatterns.MondayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "57", week: "W34", date: "25/08/2026", day: "Tuesday", stores: [...basePatterns.TuesdayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "58", week: "W34", date: "26/08/2026", day: "Wednesday", stores: [...basePatterns.WednesdayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "59", week: "W34", date: "27/08/2026", day: "Thursday", stores: [...basePatterns.ThursdayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "60", week: "W34", date: "28/08/2026", day: "Friday", stores: [...basePatterns.FridayB], accommodation: "HOME BASE", isLeave: false },
+
+            { id: "61", week: "W35", date: "31/08/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "62", week: "W35", date: "01/09/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "63", week: "W35", date: "02/09/2026", day: "Wednesday", stores: [...basePatterns.WednesdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "64", week: "W35", date: "03/09/2026", day: "Thursday", stores: [...basePatterns.ThursdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "65", week: "W35", date: "04/09/2026", day: "Friday", stores: [...basePatterns.FridayA], accommodation: "HOME BASE", isLeave: false },
+
+            { id: "66", week: "W36", date: "07/09/2026", day: "Monday", stores: [...basePatterns.MondayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "67", week: "W36", date: "08/09/2026", day: "Tuesday", stores: ["Metcash Fwks Tenterfield", "Metcash IGA L Inverell", "Metcash IGA M Bingara", "Metcash IGA M Warialda", "Metcash IGA M Guyra", "Metcash F&S Armidale"], accommodation: "🛏️ BOOK TRIP (Armidale)", isLeave: false },
+            { id: "68", week: "W36", date: "09/09/2026", day: "Wednesday", stores: ["Metcash Fwks Uralla", "Metcash IGA L Tamworth", "Metcash IGA M Kootingal", "Metcash IGA L Quirindi", "Metcash IGA M Walcha Plus", "Metcash IGA M Manilla Plus"], accommodation: "🛏️ BOOK TRIP (Tamworth)", isLeave: false },
+            { id: "69", week: "W36", date: "10/09/2026", day: "Thursday", stores: ["Metcash IGA L Wee Waa", "Metcash IGA M L Kyogle (Ritchies)", "Metcash IGA M Russell Island", "ADMIN DATA LOGS IN MOTEL"], accommodation: "🛏️ BOOK TRIP (Kyogle)", isLeave: false },
+            { id: "70", week: "W36", date: "11/09/2026", day: "Friday", stores: [...basePatterns.FridayB], accommodation: "HOME BASE", isLeave: false },
+
+            { id: "71", week: "W37", date: "14/09/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "72", week: "W37", date: "15/09/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "73", week: "W37", date: "16/09/2026", day: "Wednesday", stores: [...basePatterns.WednesdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "74", week: "W37", date: "17/09/2026", day: "Thursday", stores: [...basePatterns.ThursdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "75", week: "W37", date: "18/09/2026", day: "Friday", stores: [...basePatterns.FridayA], accommodation: "HOME BASE", isLeave: false },
+
+            { id: "76", week: "W38", date: "21/09/2026", day: "Monday", stores: [...basePatterns.MondayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "77", week: "W38", date: "22/09/2026", day: "Tuesday", stores: [...basePatterns.TuesdayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "78", week: "W38", date: "23/09/2026", day: "Wednesday", stores: [...basePatterns.WednesdayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "79", week: "W38", date: "24/09/2026", day: "Thursday", stores: [...basePatterns.ThursdayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "80", week: "W38", date: "25/09/2026", day: "Friday", stores: [...basePatterns.FridayB], accommodation: "HOME BASE", isLeave: false },
+
+            { id: "81", week: "W39", date: "28/09/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "82", week: "W39", date: "29/09/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "83", week: "W39", date: "30/09/2026", day: "Wednesday", stores: [...basePatterns.WednesdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "84", week: "W39", date: "01/10/2026", day: "Thursday", stores: [...basePatterns.ThursdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "85", week: "W39", date: "02/10/2026", day: "Friday", stores: [...basePatterns.FridayA], accommodation: "HOME BASE", isLeave: false },
+
+            { id: "86", week: "W40", date: "05/10/2026", day: "Monday", stores: ["STORES OFFLINE - DOUBLE PUBLIC HOLIDAY"], accommodation: "HOME BASE", isLeave: false },
+            { id: "87", week: "W40", date: "06/10/2026", day: "Tuesday", stores: ["Metcash IGA M Chinchilla", "Metcash IGA M Miles", "Metcash IGA M Roma (Cornetts)", "Metcash IGA M Longreach", "Metcash IGA M Charleville", "Metcash IGA Grocer Cunnamulla"], accommodation: "🛏️ BOOK TRIP (Roma)", isLeave: false },
+            { id: "88", week: "W40", date: "07/10/2026", day: "Wednesday", stores: ["Metcash IGA Barcaldine", "Metcash IGA Blackall", "Metcash M Beales Clermont", "Metcash Fwks St George", "Metcash Foodworks Tara 2020"], accommodation: "🛏️ BOOK TRIP (Longreach)", isLeave: false },
+            { id: "89", week: "W40", date: "08/10/2026", day: "Thursday", stores: ["Metcash IGA Middlemount", "Metcash IGA Clermont", "Metcash IGA Dysart Plaza", "Metcash IGA M Russell Island", "ADMIN STORAGE ROAD ANALYSIS"], accommodation: "🛏️ BOOK TRIP (Toowoomba)", isLeave: false },
+            { id: "90", week: "W40", date: "09/10/2026", day: "Friday", stores: [...basePatterns.FridayB], accommodation: "HOME BASE", isLeave: false },
+
+            { id: "91", week: "W41", date: "12/10/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "92", week: "W41", date: "13/10/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "93", week: "W41", date: "14/10/2026", day: "Wednesday", stores: [...basePatterns.WednesdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "94", week: "W41", date: "15/10/2026", day: "Thursday", stores: [...basePatterns.ThursdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "95", week: "W41", date: "16/10/2026", day: "Friday", stores: [...basePatterns.FridayA], accommodation: "HOME BASE", isLeave: false },
+
+            { id: "96", week: "W42", date: "19/10/2026", day: "Monday", stores: [...basePatterns.MondayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "97", week: "W42", date: "20/10/2026", day: "Tuesday", stores: [...basePatterns.TuesdayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "98", week: "W42", date: "21/10/2026", day: "Wednesday", stores: [...basePatterns.WednesdayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "99", week: "W42", date: "22/10/2026", day: "Thursday", stores: [...basePatterns.ThursdayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "100", week: "W42", date: "23/10/2026", day: "Friday", stores: [...basePatterns.FridayB], accommodation: "HOME BASE", isLeave: false },
+
+            { id: "101", week: "W43", date: "26/10/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "102", week: "W43", date: "27/10/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "103", week: "W43", date: "28/10/2026", day: "Wednesday", stores: [...basePatterns.WednesdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "104", week: "W43", date: "29/10/2026", day: "Thursday", stores: ["Metcash IGA M Evans Head (Ritchies)", "Metcash IGA L Maclean (Ritchies)", "Metcash IGA M Iluka Plus Cbn", "Metcash Fresh & Save Grafton"], accommodation: "HOME BASE", isLeave: false },
+            { id: "105", week: "W43", date: "30/10/2026", day: "Friday", stores: [...basePatterns.FridayA], accommodation: "HOME BASE", isLeave: false },
+
+            { id: "106", week: "W44", date: "02/11/2026", day: "Monday", stores: [...basePatterns.MondayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "107", week: "W44", date: "03/11/2026", day: "Tuesday", stores: [...basePatterns.WednesdayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "108", week: "W44", date: "04/11/2026", day: "Wednesday", stores: [...basePatterns.ThursdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "109", week: "W44", date: "05/11/2026", day: "Thursday", stores: ["Metcash IGA M Russell Island", "DISPLAY BUILD OUT DAY", "PLANOGRAM AUDIT FIELD DAY", "TERRITORY ADMIN REVIEW"], accommodation: "HOME BASE", isLeave: false },
+            { id: "110", week: "W44", date: "06/11/2026", day: "Friday", stores: [...basePatterns.FridayB], accommodation: "HOME BASE", isLeave: false },
+
+            { id: "111", week: "W45", date: "09/11/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "112", week: "W45", date: "10/11/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "113", week: "W45", date: "11/11/2026", day: "Wednesday", stores: [...basePatterns.WednesdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "114", week: "W45", date: "12/11/2026", day: "Thursday", stores: [...basePatterns.ThursdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "115", week: "W45", date: "13/11/2026", day: "Friday", stores: [...basePatterns.FridayA], accommodation: "HOME BASE", isLeave: false },
+
+            { id: "116", week: "W46", date: "16/11/2026", day: "Monday", stores: [...basePatterns.MondayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "117", week: "W46", date: "17/11/2026", day: "Tuesday", stores: [...basePatterns.TuesdayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "118", week: "W46", date: "18/11/2026", day: "Wednesday", stores: [...basePatterns.WednesdayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "119", week: "W46", date: "19/11/2026", day: "Thursday", stores: [...basePatterns.ThursdayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "120", week: "W46", date: "20/11/2026", day: "Friday", stores: [...basePatterns.FridayB], accommodation: "HOME BASE", isLeave: false },
+
+            { id: "121", week: "W47", date: "23/11/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "122", week: "W47", date: "24/11/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "123", week: "W47", date: "25/11/2026", day: "Wednesday", stores: [...basePatterns.WednesdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "124", week: "W47", date: "26/11/2026", day: "Thursday", stores: ["Metcash IGA M Evans Head (Ritchies)", "Metcash IGA L Maclean (Ritchies)", "Metcash IGA M Iluka Plus Cbn", "Metcash Fresh & Save Grafton"], accommodation: "HOME BASE", isLeave: false },
+            { id: "125", week: "W47", date: "27/11/2026", day: "Friday", stores: [...basePatterns.FridayA], accommodation: "HOME BASE", isLeave: false },
+
+            { id: "126", week: "W48", date: "30/11/2026", day: "Monday", stores: [...basePatterns.MondayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "127", week: "W48", date: "01/12/2026", day: "Tuesday", stores: ["Metcash Fwks Tenterfield", "Metcash IGA L Inverell", "Metcash IGA M Bingara", "Metcash IGA M Warialda", "Metcash IGA M Guyra", "Metcash F&S Armidale"], accommodation: "🛏️ BOOK TRIP (Armidale)", isLeave: false },
+            { id: "128", week: "W48", date: "02/12/2026", day: "Wednesday", stores: ["Metcash Fwks Uralla", "Metcash IGA L Tamworth", "Metcash IGA M Kootingal", "Metcash IGA L Quirindi", "Metcash IGA M Walcha Plus", "Metcash IGA M Manilla Plus"], accommodation: "🛏️ BOOK TRIP (Tamworth)", isLeave: false },
+            { id: "129", week: "W48", date: "03/12/2026", day: "Thursday", stores: ["Metcash IGA L Wee Waa", "Metcash IGA M L Kyogle (Ritchies)", "Metcash IGA M Russell Island", "PRE-XMAS COMPLIANCE CHECKS"], accommodation: "🛏️ BOOK TRIP (Kyogle)", isLeave: false },
+            { id: "130", week: "W48", date: "04/12/2026", day: "Friday", stores: [...basePatterns.FridayB], accommodation: "HOME BASE", isLeave: false },
+
+            { id: "131", week: "W49", date: "07/12/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "132", week: "W49", date: "08/12/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "133", week: "W49", date: "09/12/2026", day: "Wednesday", stores: [...basePatterns.WednesdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "134", week: "W49", date: "10/12/2026", day: "Thursday", stores: [...basePatterns.ThursdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "135", week: "W49", date: "11/12/2026", day: "Friday", stores: [...basePatterns.FridayA], accommodation: "HOME BASE", isLeave: false },
+
+            { id: "136", week: "W50", date: "14/12/2026", day: "Monday", stores: [...basePatterns.MondayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "137", week: "W50", date: "15/12/2026", day: "Tuesday", stores: [...basePatterns.TuesdayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "138", week: "W50", date: "16/12/2026", day: "Wednesday", stores: [...basePatterns.WednesdayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "139", week: "W50", date: "17/12/2026", day: "Thursday", stores: [...basePatterns.ThursdayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "140", week: "W50", date: "18/12/2026", day: "Friday", stores: [...basePatterns.FridayB], accommodation: "HOME BASE", isLeave: false },
+
+            { id: "141", week: "W51", date: "21/12/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "142", week: "W51", date: "22/12/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "143", week: "W51", date: "23/12/2026", day: "Wednesday", stores: [...basePatterns.WednesdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "144", week: "W51", date: "24/12/2026", day: "Thursday", stores: [...basePatterns.ThursdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "145", week: "W51", date: "25/12/2026", day: "Friday", stores: ["STORES OFFLINE - CHRISTMAS DAY"], accommodation: "HOME BASE", isLeave: false },
+
+            { id: "146", week: "W52", date: "28/12/2026", day: "Monday", stores: ["STORES OFFLINE - BOXING DAY HOLIDAY"], accommodation: "HOME BASE", isLeave: false },
+            { id: "147", week: "W52", date: "29/12/2026", day: "Tuesday", stores: [...basePatterns.WednesdayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "148", week: "W52", date: "30/12/2026", day: "Wednesday", stores: [...basePatterns.MondayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "149", week: "W52", date: "31/12/2026", day: "Thursday", stores: [...basePatterns.ThursdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "150", week: "W52", date: "01/01/2027", day: "Friday", stores: ["STORES OFFLINE - NEW YEARS DAY"], accommodation: "HOME BASE", isLeave: false }
         ];
 
-        let roster = JSON.parse(localStorage.getItem('kyal_roster_data_v9')) || initialRosterData;
+        let roster = JSON.parse(localStorage.getItem('kyal_roster_data_v10')) || initialRosterData;
+        let visitedStores = JSON.parse(localStorage.getItem('kyal_visited_stores_v10')) || {};
         let currentEditingId = null;
         let currentPickerDayId = null;
 
-        function saveData() { localStorage.setItem('kyal_roster_data_v9', JSON.stringify(roster)); }
-        function isNswPublicHoliday(dateStr) { return dateStr === "08/06/2026"; }
+        function saveData() {
+            localStorage.setItem('kyal_roster_data_v10', JSON.stringify(roster));
+            localStorage.setItem('kyal_visited_stores_v10', JSON.stringify(visitedStores));
+        }
 
-        // --- Core Rendering with Dynamic Week Support ---
+        function isNswPublicHoliday(dateStr) { return dateStr === "08/06/2026" || dateStr === "05/10/2026"; }
+
         function renderCalendar() {
             const container = document.getElementById('calendarContainer');
             container.innerHTML = '';
 
-            // This fixes the bug: dynamically pulls every unique week found in your saved data
-            const weeks = [...new Set(roster.map(item => item.week))].sort();
+            const weeks = [...new Set(roster.map(item => item.week))];
+            
+            // Custom sort to ensure W23 to W52 aligns properly mathematically
+            weeks.sort((a, b) => {
+                let numA = parseInt(a.replace('W',''));
+                let numB = parseInt(b.replace('W',''));
+                return numA - numB;
+            });
 
             weeks.forEach(weekName => {
                 const currentWeekRow = document.createElement('div');
@@ -264,7 +438,6 @@
                     tile.className = `day-tile ${hasNswHoliday ? 'holiday' : ''} ${day.isLeave ? 'annual-leave' : ''}`;
                     tile.setAttribute('data-day-id', day.id);
 
-                    // Right click picker
                     tile.addEventListener('contextmenu', (e) => {
                         e.preventDefault();
                         toggleStorePicker(day.id, e.clientX, e.clientY);
@@ -322,7 +495,6 @@
             if (targetDay) { targetDay.stores.splice(storeIndex, 1); saveData(); renderCalendar(); }
         }
 
-        // --- Picker Logic ---
         function toggleStorePicker(dayId, mouseX, mouseY) {
             const picker = document.getElementById('floatingStorePicker');
             if (picker.style.display === 'flex' && currentPickerDayId === dayId) { closePicker(); return; }
@@ -438,11 +610,20 @@
         }
 
         function resetTracker() {
-            if(confirm("Reset entire roster?")) { localStorage.removeItem('kyal_roster_data_v9'); roster = JSON.parse(JSON.stringify(initialRosterData)); renderCalendar(); }
+            if(confirm("Reset entire roster?")) { localStorage.removeItem('kyal_roster_data_v10'); roster = JSON.parse(JSON.stringify(initialRosterData)); renderCalendar(); }
+        }
+
+        function exportData() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({roster, visitedStores}, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "master_roster_backup.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
         }
 
         // --- AI LOGIC ---
-        // Load key on boot
         window.addEventListener('DOMContentLoaded', () => {
             if(localStorage.getItem('gemini_api_key')) document.getElementById('apiKey').value = localStorage.getItem('gemini_api_key');
         });
@@ -499,14 +680,12 @@ Only include the days that are changing. Do not modify IDs.`;
 
                 const data = await response.json();
                 
-                // Remove the "Analyzing..." message
                 const chatArea = document.getElementById('chatArea');
                 chatArea.removeChild(chatArea.lastChild);
 
                 if(data.candidates && data.candidates[0].content.parts[0].text) {
                     const fullReply = data.candidates[0].content.parts[0].text;
                     
-                    // Parse the JSON block if it exists
                     const jsonMatch = fullReply.match(/```json\n([\s\S]*?)\n```/);
                     if (jsonMatch) {
                         const changes = JSON.parse(jsonMatch[1]);
@@ -521,7 +700,6 @@ Only include the days that are changing. Do not modify IDs.`;
                         renderCalendar();
                     }
                     
-                    // Display the text (remove the ugly json block from the chat)
                     const cleanReply = fullReply.replace(/```json\n[\s\S]*?\n```/, '').trim();
                     if (cleanReply) appendChat("AI", cleanReply);
                     
