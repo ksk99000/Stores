@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2026 Master Roster - Printable Edition</title>
+    <title>2026 Master Roster - Offline Printable Edition</title>
     <style>
         :root {
             --primary: #0f172a; --accent: #2563eb; --success: #16a34a; --warning: #dc2626;
@@ -87,15 +87,15 @@
         .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 4px; font-size: 0.85rem; outline: none; }
         .form-group input:focus, .form-group select:focus { border-color: var(--accent); }
 
-        /* Print Engine Styles */
+        /* Print Engine Styles - Highly Optimized for A4 Landscape */
         #printArea { display: none; }
         
         @media print {
-            body { background: white; padding: 0; margin: 0; }
+            body { background: white; padding: 0; margin: 0; height: 100vh; width: 100vw; }
             .main-content, header, .modal, .floating-picker, .controls { display: none !important; }
-            #printArea { display: block !important; }
+            #printArea { display: block !important; width: 100%; }
             
-            @page { size: A4 landscape; margin: 10mm; }
+            @page { size: A4 landscape; margin: 8mm; }
             
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; box-shadow: none !important; }
 
@@ -103,32 +103,34 @@
                 page-break-after: always; 
                 display: flex; 
                 flex-direction: column; 
-                height: 100vh; 
-                gap: 8px;
+                height: 95vh; /* Forces the flexbox container to stretch to the bottom of the printed page */
+                gap: 10px;
+                padding-bottom: 2mm;
             }
             .print-page:last-child { page-break-after: auto; }
             
-            .print-header { text-align: center; font-size: 1.2rem; font-weight: 700; padding-bottom: 5px; border-bottom: 2px solid #0f172a; margin-bottom: 5px; color: #0f172a; }
+            .print-header { text-align: center; font-size: 1.5rem; font-weight: 800; padding-bottom: 8px; border-bottom: 2px solid #0f172a; margin-bottom: 4px; color: #0f172a; }
             
-            .p-week-row { display: grid; grid-template-columns: 50px repeat(5, 1fr); gap: 6px; border: 1px solid #cbd5e1; border-radius: 4px; padding: 6px; flex: 1; min-height: 0; }
-            .p-week-label { display: flex; align-items: center; justify-content: center; background: #e2e8f0; color: #1e293b; font-weight: 800; font-size: 0.85rem; border-radius: 4px; writing-mode: vertical-rl; text-orientation: mixed; transform: rotate(180deg); }
+            .p-week-row { display: grid; grid-template-columns: 40px repeat(5, 1fr); gap: 8px; border: 2px solid #94a3b8; border-radius: 6px; padding: 6px; flex: 1; min-height: 0; }
+            .p-week-label { display: flex; align-items: center; justify-content: center; background: #e2e8f0; color: #1e293b; font-weight: 800; font-size: 1rem; border-radius: 4px; writing-mode: vertical-rl; text-orientation: mixed; transform: rotate(180deg); }
             
-            .p-day-tile { border: 1px solid #cbd5e1; border-radius: 4px; padding: 6px; display: flex; flex-direction: column; background: #f8fafc; overflow: hidden; }
+            .p-day-tile { border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px; display: flex; flex-direction: column; background: #f8fafc; overflow: hidden; }
             .p-day-tile.p-holiday { background: #fef2f2; border-color: #fca5a5; }
             .p-day-tile.p-leave { background: #e0f2fe; border-color: #bae6fd; }
             
-            .p-day-header { display: flex; justify-content: space-between; border-bottom: 1px solid #cbd5e1; margin-bottom: 6px; padding-bottom: 4px; }
-            .p-day-date { font-weight: 700; font-size: 0.8rem; color: #0f172a; }
-            .p-day-name { font-size: 0.65rem; color: #64748b; font-weight: 700; text-transform: uppercase; }
+            .p-day-header { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 2px solid #cbd5e1; margin-bottom: 8px; padding-bottom: 4px; }
+            .p-day-date { font-weight: 800; font-size: 1.1rem; color: #0f172a; }
+            .p-day-name { font-size: 0.85rem; color: #475569; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
             
-            .p-alert { background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; font-size: 0.65rem; font-weight: 700; padding: 2px; text-align: center; border-radius: 3px; margin-bottom: 4px; }
+            .p-alert { background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; font-size: 0.8rem; font-weight: 700; padding: 4px; text-align: center; border-radius: 4px; margin-bottom: 6px; }
             .p-alert.p-leave-tag { background: #bae6fd; color: #0369a1; border-color: #7dd3fc; }
             .p-alert.p-nsw-tag { background: #fef3c7; color: #b45309; border-color: #fcd34d; }
             
-            .p-store-chip { padding: 3px 4px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 3px; font-size: 0.65rem; font-weight: 600; color: #334155; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; justify-content: space-between; }
+            /* Store chips increased in size and wrapped to 2 lines so they don't get cut off */
+            .p-store-chip { padding: 5px 6px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.85rem; font-weight: 600; color: #0f172a; margin-bottom: 5px; white-space: normal; line-height: 1.15; display: flex; justify-content: space-between; align-items: center; text-align: left;}
             .p-store-chip.p-visited { background: #d1fae5; border-color: #a7f3d0; color: #065f46; text-decoration: line-through; }
-            .p-store-chip.p-visited::after { content: "✓"; font-weight: 700; font-size: 0.6rem; margin-left: 2px; }
-            .p-store-chip.p-non-visit { background: #e2e8f0; color: #64748b; font-style: italic; text-align: center; justify-content: center; }
+            .p-store-chip.p-visited::after { content: "✓"; font-weight: 800; font-size: 0.85rem; margin-left: 4px; }
+            .p-store-chip.p-non-visit { background: #e2e8f0; color: #475569; font-style: italic; text-align: center; justify-content: center; }
         }
         
         @media(max-width: 1200px) { .week-row { grid-template-columns: 1fr; } }
@@ -157,7 +159,7 @@
     <div class="modal" id="printModal">
         <div class="modal-content" style="width: 320px;">
             <h3 style="font-size:1.1rem; margin-bottom: 15px; color: var(--primary);">🖨️ Print Setup</h3>
-            <p style="font-size: 0.75rem; color: #64748b; margin-bottom: 15px; line-height: 1.4;">Select the range of weeks you want to print. The system will automatically group up to 4 weeks per physical A4 Landscape page.</p>
+            <p style="font-size: 0.75rem; color: #64748b; margin-bottom: 15px; line-height: 1.4;">Select the range of weeks you want to print. The system will automatically stretch and format up to 4 weeks to perfectly fill physical A4 Landscape paper.</p>
             <div class="form-group">
                 <label>Start Week</label>
                 <select id="printStartWeek"></select>
@@ -410,12 +412,12 @@
             { id: "150", week: "W52", date: "01/01/2027", day: "Friday", stores: ["STORES OFFLINE - NEW YEARS DAY"], accommodation: "HOME BASE", isLeave: false }
         ];
 
-        let roster = JSON.parse(localStorage.getItem('kyal_roster_data_v14')) || initialRosterData;
-        let visitedStores = JSON.parse(localStorage.getItem('kyal_visited_stores_v14')) || {};
+        let roster = JSON.parse(localStorage.getItem('kyal_roster_data_v15')) || initialRosterData;
+        let visitedStores = JSON.parse(localStorage.getItem('kyal_visited_stores_v15')) || {};
 
         function saveData() { 
-            localStorage.setItem('kyal_roster_data_v14', JSON.stringify(roster)); 
-            localStorage.setItem('kyal_visited_stores_v14', JSON.stringify(visitedStores));
+            localStorage.setItem('kyal_roster_data_v15', JSON.stringify(roster)); 
+            localStorage.setItem('kyal_visited_stores_v15', JSON.stringify(visitedStores));
         }
         function isNswPublicHoliday(dateStr) { return dateStr === "08/06/2026" || dateStr === "05/10/2026"; }
 
@@ -652,8 +654,8 @@
 
         function resetTracker() {
             if(confirm("Are you sure you want to reset the entire roster back to default layouts? All custom entries will be lost.")) { 
-                localStorage.removeItem('kyal_roster_data_v14'); 
-                localStorage.removeItem('kyal_visited_stores_v14'); 
+                localStorage.removeItem('kyal_roster_data_v15'); 
+                localStorage.removeItem('kyal_visited_stores_v15'); 
                 roster = JSON.parse(JSON.stringify(initialRosterData)); 
                 visitedStores = {};
                 renderCalendar(); 
@@ -686,7 +688,6 @@
                 endSelect.appendChild(opt2);
             });
             
-            // Set defaults (start is first, end is 4th if available)
             if(weeks.length > 0) startSelect.value = weeks[0];
             if(weeks.length >= 4) endSelect.value = weeks[3];
             else if (weeks.length > 0) endSelect.value = weeks[weeks.length - 1];
@@ -715,7 +716,6 @@
             const printArea = document.getElementById('printArea');
             printArea.innerHTML = '';
             
-            // Group into pages of 4 weeks max
             for (let i = 0; i < selectedWeeks.length; i += 4) {
                 const pageWeeks = selectedWeeks.slice(i, i + 4);
                 const pageDiv = document.createElement('div');
