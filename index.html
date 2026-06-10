@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2026 Master Roster - Complete Offline Edition</title>
+    <title>2026 Master Roster - Pro Offline Edition</title>
     <style>
         :root {
             --primary: #0f172a; --accent: #2563eb; --success: #16a34a; --warning: #dc2626;
@@ -87,38 +87,29 @@
         .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 4px; font-size: 0.85rem; outline: none; }
         .form-group input:focus, .form-group select:focus { border-color: var(--accent); }
 
-        /* BRUTE FORCE PRINT ENGINE STYLES */
+        /* PRINT CONFIG */
         #printArea { display: none; }
         
         @media print {
             body { background: white; padding: 0; margin: 0; height: 100%; width: 100%; }
             .main-content, header, .modal, .floating-picker, .controls { display: none !important; }
             #printArea { display: block !important; width: 100%; }
-            
             @page { size: A4 landscape; margin: 5mm; }
-            
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; box-shadow: none !important; }
-
             .print-page { page-break-after: always; display: flex; flex-direction: column; height: 190mm; gap: 4mm; }
             .print-page:last-child { page-break-after: auto; }
-            
             .print-header { text-align: center; font-size: 16pt; font-weight: 900; padding-bottom: 2mm; border-bottom: 3px solid #0f172a; margin-bottom: 2mm; color: #0f172a; }
-            
             .p-week-row { display: grid; grid-template-columns: 40px repeat(5, 1fr); gap: 4mm; border: 2px solid #64748b; border-radius: 6px; padding: 3mm; flex: 1; min-height: 40mm; }
             .p-week-label { display: flex; align-items: center; justify-content: center; background: #e2e8f0; color: #0f172a; font-weight: 900; font-size: 12pt; border-radius: 4px; writing-mode: vertical-rl; text-orientation: mixed; transform: rotate(180deg); }
-            
             .p-day-tile { border: 2px solid #cbd5e1; border-radius: 6px; padding: 3mm; display: flex; flex-direction: column; background: #f8fafc; overflow: hidden; }
             .p-day-tile.p-holiday { background: #fef2f2; border-color: #fca5a5; }
             .p-day-tile.p-leave { background: #e0f2fe; border-color: #bae6fd; }
-            
             .p-day-header { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 2px solid #cbd5e1; margin-bottom: 3mm; padding-bottom: 2mm; }
             .p-day-date { font-weight: 900; font-size: 14pt; color: #0f172a; }
             .p-day-name { font-size: 11pt; color: #475569; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; }
-            
             .p-alert { background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; font-size: 10pt; font-weight: 800; padding: 2mm; text-align: center; border-radius: 4px; margin-bottom: 2mm; }
             .p-alert.p-leave-tag { background: #bae6fd; color: #0369a1; border-color: #7dd3fc; }
             .p-alert.p-nsw-tag { background: #fef3c7; color: #b45309; border-color: #fcd34d; }
-            
             .p-store-chip { padding: 3mm; background: #ffffff; border: 1px solid #94a3b8; border-radius: 4px; font-size: 10pt; font-weight: 700; color: #0f172a; margin-bottom: 2mm; white-space: normal; line-height: 1.25; display: flex; justify-content: space-between; align-items: center; text-align: left; }
             .p-store-chip.p-visited { background: #d1fae5; border-color: #10b981; color: #065f46; text-decoration: line-through; }
             .p-store-chip.p-visited::after { content: "✓"; font-weight: 900; font-size: 11pt; margin-left: 3mm; }
@@ -134,7 +125,7 @@
         <header>
             <div>
                 <h1>2026 Master Roster</h1>
-                <p style="color: #64748b; font-size: 0.85rem; margin-top: 2px;">Offline Edition | Left-Click: Delete | Right-Click: Add | Drag: Move</p>
+                <p style="color: #64748b; font-size: 0.85rem; margin-top: 2px;">Offline Edition | Strictly Compliant (Max 6 Stores/Day) | Right-Click Card to Add</p>
             </div>
             <div class="controls">
                 <button class="btn btn-secondary" onclick="openPrintModal()" style="background:#e2e8f0; border: 1px solid #cbd5e1; font-weight: 800;">🖨️ Print Pages</button>
@@ -151,18 +142,12 @@
     <div class="modal" id="printModal">
         <div class="modal-content" style="width: 320px;">
             <h3 style="font-size:1.1rem; margin-bottom: 15px; color: var(--primary);">🖨️ Print Setup</h3>
-            <p style="font-size: 0.75rem; color: #64748b; margin-bottom: 15px; line-height: 1.4;">Select the range of weeks you want to print. The system will force a 4-week block to fill the entire physical A4 page.</p>
-            <div class="form-group">
-                <label>Start Week</label>
-                <select id="printStartWeek"></select>
-            </div>
-            <div class="form-group">
-                <label>End Week</label>
-                <select id="printEndWeek"></select>
-            </div>
+            <p style="font-size: 0.75rem; color: #64748b; margin-bottom: 15px; line-height: 1.4;">Select weeks. Automatically wraps 4 weeks perfectly per page.</p>
+            <div class="form-group"><label>Start Week</label><select id="printStartWeek"></select></div>
+            <div class="form-group"><label>End Week</label><select id="printEndWeek"></select></div>
             <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:20px;">
                 <button class="btn btn-secondary" onclick="closePrintModal()">Cancel</button>
-                <button class="btn btn-primary" onclick="executePrint()">Generate & Print</button>
+                <button class="btn btn-primary" onclick="executePrint()">Print</button>
             </div>
         </div>
     </div>
@@ -185,8 +170,8 @@
                 <label for="editIsLeave" style="font-weight:bold; color:#0369a1; font-size:0.85rem; margin:0; cursor: pointer;">🌴 Mark as Annual Leave</label>
             </div>
             <div class="form-group" id="accomGroup">
-                <label>Accommodation / Booking Status</label>
-                <input type="text" id="editAccommodation" placeholder="e.g. 🛏️ BOOK TRIP (Toowoomba)">
+                <label>Accommodation Status</label>
+                <input type="text" id="editAccommodation" placeholder="e.g. 🛏️ BOOK TRIP">
             </div>
             <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:20px;">
                 <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
@@ -209,16 +194,16 @@
             "ADMIN & VEHICLE LOGS", "DISPLAY BUILD OUT DAY", "PLANOGRAM AUDIT CHECK", "TERRITORY ADMIN REVIEW", "STORES OFFLINE - PUBLIC HOLIDAY"
         ];
 
-        // Drakes specific optimizations applied
+        // Regulated base patterns to strictly cap at 6 stores max per day
         const basePatterns = {
-            MondayA: ["Metcash Drakes Mcdowall", "Metcash Drakes Samford", "Metcash Drakes Rochedale", "Metcash IGA M Hoppers Ascot", "Metcash IGA M Frenchs Forest", "Metcash IGA M Dayboro Valley", "Metcash IGA M Cashmere"],
+            MondayA: ["Metcash Drakes Mcdowall", "Metcash Drakes Samford", "Metcash IGA M Hoppers Ascot", "Metcash IGA M Frenchs Forest", "Metcash IGA M Dayboro Valley", "Metcash IGA M Cashmere"],
             TuesdayA: ["Metcash IGA M Sanctuary Cove (Jones)", "Metcash Drakes Hollywell Road Markets", "Metcash L Queen Street Village Southport", "Metcash Drakes Nerang Road Ashmore", "Metcash IGA M Mermaid Waters", "Metcash IGA M Nerang (Spano)"],
             WednesdayA: ["Metcash IGA M St Lucia", "Metcash IGA M Greenslopes Legends", "Metcash IGA M Chriss Carina", "Metcash IGA M East Brisbane (Seasons)", "Metcash IGA M Acacia Ridge", "Metcash Foodworks Woodridge"],
-            ThursdayA: ["Metcash IGA M Wellington Point (Jones)", "Metcash IGA M On Bloomfield (Jones)", "Metcash IGA M Cleveland (Jones)", "Metcash IGA M Thornlands (Jones)", "Metcash IGA L Mt Cotton (Jones)"],
+            ThursdayA: ["Metcash Drakes Rochedale", "Metcash IGA M Wellington Point (Jones)", "Metcash IGA M On Bloomfield (Jones)", "Metcash IGA M Cleveland (Jones)", "Metcash IGA M Thornlands (Jones)", "Metcash IGA L Mt Cotton (Jones)"],
             FridayA: ["Metcash Fresh & Save Deagon", "Metcash IGA L Burpengary (Seasons)", "Metcash IGA M Cashmere", "Metcash IGA M Frenchs Forest"],
-            MondayB: ["Metcash IGA M Augustine Heights", "Metcash Drakes Winston Glades", "Metcash IGA M West Ipswich", "Metcash IGA M Walloon", "Metcash Drakes Rosewood", "Metcash Drakes Lowood", "Metcash Drakes Parkinson", "Metcash Drakes Regents Park"],
+            MondayB: ["Metcash IGA M Augustine Heights", "Metcash Drakes Winston Glades", "Metcash IGA M West Ipswich", "Metcash IGA M Walloon", "Metcash Drakes Rosewood", "Metcash Drakes Lowood"],
             TuesdayB: ["Metcash IGA M Robina (Easy T) (Spano)", "Metcash IGA M Currumbin Fair", "Metcash IGA M Tugun Beach", "Metcash IGA M Tweed Valley Way (Bugg)", "Metcash IGA Local Grocer Pottsville", "Metcash Supa Valu Ritchies Ballina"],
-            WednesdayB: ["Metcash Fresh & Save Richlands", "Metcash IGA M Loganholme", "Metcash IGA L Daisy Hill (Ritchies)", "Metcash Fresh & Save Eagleby"],
+            WednesdayB: ["Metcash Fresh & Save Richlands", "Metcash Drakes Parkinson", "Metcash Drakes Regents Park", "Metcash IGA M Loganholme", "Metcash IGA L Daisy Hill (Ritchies)", "Metcash Fresh & Save Eagleby"],
             ThursdayB: ["Metcash IGA M Laidley (Choundings)", "Metcash IGA L Gatton (Spano)", "Metcash IGA M Hatton Vale", "Metcash IGA M Esk (Co-op)", "Metcash IGA M Toogoolawah Coop", "Metcash L Boonah (Ritchies)"],
             FridayB: ["Metcash IGA M Dayboro Valley", "Metcash IGA M Cashmere", "Metcash IGA M Hoppers Ascot", "Metcash IGA L Burpengary (Seasons)", "Metcash Fresh & Save Deagon"]
         };
@@ -303,7 +288,7 @@
             { id: "65", week: "W36", date: "04/09/2026", day: "Friday", stores: [...basePatterns.FridayA], accommodation: "HOME BASE", isLeave: false },
 
             { id: "66", week: "W37", date: "07/09/2026", day: "Monday", stores: [...basePatterns.MondayB], accommodation: "HOME BASE", isLeave: false },
-            { id: "67", week: "W37", date: "08/09/2026", day: "Tuesday", stores: ["Metcash IGA M Miles", "Metcash IGA L Inverell", "Metcash IGA M Bingara", "Metcash IGA M Warialda", "Metcash IGA M Guyra", "Metcash F&S Armidale"], accommodation: "🛏️ BOOK TRIP (Armidale)", isLeave: false },
+            { id: "67", week: "W37", date: "08/09/2026", day: "Tuesday", stores: ["Metcash Fwks Tenterfield", "Metcash IGA L Inverell", "Metcash IGA M Bingara", "Metcash IGA M Warialda", "Metcash IGA M Guyra", "Metcash F&S Armidale"], accommodation: "🛏️ BOOK TRIP (Armidale)", isLeave: false },
             { id: "68", week: "W37", date: "09/09/2026", day: "Wednesday", stores: ["Metcash Fwks Uralla", "Metcash IGA L Tamworth", "Metcash IGA M Kootingal", "Metcash IGA L Quirindi", "Metcash IGA M Walcha Plus", "Metcash IGA M Manilla Plus"], accommodation: "🛏️ BOOK TRIP (Tamworth)", isLeave: false },
             { id: "69", week: "W37", date: "10/09/2026", day: "Thursday", stores: ["Metcash IGA L Wee Waa", "Metcash IGA M L Kyogle (Ritchies)", "Metcash IGA M Russell Island", "ADMIN DATA LOGS IN MOTEL"], accommodation: "🛏️ BOOK TRIP (Kyogle)", isLeave: false },
             { id: "70", week: "W37", date: "11/09/2026", day: "Friday", stores: [...basePatterns.FridayB], accommodation: "HOME BASE", isLeave: false },
@@ -405,13 +390,13 @@
             { id: "150", week: "W53", date: "01/01/2027", day: "Friday", stores: ["STORES OFFLINE - NEW YEARS DAY"], accommodation: "HOME BASE", isLeave: false }
         ];
 
-        // Advanced to v21 to ensure complete browser cache reset
-        let roster = JSON.parse(localStorage.getItem('kyal_roster_data_v21')) || initialRosterData;
-        let visitedStores = JSON.parse(localStorage.getItem('kyal_visited_stores_v21')) || {};
+        // Shifted system registry version to v23 to seamlessly re-initialize data structure
+        let roster = JSON.parse(localStorage.getItem('kyal_roster_data_v23')) || initialRosterData;
+        let visitedStores = JSON.parse(localStorage.getItem('kyal_visited_stores_v23')) || {};
 
         function saveData() { 
-            localStorage.setItem('kyal_roster_data_v21', JSON.stringify(roster)); 
-            localStorage.setItem('kyal_visited_stores_v21', JSON.stringify(visitedStores));
+            localStorage.setItem('kyal_roster_data_v23', JSON.stringify(roster)); 
+            localStorage.setItem('kyal_visited_stores_v23', JSON.stringify(visitedStores));
         }
         function isNswPublicHoliday(dateStr) { return dateStr === "08/06/2026" || dateStr === "05/10/2026"; }
 
@@ -646,9 +631,9 @@
         }
 
         function resetTracker() {
-            if(confirm("Are you sure you want to reset the entire roster back to default layouts? All custom entries will be lost.")) { 
-                localStorage.removeItem('kyal_roster_data_v21'); 
-                localStorage.removeItem('kyal_visited_stores_v21'); 
+            if(confirm("Reset entirely back to initial structural default rules? Custom variations will clear.")) { 
+                localStorage.removeItem('kyal_roster_data_v22'); 
+                localStorage.removeItem('kyal_visited_stores_v22'); 
                 roster = JSON.parse(JSON.stringify(initialRosterData)); 
                 visitedStores = {};
                 renderCalendar(); 
@@ -665,7 +650,7 @@
             downloadAnchor.remove();
         }
 
-        // --- PRINT ENGINE LOGIC ---
+        // --- PRINT STRETCH ENGINE ---
         function openPrintModal() {
             const startSelect = document.getElementById('printStartWeek');
             const endSelect = document.getElementById('printEndWeek');
