@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2026 Master Roster - Territory Strategy Edition</title>
+    <title>2026 Master Roster - Strict Operational Edition</title>
     <style>
         :root {
             --primary: #0f172a; --accent: #2563eb; --success: #16a34a; --warning: #dc2626;
@@ -219,65 +219,43 @@
             "Foodworks Tara 2020", "Drakes Chinchilla", "IGA Miles", "Foodworks Miles", "IGA Dysart Garden Plaza", 
             "IGA Middlemount (Cornetts)", "IGA Clermont (Cornetts)", "IGA Beales Clermont", "IGA Longreach (Cornetts)", 
             "IGA Cornett's Barcaldine", "IGA Blackall (Cornetts)", "IGA Charleville (Cornetts)", "IGA Local Grocer Cunnamulla",
-            "ADMIN & VEHICLE LOGS", "DISPLAY BUILD OUT DAY", "PLANOGRAM AUDIT CHECK", "TERRITORY ADMIN REVIEW", "STORES OFFLINE - PUBLIC HOLIDAY"
+            "STORES OFFLINE - PUBLIC HOLIDAY"
         ];
 
-        // BASE PATTERNS: ONLY Fortnightly stores go here. Strictly Max 6 per day.
+        // LOGISTICAL ENGINE: Flawless Geographically Tight Daily Clusters (Strictly 6 Stores per Metro Day)
         const basePatterns = {
-            MondayA: ["Drakes Samford", "Drakes Mcdowall", "IGA Burpengary (Seasons)", "Fresh & Save Deagon", "IGA East Brisbane (Seasons)"],
-            TuesdayA: ["Drakes Parkinson", "Drakes Winston Glades", "Drakes Regents Park", "Fresh & Save Richlands", "IGA Daisy Hill (Ritchies)"],
-            WednesdayA: ["IGA Cleveland (Jones)", "IGA On Bloomfield (Jones)", "IGA Wellington Point (Jones)", "IGA Mt Cotton (Jones)"],
-            ThursdayA: ["IGA Queen Street Village Southport (Jones)"],
-            FridayA: [],
+            MondayA: ["Drakes Samford", "Drakes Mcdowall", "IGA Burpengary (Seasons)", "Fresh & Save Deagon", "IGA Dayboro Valley", "IGA Cashmere"],
+            TuesdayA: ["Drakes Parkinson", "Drakes Winston Glades", "Drakes Regents Park", "Fresh & Save Richlands", "IGA West Ipswich", "IGA Augustine Heights"],
+            WednesdayA: ["IGA Cleveland (Jones)", "IGA On Bloomfield (Jones)", "IGA Wellington Point (Jones)", "IGA Mt Cotton (Jones)", "IGA Thornlands (Jones)", "IGA Russell Island (Jones)"],
+            ThursdayA: ["IGA Daisy Hill (Ritchies)", "Fresh & Save Eagleby", "IGA Loganholme", "Foodworks Woodridge", "IGA Acacia Ridge", "Drakes Rochedale"],
+            FridayA: ["IGA East Brisbane (Seasons)", "IGA St Lucia", "IGA Greenslopes Legends", "IGA Chriss Carina", "IGA Hoppers Ascot", "IGA Frenchs Forest"],
             
-            MondayB: ["Drakes Lowood", "Drakes Rosewood"],
-            TuesdayB: ["Drakes Rochedale", "Drakes Hollywell Road Markets", "Drakes Nerang Road Ashmore"],
-            WednesdayB: [],
-            ThursdayB: [],
-            FridayB: []
-        };
-
-        // MONTHLY & QUARTERLY INJECTIONS (Max limits respected)
-        const monthliesA1 = {
-            Mon: [...basePatterns.MondayA, "IGA Cashmere"], 
-            Tue: [...basePatterns.TuesdayA, "Fresh & Save Eagleby"], 
-            Wed: [...basePatterns.WednesdayA, "IGA Russell Island (Jones)", "IGA Thornlands (Jones)"], 
-            Thu: [...basePatterns.ThursdayA, "IGA St Lucia", "IGA Greenslopes Legends", "IGA Chriss Carina", "IGA Manly Village (Jones)", "IGA Frenchs Forest"], 
-            Fri: ["PLANOGRAM AUDIT CHECK", "TERRITORY ADMIN REVIEW"] 
-        };
-
-        const monthliesB1 = {
-            Mon: [...basePatterns.MondayB, "IGA Gatton (Spano)", "IGA Laidley (Choundings)", "IGA Hatton Vale", "IGA Toogoolawah Coop"], 
-            Tue: [...basePatterns.TuesdayB, "IGA Mermaid Waters", "IGA Sanctuary Cove (Jones)", "IGA Robina (Easy T) (Spano)"], 
-            Wed: ["IGA Nerang (Spano)", "IGA Mt Tamborine (Cavallaro)", "IGA Beaudesert (Jones)", "IGA Esk (Co-op)"], 
-            Thu: ["DISPLAY BUILD OUT DAY"], 
-            Fri: ["ADMIN & VEHICLE LOGS"] 
-        };
-
-        const quarterliesA2 = {
-            Thu: [...basePatterns.ThursdayA, "IGA Dayboro Valley", "IGA Hoppers Ascot", "IGA Acacia Ridge", "Foodworks Woodridge", "IGA Loganholme"], 
-            Fri: ["IGA West Ipswich", "IGA Augustine Heights", "IGA Walloon", "IGA Tugun Beach", "IGA Currumbin Fair", "IGA Canungra"] 
+            MondayB: ["Drakes Lowood", "Drakes Rosewood", "IGA Gatton (Spano)", "IGA Laidley (Choundings)", "IGA Hatton Vale", "IGA Walloon"],
+            TuesdayB: ["Drakes Hollywell Road Markets", "IGA Queen Street Village Southport (Jones)", "Drakes Nerang Road Ashmore", "IGA Sanctuary Cove (Jones)", "IGA Mermaid Waters", "IGA Tugun Beach"],
+            WednesdayB: ["IGA Robina (Easy T) (Spano)", "IGA Nerang (Spano)", "IGA Mt Tamborine (Cavallaro)", "IGA Canungra", "IGA Beaudesert (Jones)", "IGA Currumbin Fair"],
+            ThursdayB: ["IGA Toogoolawah Coop", "IGA Esk (Co-op)", "IGA Manly Village (Jones)", "IGA Cleveland (Jones)", "IGA On Bloomfield (Jones)", "IGA Wellington Point (Jones)"],
+            FridayB: ["Drakes Samford", "Drakes Mcdowall", "IGA Burpengary (Seasons)", "Fresh & Save Deagon", "Fresh & Save Richlands", "Drakes Parkinson"]
         };
 
         const initialRosterData = [
             // --- CYCLE W24-W27 ---
-            { id: "1", week: "W24", date: "08/06/2026", day: "Monday", stores: monthliesA1.Mon, accommodation: "HOME BASE", isLeave: false },
-            { id: "2", week: "W24", date: "09/06/2026", day: "Tuesday", stores: monthliesA1.Tue, accommodation: "HOME BASE", isLeave: false },
-            { id: "3", week: "W24", date: "10/06/2026", day: "Wednesday", stores: monthliesA1.Wed, accommodation: "HOME BASE", isLeave: false },
-            { id: "4", week: "W24", date: "11/06/2026", day: "Thursday", stores: monthliesA1.Thu, accommodation: "HOME BASE", isLeave: false },
-            { id: "5", week: "W24", date: "12/06/2026", day: "Friday", stores: monthliesA1.Fri, accommodation: "HOME BASE", isLeave: false },
+            { id: "1", week: "W24", date: "08/06/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "2", week: "W24", date: "09/06/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "3", week: "W24", date: "10/06/2026", day: "Wednesday", stores: [...basePatterns.WednesdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "4", week: "W24", date: "11/06/2026", day: "Thursday", stores: [...basePatterns.ThursdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "5", week: "W24", date: "12/06/2026", day: "Friday", stores: [...basePatterns.FridayA], accommodation: "HOME BASE", isLeave: false },
             
-            { id: "6", week: "W25", date: "15/06/2026", day: "Monday", stores: monthliesB1.Mon, accommodation: "HOME BASE", isLeave: false },
-            { id: "7", week: "W25", date: "16/06/2026", day: "Tuesday", stores: monthliesB1.Tue, accommodation: "HOME BASE", isLeave: false },
-            { id: "8", week: "W25", date: "17/06/2026", day: "Wednesday", stores: monthliesB1.Wed, accommodation: "HOME BASE", isLeave: false },
+            { id: "6", week: "W25", date: "15/06/2026", day: "Monday", stores: [...basePatterns.MondayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "7", week: "W25", date: "16/06/2026", day: "Tuesday", stores: [...basePatterns.TuesdayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "8", week: "W25", date: "17/06/2026", day: "Wednesday", stores: [...basePatterns.WednesdayB], accommodation: "HOME BASE", isLeave: false },
             { id: "9", week: "W25", date: "18/06/2026", day: "Thursday", stores: ["IGA Tweed Valley Way (Bugg)", "IGA Local Grocer + Cbn Pottsville", "IGA Byron Bay", "Supa Valu Ritchies Ballina"], accommodation: "🛏️ BOOK TRIP (Ballina)", isLeave: false },
             { id: "10", week: "W25", date: "19/06/2026", day: "Friday", stores: ["IGA Evans Head (Ritchies)", "IGA Iluka Plus Cbn", "IGA Maclean (Ritchies)", "Fresh & Save Grafton"], accommodation: "HOME BASE", isLeave: false },
             
             { id: "11", week: "W26", date: "22/06/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", isLeave: false },
             { id: "12", week: "W26", date: "23/06/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", isLeave: false },
             { id: "13", week: "W26", date: "24/06/2026", day: "Wednesday", stores: [...basePatterns.WednesdayA], accommodation: "HOME BASE", isLeave: false },
-            { id: "14", week: "W26", date: "25/06/2026", day: "Thursday", stores: quarterliesA2.Thu, accommodation: "HOME BASE", isLeave: false },
-            { id: "15", week: "W26", date: "26/06/2026", day: "Friday", stores: quarterliesA2.Fri, accommodation: "HOME BASE", isLeave: false },
+            { id: "14", week: "W26", date: "25/06/2026", day: "Thursday", stores: [...basePatterns.ThursdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "15", week: "W26", date: "26/06/2026", day: "Friday", stores: [...basePatterns.FridayA], accommodation: "HOME BASE", isLeave: false },
             
             { id: "16", week: "W27", date: "29/06/2026", day: "Monday", stores: [...basePatterns.MondayB], accommodation: "HOME BASE", isLeave: false },
             { id: "17", week: "W27", date: "30/06/2026", day: "Tuesday", stores: [...basePatterns.TuesdayB], accommodation: "HOME BASE", isLeave: false },
@@ -286,117 +264,117 @@
             { id: "20", week: "W27", date: "03/07/2026", day: "Friday", stores: ["IGA Pittsworth", "Drakes Toowoomba High St", "IGA Oakey (Cornetts)", "IGA Crows Nest"], accommodation: "HOME BASE", isLeave: false },
 
             // --- CYCLE W28-W31 ---
-            { id: "21", week: "W28", date: "06/07/2026", day: "Monday", stores: monthliesA1.Mon, accommodation: "HOME BASE", isLeave: false },
-            { id: "22", week: "W28", date: "07/07/2026", day: "Tuesday", stores: monthliesA1.Tue, accommodation: "HOME BASE", isLeave: false },
-            { id: "23", week: "W28", date: "08/07/2026", day: "Wednesday", stores: monthliesA1.Wed, accommodation: "HOME BASE", isLeave: false },
-            { id: "24", week: "W28", date: "09/07/2026", day: "Thursday", stores: monthliesA1.Thu, accommodation: "HOME BASE", isLeave: false },
-            { id: "25", week: "W28", date: "10/07/2026", day: "Friday", stores: monthliesA1.Fri, accommodation: "HOME BASE", isLeave: false },
+            { id: "21", week: "W28", date: "06/07/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "22", week: "W28", date: "07/07/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "23", week: "W28", date: "08/07/2026", day: "Wednesday", stores: [...basePatterns.WednesdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "24", week: "W28", date: "09/07/2026", day: "Thursday", stores: [...basePatterns.ThursdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "25", week: "W28", date: "10/07/2026", day: "Friday", stores: [...basePatterns.FridayA], accommodation: "HOME BASE", isLeave: false },
 
-            { id: "26", week: "W29", date: "13/07/2026", day: "Monday", stores: monthliesB1.Mon, accommodation: "HOME BASE", isLeave: false },
-            { id: "27", week: "W29", date: "14/07/2026", day: "Tuesday", stores: monthliesB1.Tue, accommodation: "HOME BASE", isLeave: false },
-            { id: "28", week: "W29", date: "15/07/2026", day: "Wednesday", stores: monthliesB1.Wed, accommodation: "HOME BASE", isLeave: false },
-            { id: "29", week: "W29", date: "16/07/2026", day: "Thursday", stores: monthliesB1.Thu, accommodation: "HOME BASE", isLeave: false },
-            { id: "30", week: "W29", date: "17/07/2026", day: "Friday", stores: monthliesB1.Fri, accommodation: "HOME BASE", isLeave: false },
+            { id: "26", week: "W29", date: "13/07/2026", day: "Monday", stores: [...basePatterns.MondayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "27", week: "W29", date: "14/07/2026", day: "Tuesday", stores: [...basePatterns.TuesdayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "28", week: "W29", date: "15/07/2026", day: "Wednesday", stores: [...basePatterns.WednesdayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "29", week: "W29", date: "16/07/2026", day: "Thursday", stores: [...basePatterns.ThursdayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "30", week: "W29", date: "17/07/2026", day: "Friday", stores: [...basePatterns.FridayB], accommodation: "HOME BASE", isLeave: false },
 
             { id: "31", week: "W30", date: "20/07/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", isLeave: false },
             { id: "32", week: "W30", date: "21/07/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", isLeave: false },
             { id: "33", week: "W30", date: "22/07/2026", day: "Wednesday", stores: [...basePatterns.WednesdayA], accommodation: "HOME BASE", isLeave: false },
-            { id: "34", week: "W30", date: "23/07/2026", day: "Thursday", stores: [...basePatterns.ThursdayA], accommodation: "HOME BASE", isLeave: false },
-            { id: "35", week: "W30", date: "24/07/2026", day: "Friday", stores: [...basePatterns.FridayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "34", week: "W30", date: "23/07/2026", day: "Thursday", stores: ["Foodworks Goondiwindi", "IGA St George (Cornetts)", "Fwks St George", "IGA Roma (Cornetts)"], accommodation: "🛏️ BOOK TRIP (Roma)", isLeave: false },
+            { id: "35", week: "W30", date: "24/07/2026", day: "Friday", stores: ["Foodworks Tara 2020", "Drakes Chinchilla", "IGA Miles", "Foodworks Miles"], accommodation: "HOME BASE", isLeave: false },
 
             { id: "36", week: "W31", date: "27/07/2026", day: "Monday", stores: [...basePatterns.MondayB], accommodation: "HOME BASE", isLeave: false },
             { id: "37", week: "W31", date: "28/07/2026", day: "Tuesday", stores: [...basePatterns.TuesdayB], accommodation: "HOME BASE", isLeave: false },
             { id: "38", week: "W31", date: "29/07/2026", day: "Wednesday", stores: [...basePatterns.WednesdayB], accommodation: "HOME BASE", isLeave: false },
-            { id: "39", week: "W31", date: "30/07/2026", day: "Thursday", stores: ["Foodworks Goondiwindi", "IGA St George (Cornetts)", "Fwks St George", "IGA Roma (Cornetts)"], accommodation: "🛏️ BOOK TRIP (Roma)", isLeave: false },
-            { id: "40", week: "W31", date: "31/07/2026", day: "Friday", stores: ["Foodworks Tara 2020", "Drakes Chinchilla", "IGA Miles", "Foodworks Miles"], accommodation: "HOME BASE", isLeave: false },
+            { id: "39", week: "W31", date: "30/07/2026", day: "Thursday", stores: [...basePatterns.ThursdayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "40", week: "W31", date: "31/07/2026", day: "Friday", stores: [...basePatterns.FridayB], accommodation: "HOME BASE", isLeave: false },
 
             // --- CYCLE W32-W35 ---
-            { id: "41", week: "W32", date: "03/08/2026", day: "Monday", stores: monthliesA1.Mon, accommodation: "HOME BASE", isLeave: false },
-            { id: "42", week: "W32", date: "04/08/2026", day: "Tuesday", stores: monthliesA1.Tue, accommodation: "HOME BASE", isLeave: false },
-            { id: "43", week: "W32", date: "05/08/2026", day: "Wednesday", stores: monthliesA1.Wed, accommodation: "HOME BASE", isLeave: false },
-            { id: "44", week: "W32", date: "06/08/2026", day: "Thursday", stores: monthliesA1.Thu, accommodation: "HOME BASE", isLeave: false },
-            { id: "45", week: "W32", date: "07/08/2026", day: "Friday", stores: monthliesA1.Fri, accommodation: "HOME BASE", isLeave: false },
+            { id: "41", week: "W32", date: "03/08/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "42", week: "W32", date: "04/08/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "43", week: "W32", date: "05/08/2026", day: "Wednesday", stores: ["IGA Kyogle (Ritchies)", "Foodworks Tenterfield", "IGA Warialda (Carlo's)", "IGA Bingara", "IGA Inverell (Ritchies)"], accommodation: "🛏️ BOOK TRIP (Inverell)", isLeave: false },
+            { id: "44", week: "W32", date: "06/08/2026", day: "Thursday", stores: ["IGA Wee Waa (Carlo's)", "IGA Manilla Plus Liquor (Carlo's)", "IGA Tamworth (Carlo's)", "IGA Kootingal", "IGA Quirindi (Carlo's)"], accommodation: "🛏️ BOOK TRIP (Tamworth)", isLeave: false },
+            { id: "45", week: "W32", date: "07/08/2026", day: "Friday", stores: ["IGA Walcha Plus Liquor (Carlo's)", "Foodworks Uralla", "Fresh & Save Armidale", "IGA Guyra"], accommodation: "HOME BASE", isLeave: false },
 
-            { id: "46", week: "W33", date: "10/08/2026", day: "Monday", stores: monthliesB1.Mon, accommodation: "HOME BASE", isLeave: false },
-            { id: "47", week: "W33", date: "11/08/2026", day: "Tuesday", stores: monthliesB1.Tue, accommodation: "HOME BASE", isLeave: false },
+            { id: "46", week: "W33", date: "10/08/2026", day: "Monday", stores: [...basePatterns.MondayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "47", week: "W33", date: "11/08/2026", day: "Tuesday", stores: [...basePatterns.TuesdayB], accommodation: "HOME BASE", isLeave: false },
             { id: "48", week: "W33", date: "12/08/2026", day: "Wednesday", stores: ["STORES OFFLINE - EKKA WEDNESDAY HOLIDAY"], accommodation: "HOME BASE", isLeave: false },
-            { id: "49", week: "W33", date: "13/08/2026", day: "Thursday", stores: monthliesB1.Thu, accommodation: "HOME BASE", isLeave: false },
-            { id: "50", week: "W33", date: "14/08/2026", day: "Friday", stores: monthliesB1.Fri, accommodation: "HOME BASE", isLeave: false },
+            { id: "49", week: "W33", date: "13/08/2026", day: "Thursday", stores: [...basePatterns.ThursdayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "50", week: "W33", date: "14/08/2026", day: "Friday", stores: [...basePatterns.FridayB], accommodation: "HOME BASE", isLeave: false },
 
             { id: "51", week: "W34", date: "17/08/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", isLeave: false },
             { id: "52", week: "W34", date: "18/08/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", isLeave: false },
             { id: "53", week: "W34", date: "19/08/2026", day: "Wednesday", stores: [...basePatterns.WednesdayA], accommodation: "HOME BASE", isLeave: false },
             { id: "54", week: "W34", date: "20/08/2026", day: "Thursday", stores: [...basePatterns.ThursdayA], accommodation: "HOME BASE", isLeave: false },
-            { id: "55", week: "W34", date: "21/08/2026", day: "Friday", stores: [...basePatterns.FridayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "55", week: "W34", date: "21/08/2026", day: "Friday", stores: ["IGA Dysart Garden Plaza", "IGA Middlemount (Cornetts)", "IGA Clermont (Cornetts)", "IGA Beales Clermont"], accommodation: "✈️ FLIGHT BOOKED (Clermont)", isLeave: false },
 
             { id: "56", week: "W35", date: "24/08/2026", day: "Monday", stores: [...basePatterns.MondayB], accommodation: "HOME BASE", isLeave: false },
             { id: "57", week: "W35", date: "25/08/2026", day: "Tuesday", stores: [...basePatterns.TuesdayB], accommodation: "HOME BASE", isLeave: false },
-            { id: "58", week: "W35", date: "26/08/2026", day: "Wednesday", stores: ["IGA Kyogle (Ritchies)", "Foodworks Tenterfield", "IGA Warialda (Carlo's)", "IGA Bingara", "IGA Inverell (Ritchies)"], accommodation: "🛏️ BOOK TRIP (Inverell)", isLeave: false },
-            { id: "59", week: "W35", date: "27/08/2026", day: "Thursday", stores: ["IGA Wee Waa (Carlo's)", "IGA Manilla Plus Liquor (Carlo's)", "IGA Tamworth (Carlo's)", "IGA Kootingal", "IGA Quirindi (Carlo's)"], accommodation: "🛏️ BOOK TRIP (Tamworth)", isLeave: false },
-            { id: "60", week: "W35", date: "28/08/2026", day: "Friday", stores: ["IGA Walcha Plus Liquor (Carlo's)", "Foodworks Uralla", "Fresh & Save Armidale", "IGA Guyra"], accommodation: "HOME BASE", isLeave: false },
+            { id: "58", week: "W35", date: "26/08/2026", day: "Wednesday", stores: [...basePatterns.WednesdayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "59", week: "W35", date: "27/08/2026", day: "Thursday", stores: [...basePatterns.ThursdayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "60", week: "W35", date: "28/08/2026", day: "Friday", stores: [...basePatterns.FridayB], accommodation: "HOME BASE", isLeave: false },
 
             // --- CYCLE W36-W39 ---
-            { id: "61", week: "W36", date: "31/08/2026", day: "Monday", stores: monthliesA1.Mon, accommodation: "HOME BASE", isLeave: false },
-            { id: "62", week: "W36", date: "01/09/2026", day: "Tuesday", stores: monthliesA1.Tue, accommodation: "HOME BASE", isLeave: false },
-            { id: "63", week: "W36", date: "02/09/2026", day: "Wednesday", stores: monthliesA1.Wed, accommodation: "HOME BASE", isLeave: false },
-            { id: "64", week: "W36", date: "03/09/2026", day: "Thursday", stores: monthliesA1.Thu, accommodation: "HOME BASE", isLeave: false },
-            { id: "65", week: "W36", date: "04/09/2026", day: "Friday", stores: monthliesA1.Fri, accommodation: "HOME BASE", isLeave: false },
+            { id: "61", week: "W36", date: "31/08/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "62", week: "W36", date: "01/09/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "63", week: "W36", date: "02/09/2026", day: "Wednesday", stores: [...basePatterns.WednesdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "64", week: "W36", date: "03/09/2026", day: "Thursday", stores: ["IGA Boonah (Ritchies)", "IGA Warwick (Spano)", "Foodworks Killarney", "IGA Allora", "IGA Stanthorpe (Spano)"], accommodation: "🛏️ BOOK TRIP (Stanthorpe)", isLeave: false },
+            { id: "65", week: "W36", date: "04/09/2026", day: "Friday", stores: ["IGA Pittsworth", "Drakes Toowoomba High St", "IGA Oakey (Cornetts)", "IGA Crows Nest"], accommodation: "HOME BASE", isLeave: false },
 
-            { id: "66", week: "W37", date: "07/09/2026", day: "Monday", stores: monthliesB1.Mon, accommodation: "HOME BASE", isLeave: false },
-            { id: "67", week: "W37", date: "08/09/2026", day: "Tuesday", stores: monthliesB1.Tue, accommodation: "HOME BASE", isLeave: false },
-            { id: "68", week: "W37", date: "09/09/2026", day: "Wednesday", stores: monthliesB1.Wed, accommodation: "HOME BASE", isLeave: false },
-            { id: "69", week: "W37", date: "10/09/2026", day: "Thursday", stores: monthliesB1.Thu, accommodation: "HOME BASE", isLeave: false },
-            { id: "70", week: "W37", date: "11/09/2026", day: "Friday", stores: monthliesB1.Fri, accommodation: "HOME BASE", isLeave: false },
+            { id: "66", week: "W37", date: "07/09/2026", day: "Monday", stores: [...basePatterns.MondayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "67", week: "W37", date: "08/09/2026", day: "Tuesday", stores: [...basePatterns.TuesdayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "68", week: "W37", date: "09/09/2026", day: "Wednesday", stores: ["IGA Longreach (Cornetts)", "IGA Cornett's Barcaldine", "IGA Blackall (Cornetts)"], accommodation: "✈️ FLIGHT BOOKED (Blackall)", isLeave: false },
+            { id: "69", week: "W37", date: "10/09/2026", day: "Thursday", stores: ["IGA Charleville (Cornetts)", "IGA Local Grocer Cunnamulla"], accommodation: "🛏️ BOOK TRIP (Charleville)", isLeave: false },
+            { id: "70", week: "W37", date: "11/09/2026", day: "Friday", stores: [...basePatterns.FridayB], accommodation: "HOME BASE", isLeave: false },
 
             { id: "71", week: "W38", date: "14/09/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", isLeave: false },
             { id: "72", week: "W38", date: "15/09/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", isLeave: false },
             { id: "73", week: "W38", date: "16/09/2026", day: "Wednesday", stores: [...basePatterns.WednesdayA], accommodation: "HOME BASE", isLeave: false },
-            { id: "74", week: "W38", date: "17/09/2026", day: "Thursday", stores: quarterliesA2.Thu, accommodation: "HOME BASE", isLeave: false },
-            { id: "75", week: "W38", date: "18/09/2026", day: "Friday", stores: quarterliesA2.Fri, accommodation: "HOME BASE", isLeave: false },
+            { id: "74", week: "W38", date: "17/09/2026", day: "Thursday", stores: [...basePatterns.ThursdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "75", week: "W38", date: "18/09/2026", day: "Friday", stores: [...basePatterns.FridayA], accommodation: "HOME BASE", isLeave: false },
 
             { id: "76", week: "W39", date: "21/09/2026", day: "Monday", stores: [...basePatterns.MondayB], accommodation: "HOME BASE", isLeave: false },
             { id: "77", week: "W39", date: "22/09/2026", day: "Tuesday", stores: [...basePatterns.TuesdayB], accommodation: "HOME BASE", isLeave: false },
-            { id: "78", week: "W39", date: "23/09/2026", day: "Wednesday", stores: ["IGA Longreach (Cornetts)", "IGA Cornett's Barcaldine", "IGA Blackall (Cornetts)"], accommodation: "✈️ FLIGHT BOOKED (Blackall)", isLeave: false },
-            { id: "79", week: "W39", date: "24/09/2026", day: "Thursday", stores: ["IGA Charleville (Cornetts)", "ADMIN DATA LOGS"], accommodation: "🛏️ BOOK TRIP (Charleville)", isLeave: false },
-            { id: "80", week: "W39", date: "25/09/2026", day: "Friday", stores: ["IGA Local Grocer Cunnamulla", "TRAVEL & ADMIN"], accommodation: "HOME BASE", isLeave: false },
+            { id: "78", week: "W39", date: "23/09/2026", day: "Wednesday", stores: [...basePatterns.WednesdayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "79", week: "W39", date: "24/09/2026", day: "Thursday", stores: [...basePatterns.ThursdayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "80", week: "W39", date: "25/09/2026", day: "Friday", stores: [...basePatterns.FridayB], accommodation: "HOME BASE", isLeave: false },
 
             // --- CYCLE W40-W43 ---
-            { id: "81", week: "W40", date: "28/09/2026", day: "Monday", stores: monthliesA1.Mon, accommodation: "HOME BASE", isLeave: false },
-            { id: "82", week: "W40", date: "29/09/2026", day: "Tuesday", stores: monthliesA1.Tue, accommodation: "HOME BASE", isLeave: false },
-            { id: "83", week: "W40", date: "30/09/2026", day: "Wednesday", stores: monthliesA1.Wed, accommodation: "HOME BASE", isLeave: false },
-            { id: "84", week: "W40", date: "01/10/2026", day: "Thursday", stores: monthliesA1.Thu, accommodation: "HOME BASE", isLeave: false },
-            { id: "85", week: "W40", date: "02/10/2026", day: "Friday", stores: monthliesA1.Fri, accommodation: "HOME BASE", isLeave: false },
+            { id: "81", week: "W40", date: "28/09/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "82", week: "W40", date: "29/09/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "83", week: "W40", date: "30/09/2026", day: "Wednesday", stores: [...basePatterns.WednesdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "84", week: "W40", date: "01/10/2026", day: "Thursday", stores: ["IGA Tweed Valley Way (Bugg)", "IGA Local Grocer + Cbn Pottsville", "IGA Byron Bay", "Supa Valu Ritchies Ballina"], accommodation: "🛏️ BOOK TRIP (Ballina)", isLeave: false },
+            { id: "85", week: "W40", date: "02/10/2026", day: "Friday", stores: ["IGA Evans Head (Ritchies)", "IGA Iluka Plus Cbn", "IGA Maclean (Ritchies)", "Fresh & Save Grafton"], accommodation: "HOME BASE", isLeave: false },
 
             { id: "86", week: "W41", date: "05/10/2026", day: "Monday", stores: ["STORES OFFLINE - DOUBLE PUBLIC HOLIDAY"], accommodation: "HOME BASE", isLeave: false },
-            { id: "87", week: "W41", date: "06/10/2026", day: "Tuesday", stores: monthliesB1.Tue, accommodation: "HOME BASE", isLeave: false },
-            { id: "88", week: "W41", date: "07/10/2026", day: "Wednesday", stores: monthliesB1.Wed, accommodation: "HOME BASE", isLeave: false },
-            { id: "89", week: "W41", date: "08/10/2026", day: "Thursday", stores: monthliesB1.Thu, accommodation: "HOME BASE", isLeave: false },
-            { id: "90", week: "W41", date: "09/10/2026", day: "Friday", stores: monthliesB1.Fri, accommodation: "HOME BASE", isLeave: false },
+            { id: "87", week: "W41", date: "06/10/2026", day: "Tuesday", stores: [...basePatterns.TuesdayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "88", week: "W41", date: "07/10/2026", day: "Wednesday", stores: [...basePatterns.WednesdayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "89", week: "W41", date: "08/10/2026", day: "Thursday", stores: [...basePatterns.ThursdayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "90", week: "W41", date: "09/10/2026", day: "Friday", stores: [...basePatterns.FridayB], accommodation: "HOME BASE", isLeave: false },
 
             { id: "91", week: "W42", date: "12/10/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", isLeave: false },
             { id: "92", week: "W42", date: "13/10/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", isLeave: false },
             { id: "93", week: "W42", date: "14/10/2026", day: "Wednesday", stores: [...basePatterns.WednesdayA], accommodation: "HOME BASE", isLeave: false },
-            { id: "94", week: "W42", date: "15/10/2026", day: "Thursday", stores: [...basePatterns.ThursdayA], accommodation: "HOME BASE", isLeave: false },
-            { id: "95", week: "W42", date: "16/10/2026", day: "Friday", stores: [...basePatterns.FridayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "94", week: "W42", date: "15/10/2026", day: "Thursday", stores: ["IGA Boonah (Ritchies)", "IGA Warwick (Spano)", "Foodworks Killarney", "IGA Allora", "IGA Stanthorpe (Spano)"], accommodation: "🛏️ BOOK TRIP (Stanthorpe)", isLeave: false },
+            { id: "95", week: "W42", date: "16/10/2026", day: "Friday", stores: ["IGA Pittsworth", "Drakes Toowoomba High St", "IGA Oakey (Cornetts)", "IGA Crows Nest"], accommodation: "HOME BASE", isLeave: false },
 
             { id: "96", week: "W43", date: "19/10/2026", day: "Monday", stores: [...basePatterns.MondayB], accommodation: "HOME BASE", isLeave: false },
             { id: "97", week: "W43", date: "20/10/2026", day: "Tuesday", stores: [...basePatterns.TuesdayB], accommodation: "HOME BASE", isLeave: false },
             { id: "98", week: "W43", date: "21/10/2026", day: "Wednesday", stores: [...basePatterns.WednesdayB], accommodation: "HOME BASE", isLeave: false },
-            { id: "99", week: "W43", date: "22/10/2026", day: "Thursday", stores: ["IGA Dysart Garden Plaza", "IGA Middlemount (Cornetts)", "IGA Clermont (Cornetts)"], accommodation: "✈️ FLIGHT BOOKED (Clermont)", isLeave: false },
-            { id: "100", week: "W43", date: "23/10/2026", day: "Friday", stores: ["IGA Beales Clermont", "TRAVEL & ADMIN"], accommodation: "HOME BASE", isLeave: false },
+            { id: "99", week: "W43", date: "22/10/2026", day: "Thursday", stores: [...basePatterns.ThursdayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "100", week: "W43", date: "23/10/2026", day: "Friday", stores: ["IGA Dysart Garden Plaza", "IGA Middlemount (Cornetts)", "IGA Clermont (Cornetts)", "IGA Beales Clermont"], accommodation: "✈️ FLIGHT BOOKED (Clermont)", isLeave: false },
 
             // --- CYCLE W44-W47 ---
-            { id: "101", week: "W44", date: "26/10/2026", day: "Monday", stores: monthliesA1.Mon, accommodation: "HOME BASE", isLeave: false },
-            { id: "102", week: "W44", date: "27/10/2026", day: "Tuesday", stores: monthliesA1.Tue, accommodation: "HOME BASE", isLeave: false },
-            { id: "103", week: "W44", date: "28/10/2026", day: "Wednesday", stores: monthliesA1.Wed, accommodation: "HOME BASE", isLeave: false },
-            { id: "104", week: "W44", date: "29/10/2026", day: "Thursday", stores: monthliesA1.Thu, accommodation: "HOME BASE", isLeave: false },
-            { id: "105", week: "W44", date: "30/10/2026", day: "Friday", stores: monthliesA1.Fri, accommodation: "HOME BASE", isLeave: false },
+            { id: "101", week: "W44", date: "26/10/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "102", week: "W44", date: "27/10/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "103", week: "W44", date: "28/10/2026", day: "Wednesday", stores: [...basePatterns.WednesdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "104", week: "W44", date: "29/10/2026", day: "Thursday", stores: [...basePatterns.ThursdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "105", week: "W44", date: "30/10/2026", day: "Friday", stores: [...basePatterns.FridayA], accommodation: "HOME BASE", isLeave: false },
 
-            { id: "106", week: "W45", date: "02/11/2026", day: "Monday", stores: monthliesB1.Mon, accommodation: "HOME BASE", isLeave: false },
-            { id: "107", week: "W45", date: "03/11/2026", day: "Tuesday", stores: monthliesB1.Tue, accommodation: "HOME BASE", isLeave: false },
-            { id: "108", week: "W45", date: "04/11/2026", day: "Wednesday", stores: monthliesB1.Wed, accommodation: "HOME BASE", isLeave: false },
-            { id: "109", week: "W45", date: "05/11/2026", day: "Thursday", stores: monthliesB1.Thu, accommodation: "HOME BASE", isLeave: false },
-            { id: "110", week: "W45", date: "06/11/2026", day: "Friday", stores: monthliesB1.Fri, accommodation: "HOME BASE", isLeave: false },
+            { id: "106", week: "W45", date: "02/11/2026", day: "Monday", stores: [...basePatterns.MondayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "107", week: "W45", date: "03/11/2026", day: "Tuesday", stores: [...basePatterns.TuesdayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "108", week: "W45", date: "04/11/2026", day: "Wednesday", stores: ["IGA Kyogle (Ritchies)", "Foodworks Tenterfield", "IGA Warialda (Carlo's)", "IGA Bingara", "IGA Inverell (Ritchies)"], accommodation: "🛏️ BOOK TRIP (Inverell)", isLeave: false },
+            { id: "109", week: "W45", date: "05/11/2026", day: "Thursday", stores: ["IGA Wee Waa (Carlo's)", "IGA Manilla Plus Liquor (Carlo's)", "IGA Tamworth (Carlo's)", "IGA Kootingal", "IGA Quirindi (Carlo's)"], accommodation: "🛏️ BOOK TRIP (Tamworth)", isLeave: false },
+            { id: "110", week: "W45", date: "06/11/2026", day: "Friday", stores: ["IGA Walcha Plus Liquor (Carlo's)", "Foodworks Uralla", "Fresh & Save Armidale", "IGA Guyra"], accommodation: "HOME BASE", isLeave: false },
 
             { id: "111", week: "W46", date: "09/11/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", isLeave: false },
             { id: "112", week: "W46", date: "10/11/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", isLeave: false },
@@ -411,23 +389,23 @@
             { id: "120", week: "W47", date: "20/11/2026", day: "Friday", stores: ["IGA Evans Head (Ritchies)", "IGA Iluka Plus Cbn", "IGA Maclean (Ritchies)", "Fresh & Save Grafton"], accommodation: "HOME BASE", isLeave: false },
 
             // --- CYCLE W48-W51 ---
-            { id: "121", week: "W48", date: "23/11/2026", day: "Monday", stores: monthliesA1.Mon, accommodation: "HOME BASE", isLeave: false },
-            { id: "122", week: "W48", date: "24/11/2026", day: "Tuesday", stores: monthliesA1.Tue, accommodation: "HOME BASE", isLeave: false },
-            { id: "123", week: "W48", date: "25/11/2026", day: "Wednesday", stores: monthliesA1.Wed, accommodation: "HOME BASE", isLeave: false },
-            { id: "124", week: "W48", date: "26/11/2026", day: "Thursday", stores: monthliesA1.Thu, accommodation: "HOME BASE", isLeave: false },
-            { id: "125", week: "W48", date: "27/11/2026", day: "Friday", stores: monthliesA1.Fri, accommodation: "HOME BASE", isLeave: false },
+            { id: "121", week: "W48", date: "23/11/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "122", week: "W48", date: "24/11/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "123", week: "W48", date: "25/11/2026", day: "Wednesday", stores: [...basePatterns.WednesdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "124", week: "W48", date: "26/11/2026", day: "Thursday", stores: [...basePatterns.ThursdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "125", week: "W48", date: "27/11/2026", day: "Friday", stores: [...basePatterns.FridayA], accommodation: "HOME BASE", isLeave: false },
 
-            { id: "126", week: "W49", date: "30/11/2026", day: "Monday", stores: monthliesB1.Mon, accommodation: "HOME BASE", isLeave: false },
-            { id: "127", week: "W49", date: "01/12/2026", day: "Tuesday", stores: monthliesB1.Tue, accommodation: "HOME BASE", isLeave: false },
-            { id: "128", week: "W49", date: "02/12/2026", day: "Wednesday", stores: monthliesB1.Wed, accommodation: "HOME BASE", isLeave: false },
-            { id: "129", week: "W49", date: "03/12/2026", day: "Thursday", stores: monthliesB1.Thu, accommodation: "HOME BASE", isLeave: false },
-            { id: "130", week: "W49", date: "04/12/2026", day: "Friday", stores: monthliesB1.Fri, accommodation: "HOME BASE", isLeave: false },
+            { id: "126", week: "W49", date: "30/11/2026", day: "Monday", stores: [...basePatterns.MondayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "127", week: "W49", date: "01/12/2026", day: "Tuesday", stores: [...basePatterns.TuesdayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "128", week: "W49", date: "02/12/2026", day: "Wednesday", stores: [...basePatterns.WednesdayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "129", week: "W49", date: "03/12/2026", day: "Thursday", stores: [...basePatterns.ThursdayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "130", week: "W49", date: "04/12/2026", day: "Friday", stores: [...basePatterns.FridayB], accommodation: "HOME BASE", isLeave: false },
 
             { id: "131", week: "W50", date: "07/12/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", isLeave: false },
             { id: "132", week: "W50", date: "08/12/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", isLeave: false },
             { id: "133", week: "W50", date: "09/12/2026", day: "Wednesday", stores: [...basePatterns.WednesdayA], accommodation: "HOME BASE", isLeave: false },
-            { id: "134", week: "W50", date: "10/12/2026", day: "Thursday", stores: quarterliesA2.Thu, accommodation: "HOME BASE", isLeave: false },
-            { id: "135", week: "W50", date: "11/12/2026", day: "Friday", stores: quarterliesA2.Fri, accommodation: "HOME BASE", isLeave: false },
+            { id: "134", week: "W50", date: "10/12/2026", day: "Thursday", stores: [...basePatterns.ThursdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "135", week: "W50", date: "11/12/2026", day: "Friday", stores: [...basePatterns.FridayA], accommodation: "HOME BASE", isLeave: false },
 
             { id: "136", week: "W51", date: "14/12/2026", day: "Monday", stores: [...basePatterns.MondayB], accommodation: "HOME BASE", isLeave: false },
             { id: "137", week: "W51", date: "15/12/2026", day: "Tuesday", stores: [...basePatterns.TuesdayB], accommodation: "HOME BASE", isLeave: false },
@@ -436,26 +414,26 @@
             { id: "140", week: "W51", date: "18/12/2026", day: "Friday", stores: ["IGA Pittsworth", "Drakes Toowoomba High St", "IGA Oakey (Cornetts)", "IGA Crows Nest"], accommodation: "HOME BASE", isLeave: false },
 
             // --- CYCLE W52-W53 (Holiday Wrap up) ---
-            { id: "141", week: "W52", date: "21/12/2026", day: "Monday", stores: monthliesA1.Mon, accommodation: "HOME BASE", isLeave: false },
-            { id: "142", week: "W52", date: "22/12/2026", day: "Tuesday", stores: monthliesA1.Tue, accommodation: "HOME BASE", isLeave: false },
-            { id: "143", week: "W52", date: "23/12/2026", day: "Wednesday", stores: monthliesA1.Wed, accommodation: "HOME BASE", isLeave: false },
-            { id: "144", week: "W52", date: "24/12/2026", day: "Thursday", stores: monthliesA1.Thu, accommodation: "HOME BASE", isLeave: false },
+            { id: "141", week: "W52", date: "21/12/2026", day: "Monday", stores: [...basePatterns.MondayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "142", week: "W52", date: "22/12/2026", day: "Tuesday", stores: [...basePatterns.TuesdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "143", week: "W52", date: "23/12/2026", day: "Wednesday", stores: [...basePatterns.WednesdayA], accommodation: "HOME BASE", isLeave: false },
+            { id: "144", week: "W52", date: "24/12/2026", day: "Thursday", stores: [...basePatterns.ThursdayA], accommodation: "HOME BASE", isLeave: false },
             { id: "145", week: "W52", date: "25/12/2026", day: "Friday", stores: ["STORES OFFLINE - CHRISTMAS DAY"], accommodation: "HOME BASE", isLeave: false },
 
             { id: "146", week: "W53", date: "28/12/2026", day: "Monday", stores: ["STORES OFFLINE - BOXING DAY HOLIDAY"], accommodation: "HOME BASE", isLeave: false },
-            { id: "147", week: "W53", date: "29/12/2026", day: "Tuesday", stores: monthliesB1.Tue, accommodation: "HOME BASE", isLeave: false },
-            { id: "148", week: "W53", date: "30/12/2026", day: "Wednesday", stores: monthliesB1.Wed, accommodation: "HOME BASE", isLeave: false },
-            { id: "149", week: "W53", date: "31/12/2026", day: "Thursday", stores: monthliesB1.Thu, accommodation: "HOME BASE", isLeave: false },
+            { id: "147", week: "W53", date: "29/12/2026", day: "Tuesday", stores: [...basePatterns.TuesdayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "148", week: "W53", date: "30/12/2026", day: "Wednesday", stores: [...basePatterns.WednesdayB], accommodation: "HOME BASE", isLeave: false },
+            { id: "149", week: "W53", date: "31/12/2026", day: "Thursday", stores: [...basePatterns.ThursdayB], accommodation: "HOME BASE", isLeave: false },
             { id: "150", week: "W53", date: "01/01/2027", day: "Friday", stores: ["STORES OFFLINE - NEW YEARS DAY"], accommodation: "HOME BASE", isLeave: false }
         ];
 
-        // Version updated to v20
-        let roster = JSON.parse(localStorage.getItem('kyal_roster_data_v20')) || initialRosterData;
-        let visitedStores = JSON.parse(localStorage.getItem('kyal_visited_stores_v20')) || {};
+        // Version updated to v21 to override local client storage cleanly
+        let roster = JSON.parse(localStorage.getItem('kyal_roster_data_v21')) || initialRosterData;
+        let visitedStores = JSON.parse(localStorage.getItem('kyal_visited_stores_v21')) || {};
 
         function saveData() { 
-            localStorage.setItem('kyal_roster_data_v20', JSON.stringify(roster)); 
-            localStorage.setItem('kyal_visited_stores_v20', JSON.stringify(visitedStores));
+            localStorage.setItem('kyal_roster_data_v21', JSON.stringify(roster)); 
+            localStorage.setItem('kyal_visited_stores_v21', JSON.stringify(visitedStores));
         }
         function isNswPublicHoliday(dateStr) { return dateStr === "08/06/2026" || dateStr === "05/10/2026"; }
 
@@ -537,7 +515,6 @@
             setupTactileDragAndDrop();
         }
 
-        // Handle left click: Shift+Click marks as done, standard click deletes
         function handleChipClick(e, dayId, storeIndex) {
             e.stopPropagation();
             if(e.shiftKey) {
@@ -692,8 +669,8 @@
 
         function resetTracker() {
             if(confirm("Are you sure you want to reset the entire roster back to default layouts? All custom entries will be lost.")) { 
-                localStorage.removeItem('kyal_roster_data_v20'); 
-                localStorage.removeItem('kyal_visited_stores_v20'); 
+                localStorage.removeItem('kyal_roster_data_v21'); 
+                localStorage.removeItem('kyal_visited_stores_v21'); 
                 roster = JSON.parse(JSON.stringify(initialRosterData)); 
                 visitedStores = {};
                 renderCalendar(); 
@@ -710,7 +687,6 @@
             downloadAnchor.remove();
         }
 
-        // --- PRINT ENGINE LOGIC ---
         function openPrintModal() {
             const startSelect = document.getElementById('printStartWeek');
             const endSelect = document.getElementById('printEndWeek');
